@@ -120,16 +120,16 @@ class jupyterhub (String $domain_name = "",
 
   file_line { 'nginx_default_server_ipv4':
     ensure => absent,
-    path   => "/etc/nginx/nginx.conf",
-    match  => "listen       80 default_server;",
+    path   => '/etc/nginx/nginx.conf',
+    match  => 'listen       80 default_server;',
     match_for_absence => true,
     notify => Service['nginx']
   }
 
   file_line { 'nginx_default_server_ipv6':
     ensure => absent,
-    path   => "/etc/nginx/nginx.conf",
-    match  => "listen       \[::\]:80 default_server;",
+    path   => '/etc/nginx/nginx.conf',
+    match  => 'listen       \[::\]:80 default_server;',
     match_for_absence => true,
     notify => Service['nginx']
   }
