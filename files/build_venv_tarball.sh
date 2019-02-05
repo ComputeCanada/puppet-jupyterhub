@@ -7,7 +7,7 @@ $PYTHON -m virtualenv $VENV
 source $VENV/bin/activate
 pip install --no-cache-dir jupyterhub notebook jupyterlmod nbserverproxy
 pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/remote_port.zip
-pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/master.zip
+pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip
 
 jupyter nbextension install --py jupyterlmod --sys-prefix
 jupyter nbextension enable --py jupyterlmod --sys-prefix
