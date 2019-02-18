@@ -67,11 +67,12 @@ class jupyterhub (String $domain_name = "",
     owner  => 'jupyterhub'
   }
   file { 'submit.sh':
-    path   => '/opt/jupyterhub/etc/submit.sh',
-    ensure => 'present',
-    source => 'puppet:///modules/jupyterhub/submit.sh',
-    mode   => '0644',
-    owner  => 'jupyterhub'
+    path    => '/opt/jupyterhub/etc/submit.sh',
+    ensure  => 'present',
+    source  => 'puppet:///modules/jupyterhub/submit.sh',
+    mode    => '0644',
+    owner   => 'jupyterhub',
+    replace => 'false'
   }
   exec { 'jupyter_tarball':
     command => "/opt/jupyterhub/bin/build_venv_tarball.sh",
