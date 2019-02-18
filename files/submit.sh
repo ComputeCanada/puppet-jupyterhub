@@ -3,7 +3,7 @@
 #SBATCH --output={homedir}/jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
 #SBATCH --chdir={homedir}
-#SBATCH --mem=512M
+#SBATCH --mem=450M
 #SBATCH --cpus-per-task=1
 #SBATCH --export={keepvars}
 #SBATCH --oversubscribe
