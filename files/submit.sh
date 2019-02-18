@@ -6,6 +6,7 @@
 #SBATCH --mem=512M
 #SBATCH --cpus-per-task=1
 #SBATCH --export={keepvars}
+#SBATCH --oversubscribe
 unset XDG_RUNTIME_DIR
 module restore
 
