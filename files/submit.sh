@@ -1,10 +1,10 @@
 #!/bin/bash
-##SBATCH --time=00-1:00:00
+#SBATCH --time=0
 #SBATCH --output={homedir}/jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
 #SBATCH --chdir={homedir}
-#SBATCH --mem=2000M
-#SBATCH --cpus-per-task=2
+#SBATCH --mem=512M
+#SBATCH --cpus-per-task=1
 #SBATCH --export={keepvars}
 unset XDG_RUNTIME_DIR
 module restore
