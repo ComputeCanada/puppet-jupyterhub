@@ -1,1 +1,0 @@
-jupyterhub      ALL=(ALL)       NOPASSWD:SETENV: /opt/software/slurm/bin/sbatch, /opt/software/slurm/bin/scancel [0-9]*, /opt/software/slurm/bin/squeue -h -j [0-9]* -o %T %B

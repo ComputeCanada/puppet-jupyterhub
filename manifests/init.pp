@@ -1,4 +1,5 @@
 class jupyterhub (String $domain_name = "",
+                  String $slurm_home = "/opt/software/slurm",
                   Boolean $use_ssl = true) {
   selinux::module { 'login':
     ensure    => 'present',
@@ -47,8 +48,15 @@ class jupyterhub (String $domain_name = "",
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
     ensure => 'present',
-    source => 'puppet:///modules/jupyterhub/99-jupyterhub-user'
+    content => epp('jupyterhub/99-jupyterhub-user', {'slurm_home' => $slurm_home})
   }
+
+  file_line { 'slurm_bin_sudo_secure_path':
+    path  => '/etc/sudoers',
+    line  => 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/opt/software/slurm/bin',
+    match => '^Defaults\ \ \ \ secure_path\ \=',
+  }
+
   file { ['/opt/jupyterhub', '/opt/jupyterhub/etc', '/opt/jupyterhub/bin']:
     ensure => directory,
     owner  => 'jupyterhub'
