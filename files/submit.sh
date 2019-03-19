@@ -11,9 +11,16 @@ unset XDG_RUNTIME_DIR
 module restore
 
 # Environment setup
-VENV="/dev/shm/jupyter"
+TARBALL="/project/jupyter_singleuser.tar.gz"
+VENV="$SLURM_TMPDIR/$(tar --exclude="*/*" -tf $TARBALL)"
 rm -rf $VENV
-tar xf /project/jupyter_singleuser.tar.gz -C /dev/shm
+tar xf $TARBALL -C $SLURM_TMPDIR
+
+# Disable virtualenv prompt addition
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# Disable variable export with sbatch
+export SBATCH_EXPORT=NONE
 
 # Launch jupyterhub single server
 source $VENV/bin/activate
