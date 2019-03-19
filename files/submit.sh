@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=0
-#SBATCH --output={homedir}/jupyterhub_slurmspawner_%j.log
+#SBATCH --output={homedir}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
 #SBATCH --chdir={homedir}
 #SBATCH --mem=450M
