@@ -53,7 +53,7 @@ class jupyterhub (String $domain_name = "",
 
   file_line { 'slurm_bin_sudo_secure_path':
     path  => '/etc/sudoers',
-    line  => 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/opt/software/slurm/bin',
+    line  => "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:${slurm_home}/bin",
     match => '^Defaults\ \ \ \ secure_path\ \=',
   }
 
