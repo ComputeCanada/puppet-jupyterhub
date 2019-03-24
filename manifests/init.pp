@@ -57,6 +57,21 @@ class jupyterhub (String $domain_name = "",
     match => '^Defaults\ \ \ \ secure_path\ \=',
   }
 
+  file { 'jupyterhub-auth':
+    path   => '/etc/pam.d/jupyterhub-auth',
+    ensure => 'present',
+    source => 'puppet:///modules/jupyterhub/jupyterhub-auth',
+    mode   => '0644'
+  }
+
+  file { 'jupyterhub-login':
+    path    => '/etc/pam.d/jupyterhub-login',
+    ensure  => 'present',
+    source  => 'puppet:///modules/jupyterhub/jupyterhub-login',
+    mode    => '0644',
+    require => File['jupyterhub-auth']
+  }
+
   file { ['/opt/jupyterhub', '/opt/jupyterhub/etc', '/opt/jupyterhub/bin']:
     ensure => directory,
     owner  => 'jupyterhub'
@@ -114,6 +129,7 @@ class jupyterhub (String $domain_name = "",
     ensure  => running,
     enable  => true,
     require => [Exec['jupyterhub_batchspawner'],
+                File['jupyterhub-login'],
                 File['jupyterhub.service'],
                 File['jupyterhub_config.py'],
                 File['submit.sh']]
