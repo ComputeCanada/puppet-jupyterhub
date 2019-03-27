@@ -9,6 +9,7 @@ class MySpawner(SlurmSpawner):
 c.JupyterHub.spawner_class = MySpawner
 c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.ip = '127.0.0.1'
+c.JupyterHub.allow_named_servers = True
 
 c.PAMAuthenticator.open_sessions = False
 c.PAMAuthenticator.service = "jupyterhub-login"

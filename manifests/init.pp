@@ -113,13 +113,13 @@ class jupyterhub (String $domain_name = "",
     require => Package['python36']
   }
   exec { 'jupyterhub_pip':
-    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub',
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub==1.0.0b1',
     creates => '/opt/jupyterhub/bin/jupyterhub',
     user    => 'jupyterhub',
     require => Exec['jupyterhub_venv']
   }
   exec { 'jupyterhub_batchspawner':
-    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/remote_port.zip',
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip',
     creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
     user    => 'jupyterhub',
     require => Exec['jupyterhub_pip']
