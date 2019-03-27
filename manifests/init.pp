@@ -164,11 +164,21 @@ class jupyterhub (String $domain_name = "",
     enable  => true
   }
 
+  firewall { '200 nginx public':
+    chain  => 'INPUT',
+    dport  => [80, 443],
+    proto  => 'tcp',
+    source => "0.0.0.0/0",
+    action => 'accept'
+  }
+
   if $domain_name != "" and $use_ssl {
     exec { 'cerbot-nginx':
       command => "/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains $domain_name",
       creates => "/etc/letsencrypt/live/$domain_name/cert.pem",
-      require => [Package['certbot-nginx'], Service['nginx']]
+      require => [Package['certbot-nginx'],
+                  Firewall['200 nginx public'],
+                  Service['nginx']]
     }
   }
 
