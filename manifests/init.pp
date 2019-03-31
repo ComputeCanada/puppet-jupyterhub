@@ -1,20 +1,20 @@
 class jupyterhub (String $domain_name = "",
                   String $slurm_home = "/opt/software/slurm",
                   Boolean $use_ssl = true) {
-  selinux::module { 'login':
-    ensure    => 'present',
-    source_te => 'puppet:///modules/jupyterhub/login.te',
-    builder   => 'refpolicy'
-  }
+  # selinux::module { 'login':
+  #   ensure    => 'present',
+  #   source_te => 'puppet:///modules/jupyterhub/login.te',
+  #   builder   => 'refpolicy'
+  # }
   selinux::boolean { 'httpd_can_network_connect': }
 
   user { 'jupyterhub':
     ensure  => 'present',
     groups  => 'jupyterhub',
     uid     => '2003',
-    home    => '/opt/jupyterhub',
+    home    => '/var/run/jupyterhub',
     comment =>  'JupyterHub',
-    shell   => '/bin/bash',
+    shell   => '/bin/nologin',
   }
   group { 'jupyterhub':
     ensure => 'present',
@@ -72,9 +72,14 @@ class jupyterhub (String $domain_name = "",
     require => File['jupyterhub-auth']
   }
 
-  file { ['/opt/jupyterhub', '/opt/jupyterhub/etc', '/opt/jupyterhub/bin']:
+  file { ['/opt/jupyterhub', '/opt/jupyterhub/bin', '/etc/jupyterhub']:
+    ensure => directory
+  }
+  file { '/var/run/jupyterhub':
     ensure => directory,
-    owner  => 'jupyterhub'
+    mode   => '0644',
+    owner  => 'jupyterhub',
+    group  => 'jupyterhub'
   }
   file { 'build_venv_tarball.sh':
     path   => '/opt/jupyterhub/bin/build_venv_tarball.sh',
@@ -83,18 +88,16 @@ class jupyterhub (String $domain_name = "",
     mode   => '0700'
   }
   file { 'jupyterhub_config.py':
-    path   => '/opt/jupyterhub/etc/jupyterhub_config.py',
+    path   => '/etc/jupyterhub/jupyterhub_config.py',
     ensure => 'present',
     source => 'puppet:///modules/jupyterhub/jupyterhub_config.py',
-    mode   => '0600',
-    owner  => 'jupyterhub'
+    mode   => '0644',
   }
   file { 'submit.sh':
-    path    => '/opt/jupyterhub/etc/submit.sh',
+    path    => '/etc/jupyterhub/submit.sh',
     ensure  => 'present',
     source  => 'puppet:///modules/jupyterhub/submit.sh',
     mode    => '0644',
-    owner   => 'jupyterhub',
     replace => 'false'
   }
   exec { 'jupyter_tarball':
@@ -109,19 +112,16 @@ class jupyterhub (String $domain_name = "",
   exec { 'jupyterhub_venv':
     command => '/usr/bin/python36 -m venv /opt/jupyterhub',
     creates => '/opt/jupyterhub/bin/python',
-    user    => 'jupyterhub',
     require => Package['python36']
   }
   exec { 'jupyterhub_pip':
     command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub==1.0.0b1',
     creates => '/opt/jupyterhub/bin/jupyterhub',
-    user    => 'jupyterhub',
     require => Exec['jupyterhub_venv']
   }
   exec { 'jupyterhub_batchspawner':
     command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip',
     creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
-    user    => 'jupyterhub',
     require => Exec['jupyterhub_pip']
   }
 

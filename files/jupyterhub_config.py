@@ -3,7 +3,7 @@ from batchspawner import SlurmSpawner
 class MySpawner(SlurmSpawner):
     @property
     def batch_script(self):
-        with open('/opt/jupyterhub/etc/submit.sh', 'r') as script_template:
+        with open('/etc/jupyterhub/submit.sh', 'r') as script_template:
             script = script_template.read()
         return script
 c.JupyterHub.spawner_class = MySpawner

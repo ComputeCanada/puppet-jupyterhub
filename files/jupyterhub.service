@@ -5,8 +5,8 @@ After=network-online.target
 [Service]
 User=jupyterhub
 Group=jupyterhub
-ExecStart=/opt/jupyterhub/bin/jupyterhub --config /opt/jupyterhub/etc/jupyterhub_config.py
-WorkingDirectory=/opt/jupyterhub/etc
+ExecStart=/opt/jupyterhub/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py
+WorkingDirectory=/var/run/jupyterhub
 
 [Install]
 WantedBy=multi-user.target
