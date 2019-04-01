@@ -1,18 +1,13 @@
 class jupyterhub (String $domain_name = "",
                   String $slurm_home = "/opt/software/slurm",
                   Boolean $use_ssl = true) {
-  # selinux::module { 'login':
-  #   ensure    => 'present',
-  #   source_te => 'puppet:///modules/jupyterhub/login.te',
-  #   builder   => 'refpolicy'
-  # }
+
   selinux::boolean { 'httpd_can_network_connect': }
 
   user { 'jupyterhub':
     ensure  => 'present',
     groups  => 'jupyterhub',
     uid     => '2003',
-    home    => '/var/run/jupyterhub',
     comment =>  'JupyterHub',
     shell   => '/sbin/nologin',
   }
@@ -77,10 +72,17 @@ class jupyterhub (String $domain_name = "",
   }
   file { '/var/run/jupyterhub':
     ensure => directory,
-    mode   => '0644',
     owner  => 'jupyterhub',
-    group  => 'jupyterhub'
+    group  => 'jupyterhub',
+    mode   => '0755'
   }
+
+  file { '/usr/lib/tmpfiles.d/jupyterhub.conf':
+    source => 'puppet:///modules/jupyterhub/jupyterhub.conf',
+    ensure => 'present',
+    mode   => '0644',
+  }
+
   file { 'build_venv_tarball.sh':
     path   => '/opt/jupyterhub/bin/build_venv_tarball.sh',
     ensure => present,
