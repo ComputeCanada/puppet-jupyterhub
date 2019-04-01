@@ -14,7 +14,7 @@ class jupyterhub (String $domain_name = "",
     uid     => '2003',
     home    => '/var/run/jupyterhub',
     comment =>  'JupyterHub',
-    shell   => '/bin/nologin',
+    shell   => '/sbin/nologin',
   }
   group { 'jupyterhub':
     ensure => 'present',
