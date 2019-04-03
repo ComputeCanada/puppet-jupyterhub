@@ -7,13 +7,13 @@ class jupyterhub (String $domain_name = "",
   user { 'jupyterhub':
     ensure  => 'present',
     groups  => 'jupyterhub',
-    uid     => '2003',
-    comment =>  'JupyterHub',
+    comment => 'JupyterHub',
+    home    => '/var/run/jupyterhub',
     shell   => '/sbin/nologin',
+    system  => true
   }
   group { 'jupyterhub':
-    ensure => 'present',
-    gid    =>  '2003'
+    ensure => 'present'
   }
 
   class { 'nodejs':
