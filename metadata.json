@@ -10,6 +10,6 @@
     "dependencies": [ 
         { "name":"puppet/nodejs", "version_requirement": " >= 7.0.0" },
         { "name":"puppet/selinux", "version_requirement": " >= 1.6.1"  },
-        { "name":"puppetlabs/stdlib", "version_requirement": " <= 5.2.0"  }
+        { "name":"puppetlabs/stdlib", "version_requirement": " >= 5.2.0"  }
     ]
 }
