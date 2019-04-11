@@ -1,5 +1,5 @@
-class jupyterhub (String $domain_name = "",
-                  String $slurm_home = "/opt/software/slurm",
+class jupyterhub (String $domain_name = '',
+                  String $slurm_home = '/opt/software/slurm',
                   Boolean $use_ssl = true) {
 
   selinux::boolean { 'httpd_can_network_connect': }
@@ -36,13 +36,13 @@ class jupyterhub (String $domain_name = "",
   }
 
   file { 'jupyterhub.service':
-    path   => '/lib/systemd/system/jupyterhub.service',
     ensure => 'present',
+    path   => '/lib/systemd/system/jupyterhub.service',
     source => 'puppet:///modules/jupyterhub/jupyterhub.service'
   }
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
-    ensure => 'present',
+    ensure  => 'present',
     content => epp('jupyterhub/99-jupyterhub-user', {'slurm_home' => $slurm_home})
   }
 
@@ -53,15 +53,15 @@ class jupyterhub (String $domain_name = "",
   }
 
   file { 'jupyterhub-auth':
-    path   => '/etc/pam.d/jupyterhub-auth',
     ensure => 'present',
+    path   => '/etc/pam.d/jupyterhub-auth',
     source => 'puppet:///modules/jupyterhub/jupyterhub-auth',
     mode   => '0644'
   }
 
   file { 'jupyterhub-login':
-    path    => '/etc/pam.d/jupyterhub-login',
     ensure  => 'present',
+    path    => '/etc/pam.d/jupyterhub-login',
     source  => 'puppet:///modules/jupyterhub/jupyterhub-login',
     mode    => '0644',
     require => File['jupyterhub-auth']
@@ -78,32 +78,32 @@ class jupyterhub (String $domain_name = "",
   }
 
   file { '/usr/lib/tmpfiles.d/jupyterhub.conf':
-    source => 'puppet:///modules/jupyterhub/jupyterhub.conf',
     ensure => 'present',
+    source => 'puppet:///modules/jupyterhub/jupyterhub.conf',
     mode   => '0644',
   }
 
   file { 'build_venv_tarball.sh':
-    path   => '/opt/jupyterhub/bin/build_venv_tarball.sh',
     ensure => present,
+    path   => '/opt/jupyterhub/bin/build_venv_tarball.sh',
     source => 'puppet:///modules/jupyterhub/build_venv_tarball.sh',
     mode   => '0700'
   }
   file { 'jupyterhub_config.py':
-    path   => '/etc/jupyterhub/jupyterhub_config.py',
     ensure => 'present',
+    path   => '/etc/jupyterhub/jupyterhub_config.py',
     source => 'puppet:///modules/jupyterhub/jupyterhub_config.py',
     mode   => '0644',
   }
   file { 'submit.sh':
-    path    => '/etc/jupyterhub/submit.sh',
     ensure  => 'present',
+    path    => '/etc/jupyterhub/submit.sh',
     source  => 'puppet:///modules/jupyterhub/submit.sh',
     mode    => '0644',
-    replace => 'false'
+    replace => false
   }
   exec { 'jupyter_tarball':
-    command => "/opt/jupyterhub/bin/build_venv_tarball.sh",
+    command => '/opt/jupyterhub/bin/build_venv_tarball.sh',
     creates => '/project/jupyter_singleuser.tar.gz',
     require => [File['build_venv_tarball.sh'],
                 NFS::Client::Mount['/project'],
@@ -146,38 +146,38 @@ class jupyterhub (String $domain_name = "",
   }
 
   file_line { 'nginx_default_server_ipv4':
-    ensure => absent,
-    path   => '/etc/nginx/nginx.conf',
-    match  => 'listen       80 default_server;',
+    ensure            => absent,
+    path              => '/etc/nginx/nginx.conf',
+    match             => 'listen       80 default_server;',
     match_for_absence => true,
-    notify => Service['nginx']
+    notify            => Service['nginx']
   }
 
   file_line { 'nginx_default_server_ipv6':
-    ensure => absent,
-    path   => '/etc/nginx/nginx.conf',
-    match  => 'listen       \[::\]:80 default_server;',
+    ensure            => absent,
+    path              => '/etc/nginx/nginx.conf',
+    match             => 'listen       \[::\]:80 default_server;',
     match_for_absence => true,
-    notify => Service['nginx']
+    notify            => Service['nginx']
   }
 
   service { 'nginx':
-    ensure  => running,
-    enable  => true
+    ensure => running,
+    enable => true
   }
 
   firewall { '200 nginx public':
     chain  => 'INPUT',
     dport  => [80, 443],
     proto  => 'tcp',
-    source => "0.0.0.0/0",
+    source => '0.0.0.0/0',
     action => 'accept'
   }
 
-  if $domain_name != "" and $use_ssl {
+  if $domain_name != '' and $use_ssl {
     exec { 'cerbot-nginx':
-      command => "/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains $domain_name",
-      creates => "/etc/letsencrypt/live/$domain_name/cert.pem",
+      command => "/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains ${domain_name}",
+      creates => "/etc/letsencrypt/live/${domain_name}/cert.pem",
       require => [Package['certbot-nginx'],
                   Firewall['200 nginx public'],
                   Service['nginx']]
