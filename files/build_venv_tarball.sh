@@ -5,7 +5,7 @@ mkdir -p $VENV
 PYTHON="/cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.0/bin/python3"
 $PYTHON -m virtualenv $VENV
 source $VENV/bin/activate
-pip install --no-cache-dir jupyterhub==1.0.0b1
+pip install --no-cache-dir jupyterhub==1.0.0b2
 pip install --no-cache-dir notebook jupyterlmod nbserverproxy
 pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip
 pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip

@@ -117,7 +117,7 @@ class jupyterhub (String $domain_name = "",
     require => Package['python36']
   }
   exec { 'jupyterhub_pip':
-    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub==1.0.0b1',
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub==1.0.0b2',
     creates => '/opt/jupyterhub/bin/jupyterhub',
     require => Exec['jupyterhub_venv']
   }
