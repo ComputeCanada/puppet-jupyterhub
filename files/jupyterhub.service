@@ -5,6 +5,7 @@ After=network-online.target
 [Service]
 User=jupyterhub
 Group=jupyterhub
+Environment=PATH=/bin:/usr/bin:/opt/jupyterhub/bin:/opt/software/slurm/bin
 ExecStart=/opt/jupyterhub/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py
 WorkingDirectory=/var/run/jupyterhub
 
