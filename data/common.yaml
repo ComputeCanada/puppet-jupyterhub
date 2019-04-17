@@ -1,0 +1,6 @@
+# jupyterhub/data/common.yaml
+---
+jupyterhub::jupyterhub::version: 1.0.0b2
+jupyterhub::batchspawner::url: https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip
+jupyterhub::tarball::path: /project/jupyter_singleuser.tar.gz
+jupyterhub::tarball::python: /cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.0/bin/python3

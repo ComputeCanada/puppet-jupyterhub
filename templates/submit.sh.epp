@@ -11,7 +11,7 @@ unset XDG_RUNTIME_DIR
 module restore
 
 # Environment setup
-TARBALL="/project/jupyter_singleuser.tar.gz"
+TARBALL="<%= $tarball_path =>"
 VENV="$SLURM_TMPDIR/$(tar --exclude="*/*" -tf $TARBALL)"
 rm -rf $VENV
 tar xf $TARBALL -C $SLURM_TMPDIR

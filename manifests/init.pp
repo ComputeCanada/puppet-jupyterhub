@@ -1,6 +1,13 @@
+class jupyterhub::base {
+  file { ['/opt/jupyterhub', '/opt/jupyterhub/bin']:
+    ensure => directory
+  }
+}
+
 class jupyterhub (String $domain_name = '',
                   String $slurm_home = '/opt/software/slurm',
                   Boolean $use_ssl = true) {
+  include jupyterhub::base
 
   selinux::boolean { 'httpd_can_network_connect': }
 
@@ -67,9 +74,10 @@ class jupyterhub (String $domain_name = '',
     require => File['jupyterhub-auth']
   }
 
-  file { ['/opt/jupyterhub', '/opt/jupyterhub/bin', '/etc/jupyterhub']:
+  file { '/etc/jupyterhub':
     ensure => directory
   }
+
   file { '/var/run/jupyterhub':
     ensure => directory,
     owner  => 'jupyterhub',
@@ -83,31 +91,23 @@ class jupyterhub (String $domain_name = '',
     mode   => '0644',
   }
 
-  file { 'build_venv_tarball.sh':
-    ensure => present,
-    path   => '/opt/jupyterhub/bin/build_venv_tarball.sh',
-    source => 'puppet:///modules/jupyterhub/build_venv_tarball.sh',
-    mode   => '0700'
-  }
+  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
+  $batchspawner_url = lookup('jupyterhub::batchspawner::url')
+  $tarball_path = lookup('jupyterhub::tarball::path')
+
   file { 'jupyterhub_config.py':
     ensure => 'present',
     path   => '/etc/jupyterhub/jupyterhub_config.py',
     source => 'puppet:///modules/jupyterhub/jupyterhub_config.py',
     mode   => '0644',
   }
+
   file { 'submit.sh':
     ensure  => 'present',
     path    => '/etc/jupyterhub/submit.sh',
-    source  => 'puppet:///modules/jupyterhub/submit.sh',
+    content => epp('jupyterhub/submit.sh', {'tarball_path' => $tarball_path}),
     mode    => '0644',
     replace => false
-  }
-  exec { 'jupyter_tarball':
-    command => '/opt/jupyterhub/bin/build_venv_tarball.sh',
-    creates => '/project/jupyter_singleuser.tar.gz',
-    require => [File['build_venv_tarball.sh'],
-                NFS::Client::Mount['/project'],
-                Service['autofs']]
   }
 
   # JupyterHub virtual environment
@@ -116,13 +116,15 @@ class jupyterhub (String $domain_name = '',
     creates => '/opt/jupyterhub/bin/python',
     require => Package['python36']
   }
+
   exec { 'jupyterhub_pip':
-    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub==1.0.0b2',
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir jupyterhub==${jupyterhub_version}",
     creates => '/opt/jupyterhub/bin/jupyterhub',
     require => Exec['jupyterhub_venv']
   }
+
   exec { 'jupyterhub_batchspawner':
-    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip',
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${$batchspawner_url}",
     creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
     require => Exec['jupyterhub_pip']
   }
@@ -183,5 +185,30 @@ class jupyterhub (String $domain_name = '',
                   Service['nginx']]
     }
   }
+}
 
+class jupyterhub::venv_builder {
+  include jupyterhub::base
+
+  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
+  $batchspawner_url = lookup('jupyterhub::batchspawner::url')
+  $tarball_path = lookup('jupyterhub::tarball::path')
+  $python_path = lookup('jupyterhub::tarball::python')
+
+  file { 'build_venv_tarball.sh':
+    ensure  => present,
+    path    => '/opt/jupyterhub/bin/build_venv_tarball.sh',
+    content => epp('jupyterhub/build_venv_tarball.sh', {'jupyterhub_version' => $jupyterhub_version,
+                                                        'batchspawner_url'   => $batchspawner_url,
+                                                        'tarball_path'       => $tarball_path,
+                                                        'python_path'        => $python_path}),
+    mode    => '0755',
+    require => File['/opt/jupyterhub/bin']
+  }
+
+  exec { 'jupyter_tarball':
+    command => '/opt/jupyterhub/bin/build_venv_tarball.sh',
+    creates => $tarball_path,
+    require => File['build_venv_tarball.sh']
+  }
 }

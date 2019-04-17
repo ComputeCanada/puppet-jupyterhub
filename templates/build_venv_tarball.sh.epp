@@ -2,12 +2,12 @@
 VENV="/dev/shm/jupyter"
 rm -rf $VENV
 mkdir -p $VENV
-PYTHON="/cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.0/bin/python3"
+PYTHON="<%= $python_path %>"
 $PYTHON -m virtualenv $VENV
 source $VENV/bin/activate
-pip install --no-cache-dir jupyterhub==1.0.0b2
+pip install --no-cache-dir jupyterhub==<%= $jupyterhub_version %>
 pip install --no-cache-dir notebook jupyterlmod nbserverproxy
-pip install --no-cache-dir https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip
+pip install --no-cache-dir <%= $batchspawner_url %>
 pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip
 
 jupyter nbextension install --py jupyterlmod --sys-prefix
@@ -23,5 +23,5 @@ deactivate
 # Create deployable environment tarball
 $PYTHON -m virtualenv --relocatable $VENV
 sed -i 's;VIRTUAL_ENV=.*;VIRTUAL_ENV=$(readlink -f $(dirname $BASH_SOURCE)/..);g' $VENV/bin/activate
-tar czf /project/jupyter_singleuser.tar.gz --directory=$VENV/.. jupyter
+tar czf <%= $tarball_path %> --directory=$VENV/.. jupyter
 rm -rf $VENV
