@@ -178,11 +178,19 @@ class jupyterhub (String $domain_name = '',
 
   if $domain_name != '' and $use_ssl {
     exec { 'cerbot-nginx':
-      command => "/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains ${domain_name}",
+      command => "/usr/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains ${domain_name}",
       creates => "/etc/letsencrypt/live/${domain_name}/cert.pem",
       require => [Package['certbot-nginx'],
                   Firewall['200 nginx public'],
                   Service['nginx']]
+    }
+
+    cron { 'certbot':
+      command => '/usr/bin/certbot renew --renew-hook "/usr/bin/systemctl reload nginx"',
+      user    => 'root',
+      minute  => 52,
+      hour    => [0, 12],
+      require => Exec['certbot-nginx']
     }
   }
 }
