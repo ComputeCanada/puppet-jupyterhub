@@ -119,7 +119,7 @@ class jupyterhub (String $domain_name = '',
 
   exec { 'jupyterhub_pip':
     command => "/opt/jupyterhub/bin/pip install --upgrade --no-cache-dir jupyterhub==${jupyterhub_version}",
-    creates => "/opt/jupyterhub/lib/jupyterhub-${jupyterhub_version}.dist-info",
+    creates => "/opt/jupyterhub/lib/python3.6/site-packages/jupyterhub-${jupyterhub_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
