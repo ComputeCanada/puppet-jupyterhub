@@ -177,7 +177,7 @@ class jupyterhub (String $domain_name = '',
   }
 
   if $domain_name != '' and $use_ssl {
-    exec { 'cerbot-nginx':
+    exec { 'certbot-nginx':
       command => "/usr/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains ${domain_name}",
       creates => "/etc/letsencrypt/live/${domain_name}/cert.pem",
       require => [Package['certbot-nginx'],
