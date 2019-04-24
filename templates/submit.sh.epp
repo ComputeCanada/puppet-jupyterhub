@@ -1,12 +1,13 @@
 #!/bin/bash
-#SBATCH --time=0
-#SBATCH --output={homedir}/.jupyterhub_slurmspawner_%j.log
+#SBATCH --time={{runtime}}
+#SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
-#SBATCH --chdir={homedir}
-#SBATCH --mem=450M
-#SBATCH --cpus-per-task=1
-#SBATCH --export={keepvars}
-#SBATCH --oversubscribe
+#SBATCH --chdir={{homedir}}
+#SBATCH --mem={{memory}}
+#SBATCH --cpus-per-task={{nprocs}}
+#SBATCH --export={{keepvars}}
+{% if oversubscribe %}#SBATCH --oversubscribe{% endif %}
+#SBATCH --gres={{gpus}}
 unset XDG_RUNTIME_DIR
 module restore
 
@@ -24,4 +25,4 @@ export SBATCH_EXPORT=NONE
 
 # Launch jupyterhub single server
 source $VENV/bin/activate
-{cmd}
+{{cmd}}

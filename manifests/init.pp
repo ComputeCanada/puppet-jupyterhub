@@ -93,6 +93,7 @@ class jupyterhub (String $domain_name = '',
 
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_url = lookup('jupyterhub::batchspawner::url')
+  $slurmformspawner_url = lookup('jupyterhub::slurmformspawner::url')
   $tarball_path = lookup('jupyterhub::tarball::path')
 
   file { 'jupyterhub_config.py':
@@ -127,6 +128,12 @@ class jupyterhub (String $domain_name = '',
     command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${$batchspawner_url}",
     creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
     require => Exec['jupyterhub_pip']
+  }
+
+  exec { 'jupyterhub_slurmformspawner':
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${slurmformspawner_url}",
+    creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
+    require => Exec['jupyterhub_batchspawner']
   }
 
   service { 'jupyterhub':
