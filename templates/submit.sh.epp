@@ -26,4 +26,4 @@ export SBATCH_EXPORT=NONE
 
 # Launch jupyterhub single server
 source $VENV/bin/activate
-{{cmd}}
+{{cmd}} {% if gui == 'lab' %}--NotebookApp.default_url='/lab'{% endif %}
