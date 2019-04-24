@@ -126,13 +126,13 @@ class jupyterhub (String $domain_name = '',
 
   exec { 'jupyterhub_batchspawner':
     command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${$batchspawner_url}",
-    creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/batchspawner/',
     require => Exec['jupyterhub_pip']
   }
 
   exec { 'jupyterhub_slurmformspawner':
     command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${slurmformspawner_url}",
-    creates => '/opt/jupyterhub/bin/batchspawner-singleuser',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/slurmformspawner/',
     require => Exec['jupyterhub_batchspawner']
   }
 
