@@ -8,6 +8,7 @@
 #SBATCH --cpus-per-task={{nprocs}}
 #SBATCH --export={{keepvars}}
 {% if oversubscribe %}#SBATCH --oversubscribe{% endif %}
+{% if reservation %}#SBATCH --reservation={{reservation}}{% endif %}
 #SBATCH --gres={{gpus}}
 unset XDG_RUNTIME_DIR
 module restore
