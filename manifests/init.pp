@@ -263,7 +263,7 @@ class jupyterhub::node {
 
   exec { 'install_nbrsessionproxy_nb':
     command => '/opt/jupyterhub/bin/jupyter nbextension install --py nbrsessionproxy --sys-prefix',
-    creates => '/dev/shm/jupyter/share/jupyter/nbextensions/nbrsessionproxy',
+    creates => '/opt/jupyterhub/share/jupyter/nbextensions/nbrsessionproxy',
     require => Exec['pip_nbrsessionproxy']
   }
 
