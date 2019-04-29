@@ -10,9 +10,6 @@ pip install --no-cache-dir notebook jupyterlab jupyterlmod nbserverproxy
 pip install --no-cache-dir <%= $batchspawner_url %>
 pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip
 
-jupyter nbextension install --py jupyterlmod --sys-prefix
-jupyter nbextension enable --py jupyterlmod --sys-prefix
-jupyter serverextension enable --py jupyterlmod --sys-prefix
 jupyter serverextension enable --py nbserverproxy --sys-prefix
 jupyter nbextension install --py nbrsessionproxy --sys-prefix
 jupyter nbextension enable --py nbrsessionproxy --sys-prefix
