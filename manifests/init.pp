@@ -210,13 +210,13 @@ class jupyterhub::node {
   exec { 'pip_notebook':
     command => '/opt/jupyterhub/bin/pip install --no-cache-dir notebook',
     creates => '/opt/jupyterhub/lib/python3.6/site-packages/notebook/',
-    require => Exec['jupyterhub_node_venv']
+    require => Exec['jupyterhub_venv']
   }
 
   exec { 'pip_jupyterlab':
     command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterlab',
     creates => '/opt/jupyterhub/lib/python3.6/site-packages/jupyterlab/',
-    require => Exec['jupyterhub_node_venv']
+    require => Exec['jupyterhub_venv']
   }
 
   exec { 'pip_jupyterlmod':
