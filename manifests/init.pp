@@ -269,7 +269,7 @@ class jupyterhub::node {
 
   exec { 'enable_nbrsessionproxy_nb':
     command => '/opt/jupyterhub/bin/jupyter nbextension enable --py nbrsessionproxy --sys-prefix',
-    unless  => '/usr/grep -q nbrsessionproxy/tree /dev/shm/jupyter/etc/jupyter/nbconfig/tree.json',
+    unless  => '/usr/bin/grep -q nbrsessionproxy/tree /dev/shm/jupyter/etc/jupyter/nbconfig/tree.json',
     require => Exec['pip_nbrsessionproxy']
   }
 }
