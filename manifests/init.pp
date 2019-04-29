@@ -272,16 +272,6 @@ class jupyterhub::node {
     unless  => '/usr/bin/grep -q nbrsessionproxy/tree /opt/jupyterhub/etc/jupyter/nbconfig/tree.json',
     require => Exec['pip_nbrsessionproxy']
   }
-
-  $jupyterhub_path = @(END)
-# Add Slurm custom paths for local users
-export PATH=/opt/jupyterhub/bin:$PATH
-END
-
-  file { '/etc/profile.d/z-01-jupyterhub.sh':
-    ensure  => 'present',
-    content => $jupyterhub_path
-  }
 }
 
 class jupyterhub::venv_builder {
