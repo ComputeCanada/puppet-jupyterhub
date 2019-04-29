@@ -5,19 +5,7 @@ mkdir -p $VENV
 PYTHON="<%= $python_path %>"
 $PYTHON -m virtualenv $VENV
 source $VENV/bin/activate
-pip install --no-cache-dir jupyterhub==<%= $jupyterhub_version %>
-pip install --no-cache-dir notebook jupyterlab jupyterlmod nbserverproxy
-pip install --no-cache-dir <%= $batchspawner_url %>
-pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip
-
-jupyter serverextension enable --py nbserverproxy --sys-prefix
-jupyter nbextension install --py nbrsessionproxy --sys-prefix
-jupyter nbextension enable --py nbrsessionproxy --sys-prefix
-jupyter serverextension enable --py nbrsessionproxy --sys-prefix
-
-jupyter labextension install @jupyterlab/hub-extension
-jupyter labextension install jupyterlab-lmod
-
+pip install ipykernel
 deactivate
 
 # Create deployable environment tarball

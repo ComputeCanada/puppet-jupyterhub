@@ -1,6 +1,31 @@
 class jupyterhub::base {
+  package { 'python36':
+    ensure => 'installed'
+  }
+
   file { ['/opt/jupyterhub', '/opt/jupyterhub/bin']:
     ensure => directory
+  }
+
+  exec { 'jupyterhub_venv':
+    command => '/usr/bin/python36 -m venv /opt/jupyterhub',
+    creates => '/opt/jupyterhub/bin/python',
+    require => Package['python36']
+  }
+
+  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
+  $batchspawner_url = lookup('jupyterhub::batchspawner::url')
+
+  exec { 'pip_jupyterhub':
+    command => "/opt/jupyterhub/bin/pip install --upgrade --no-cache-dir jupyterhub==${jupyterhub_version}",
+    creates => "/opt/jupyterhub/lib/python3.6/site-packages/jupyterhub-${jupyterhub_version}.dist-info/",
+    require => Exec['jupyterhub_venv']
+  }
+
+  exec { 'pip_batchspawner':
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${$batchspawner_url}",
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/batchspawner/',
+    require => Exec['pip_jupyterhub']
   }
 }
 
@@ -31,9 +56,6 @@ class jupyterhub (String $domain_name = '',
     ensure => 'installed'
   }
   package { 'certbot-nginx':
-    ensure => 'installed'
-  }
-  package { 'python36':
     ensure => 'installed'
   }
 
@@ -91,8 +113,6 @@ class jupyterhub (String $domain_name = '',
     mode   => '0644',
   }
 
-  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
-  $batchspawner_url = lookup('jupyterhub::batchspawner::url')
   $slurmformspawner_url = lookup('jupyterhub::slurmformspawner::url')
   $tarball_path = lookup('jupyterhub::tarball::path')
 
@@ -112,34 +132,16 @@ class jupyterhub (String $domain_name = '',
   }
 
   # JupyterHub virtual environment
-  exec { 'jupyterhub_venv':
-    command => '/usr/bin/python36 -m venv /opt/jupyterhub',
-    creates => '/opt/jupyterhub/bin/python',
-    require => Package['python36']
-  }
-
-  exec { 'jupyterhub_pip':
-    command => "/opt/jupyterhub/bin/pip install --upgrade --no-cache-dir jupyterhub==${jupyterhub_version}",
-    creates => "/opt/jupyterhub/lib/python3.6/site-packages/jupyterhub-${jupyterhub_version}.dist-info/",
-    require => Exec['jupyterhub_venv']
-  }
-
-  exec { 'jupyterhub_batchspawner':
-    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${$batchspawner_url}",
-    creates => '/opt/jupyterhub/lib/python3.6/site-packages/batchspawner/',
-    require => Exec['jupyterhub_pip']
-  }
-
-  exec { 'jupyterhub_slurmformspawner':
+  exec { 'pip_slurmformspawner':
     command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${slurmformspawner_url}",
     creates => '/opt/jupyterhub/lib/python3.6/site-packages/slurmformspawner/',
-    require => Exec['jupyterhub_batchspawner']
+    require => Exec['pip_batchspawner']
   }
 
   service { 'jupyterhub':
     ensure  => running,
     enable  => true,
-    require => [Exec['jupyterhub_batchspawner'],
+    require => [Exec['pip_slurmformspawner'],
                 File['jupyterhub-login'],
                 File['jupyterhub.service'],
                 File['jupyterhub_config.py'],
@@ -202,21 +204,87 @@ class jupyterhub (String $domain_name = '',
   }
 }
 
+class jupyterhub::node {
+  include jupyterhub::base
+
+  exec { 'pip_notebook':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir notebook',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/notebook/',
+    require => Exec['jupyterhub_node_venv']
+  }
+
+  exec { 'pip_jupyterlab':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterlab',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/jupyterlab/',
+    require => Exec['jupyterhub_node_venv']
+  }
+
+  exec { 'pip_jupyterlmod':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir jupyterlmod',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/jupyterlmod/',
+    require => Exec['pip_notebook']
+  }
+
+  exec { 'pip_nbserverproxy':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir nbserverproxy',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/nbserverproxy/',
+    require => Exec['pip_notebook']
+  }
+
+  exec { 'pip_nbrsessionproxy':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/nbrsessionproxy/',
+    require => Exec['pip_notebook']
+  }
+
+  exec { 'pip_jupyterlab-hub':
+    command => '/opt/jupyterhub/bin/jupyter labextension install @jupyterlab/hub-extension',
+    creates => '/opt/jupyterhub/bin/jupyter-labhub',
+    require => Exec['pip_jupyterlab']
+  }
+
+  exec { 'pip_jupyterlab-lmod':
+    command => '/opt/jupyterhub/bin/jupyter labextension install jupyterlab-lmod',
+    creates => '/opt/jupyterhub/share/jupyter/lab/staging/node_modules/jupyterlab-lmod',
+    require => Exec['pip_jupyterlab']
+  }
+
+  exec { 'enable_nbserverproxy_srv':
+    command => '/opt/jupyterhub/bin/jupyter serverextension enable --py nbserverproxy --sys-prefix',
+    unless  => 'grep -q nbserverproxy /dev/shm/jupyter/etc/jupyter/jupyter_notebook_config.json',
+    require => Exec['pip_nbserverproxy']
+  }
+
+  exec { 'enable_nbrsessionproxy_srv':
+    command => '/opt/jupyterhub/bin/jupyter serverextension enable --py nbrsessionproxy --sys-prefix',
+    unless  => 'grep -q nbrsessionproxy /dev/shm/jupyter/etc/jupyter/jupyter_notebook_config.json',
+    require => Exec['pip_nbrsessionproxy']
+  }
+
+  exec { 'install_nbrsessionproxy_nb':
+    command => '/opt/jupyterhub/bin/jupyter nbextension install --py nbrsessionproxy --sys-prefix',
+    creates => '/dev/shm/jupyter/share/jupyter/nbextensions/nbrsessionproxy',
+    require => Exec['pip_nbrsessionproxy']
+  }
+
+  exec { 'enable_nbrsessionproxy_nb':
+    command => '/opt/jupyterhub/bin/jupyter nbextension enable --py nbrsessionproxy --sys-prefix',
+    unless  => 'grep -q nbrsessionproxy/tree /dev/shm/jupyter/etc/jupyter/nbconfig/tree.json',
+    require => Exec['pip_nbrsessionproxy']
+  }
+}
+
 class jupyterhub::venv_builder {
   include jupyterhub::base
 
-  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
-  $batchspawner_url = lookup('jupyterhub::batchspawner::url')
   $tarball_path = lookup('jupyterhub::tarball::path')
   $python_path = lookup('jupyterhub::tarball::python')
 
   file { 'build_venv_tarball.sh':
     ensure  => present,
     path    => '/opt/jupyterhub/bin/build_venv_tarball.sh',
-    content => epp('jupyterhub/build_venv_tarball.sh', {'jupyterhub_version' => $jupyterhub_version,
-                                                        'batchspawner_url'   => $batchspawner_url,
-                                                        'tarball_path'       => $tarball_path,
-                                                        'python_path'        => $python_path}),
+    content => epp('jupyterhub/build_venv_tarball.sh', {'tarball_path' => $tarball_path,
+                                                        'python_path'  => $python_path}),
     mode    => '0755',
     require => File['/opt/jupyterhub/bin']
   }
