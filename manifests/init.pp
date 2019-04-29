@@ -251,13 +251,13 @@ class jupyterhub::node {
 
   exec { 'enable_nbserverproxy_srv':
     command => '/opt/jupyterhub/bin/jupyter serverextension enable --py nbserverproxy --sys-prefix',
-    unless  => '/usr/bin/grep -q nbserverproxy /dev/shm/jupyter/etc/jupyter/jupyter_notebook_config.json',
+    unless  => '/usr/bin/grep -q nbserverproxy /opt/jupyterhub/etc/jupyter/jupyter_notebook_config.json',
     require => Exec['pip_nbserverproxy']
   }
 
   exec { 'enable_nbrsessionproxy_srv':
     command => '/opt/jupyterhub/bin/jupyter serverextension enable --py nbrsessionproxy --sys-prefix',
-    unless  => '/usr/bin/grep -q nbrsessionproxy /dev/shm/jupyter/etc/jupyter/jupyter_notebook_config.json',
+    unless  => '/usr/bin/grep -q nbrsessionproxy /opt/jupyterhub/etc/jupyter/jupyter_notebook_config.json',
     require => Exec['pip_nbrsessionproxy']
   }
 
@@ -269,7 +269,7 @@ class jupyterhub::node {
 
   exec { 'enable_nbrsessionproxy_nb':
     command => '/opt/jupyterhub/bin/jupyter nbextension enable --py nbrsessionproxy --sys-prefix',
-    unless  => '/usr/bin/grep -q nbrsessionproxy/tree /dev/shm/jupyter/etc/jupyter/nbconfig/tree.json',
+    unless  => '/usr/bin/grep -q nbrsessionproxy/tree /opt/jupyterhub/etc/jupyter/nbconfig/tree.json',
     require => Exec['pip_nbrsessionproxy']
   }
 }
