@@ -1,4 +1,8 @@
 class jupyterhub::base {
+  class { 'nodejs':
+    repo_url_suffix => '8.x',
+  }
+
   package { 'python36':
     ensure => 'installed'
   }
@@ -46,10 +50,6 @@ class jupyterhub (String $domain_name = '',
   }
   group { 'jupyterhub':
     ensure => 'present'
-  }
-
-  class { 'nodejs':
-    repo_url_suffix => '8.x',
   }
 
   package { 'nginx':
