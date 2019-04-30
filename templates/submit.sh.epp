@@ -11,7 +11,6 @@
 {% if reservation %}#SBATCH --reservation={{reservation}}{% endif %}
 #SBATCH --gres={{gpus}}
 unset XDG_RUNTIME_DIR
-module restore
 
 # Environment setup
 TARBALL="<%= $tarball_path %>"
