@@ -15,8 +15,8 @@ unset XDG_RUNTIME_DIR
 # Environment setup
 TARBALL="<%= $tarball_path %>"
 VENV="$SLURM_TMPDIR/$(tar --exclude="*/*" -tf $TARBALL)"
-rm -rf $VENV
-tar xf $TARBALL -C $SLURM_TMPDIR
+rm -rf ${VENV}
+tar xf ${TARBALL} -C ${SLURM_TMPDIR}
 
 # Disable virtualenv prompt addition
 export VIRTUAL_ENV_DISABLE_PROMPT=1
@@ -24,6 +24,10 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 # Disable variable export with sbatch
 export SBATCH_EXPORT=NONE
 
+# Create user temporary environment and kernel
+source ${VENV}/bin/activate
+python -m ipykernel install --prefix=${VENV} --name 'python3'
+export JUPYTER_PATH=${VENV}/share/jupyter:${JUPYTER_PATH}
+
 # Launch jupyterhub single server
-source $VENV/bin/activate
 {{cmd}}
