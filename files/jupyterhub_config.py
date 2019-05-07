@@ -8,3 +8,4 @@ c.PAMAuthenticator.service = "jupyterhub-login"
 
 c.Authenticator.admin_users = {'admin'}
 c.JupyterHub.admin_access = True
+c.KernelSpecManager.ensure_native_kernel = False
