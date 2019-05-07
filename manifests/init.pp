@@ -237,6 +237,14 @@ class jupyterhub::node {
     require => Exec['pip_notebook']
   }
 
+  # This makes sure the /opt/jupyterhub install does not provide the default kernel.
+  # The default kernel is provided by the local scratch install of the tarball.
+  exec { 'pip_uninstall_ipykernel':
+    command => '/opt/jupyterhub/bin/pip uninstall ipykernel',
+    onlyif => '/usr/bin/test -f /opt/jupyterhub/lib/python3.6/site-packages/ipykernel_launcher.py',
+    require => Exec['pip_notebook']
+  }
+
   exec { 'pip_jupyterlab-hub':
     command => '/opt/jupyterhub/bin/jupyter labextension install @jupyterlab/hub-extension',
     creates => '/opt/jupyterhub/bin/jupyter-labhub',
