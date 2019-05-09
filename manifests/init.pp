@@ -114,6 +114,7 @@ class jupyterhub (String $domain_name = '',
   }
 
   $slurmformspawner_url = lookup('jupyterhub::slurmformspawner::url')
+  $tarball_path = lookup('jupyterhub::tarball::path')
 
   file { 'jupyterhub_config.py':
     ensure => 'present',
@@ -125,7 +126,7 @@ class jupyterhub (String $domain_name = '',
   file { 'submit.sh':
     ensure  => 'present',
     path    => '/etc/jupyterhub/submit.sh',
-    content => epp('jupyterhub/submit.sh'),
+    content => epp('jupyterhub/submit.sh', {'tarball_path' => $tarball_path}),
     mode    => '0644',
     replace => false
   }
