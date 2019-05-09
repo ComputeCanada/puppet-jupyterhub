@@ -280,7 +280,8 @@ class jupyterhub::node {
     require => Exec['pip_nbrsessionproxy']
   }
 
-  $kernel_python_bin = lookup('jupyterhub::kernel::python')
+  $kernel_python_bin = lookup({'name'          => 'jupyterhub::kernel::python',
+                               'default_value' => '/usr/bin/python36'})
   exec { 'kernel_venv':
     command => "${kernel_python_bin} -m venv /opt/ipython-kernel",
     creates => '/opt/ipython-kernel/bin/python',
@@ -295,7 +296,7 @@ class jupyterhub::node {
   exec { 'install_kernel':
     command => '/opt/ipython-kernel/bin/python -m ipykernel install --name "python3" --prefix /opt/jupyterhub',
     creates => '/opt/jupyterhub/share/jupyter/kernels/python3/kernel.json',
-    require => Exec['pip_ipykernel']
+    require => [Exec['pip_ipykernel'], Exec['pip_uninstall_ipykernel']]
   }
 
   $jupyterhub_path = @(END)
