@@ -239,11 +239,7 @@ class jupyterhub::node {
   # This makes sure the /opt/jupyterhub install does not provide the default kernel.
   # The kernel is provided by the local install in /opt/ipython-kernel.
   exec { 'pip_uninstall_ipykernel':
-<<<<<<< HEAD
-    command => '/opt/jupyterhub/bin/pip uninstall -y ipykernel',
-=======
     command => '/opt/jupyterhub/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso',
->>>>>>> kernel
     onlyif => '/usr/bin/test -f /opt/jupyterhub/lib/python3.6/site-packages/ipykernel_launcher.py',
     require => Exec['pip_notebook']
   }
