@@ -114,7 +114,6 @@ class jupyterhub (String $domain_name = '',
   }
 
   $slurmformspawner_url = lookup('jupyterhub::slurmformspawner::url')
-  $tarball_path = lookup('jupyterhub::tarball::path')
 
   file { 'jupyterhub_config.py':
     ensure => 'present',
@@ -126,7 +125,7 @@ class jupyterhub (String $domain_name = '',
   file { 'submit.sh':
     ensure  => 'present',
     path    => '/etc/jupyterhub/submit.sh',
-    content => epp('jupyterhub/submit.sh', {'tarball_path' => $tarball_path}),
+    content => epp('jupyterhub/submit.sh'),
     mode    => '0644',
     replace => false
   }
@@ -238,9 +237,13 @@ class jupyterhub::node {
   }
 
   # This makes sure the /opt/jupyterhub install does not provide the default kernel.
-  # The default kernel is provided by the local scratch install of the tarball.
+  # The kernel is provided by the local install in /opt/ipython-kernel.
   exec { 'pip_uninstall_ipykernel':
+<<<<<<< HEAD
     command => '/opt/jupyterhub/bin/pip uninstall -y ipykernel',
+=======
+    command => '/opt/jupyterhub/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso',
+>>>>>>> kernel
     onlyif => '/usr/bin/test -f /opt/jupyterhub/lib/python3.6/site-packages/ipykernel_launcher.py',
     require => Exec['pip_notebook']
   }
@@ -281,6 +284,25 @@ class jupyterhub::node {
     require => Exec['pip_nbrsessionproxy']
   }
 
+  $kernel_python_bin = lookup({'name'          => 'jupyterhub::kernel::python',
+                               'default_value' => '/usr/bin/python36'})
+  exec { 'kernel_venv':
+    command => "${kernel_python_bin} -m venv /opt/ipython-kernel",
+    creates => '/opt/ipython-kernel/bin/python',
+  }
+
+  exec { 'pip_ipykernel':
+    command => '/opt/ipython-kernel/bin/pip install --no-cache-dir ipykernel',
+    creates => '/opt/ipython-kernel/bin/ipython',
+    require => Exec['kernel_venv']
+  }
+
+  exec { 'install_kernel':
+    command => '/opt/ipython-kernel/bin/python -m ipykernel install --name "python3" --prefix /opt/jupyterhub',
+    creates => '/opt/jupyterhub/share/jupyter/kernels/python3/kernel.json',
+    require => [Exec['pip_ipykernel'], Exec['pip_uninstall_ipykernel']]
+  }
+
   $jupyterhub_path = @(END)
 # Add JupyterHub path
 [[ ":$PATH:" != *":/opt/jupyterhub/bin:"* ]] && export PATH="/opt/jupyterhub/bin:${PATH}"
@@ -289,27 +311,5 @@ END
   file { '/etc/profile.d/z-01-jupyterhub.sh':
     ensure  => 'present',
     content => $jupyterhub_path
-  }
-}
-
-class jupyterhub::venv_builder {
-  include jupyterhub::base
-
-  $tarball_path = lookup('jupyterhub::tarball::path')
-  $python_path = lookup('jupyterhub::tarball::python')
-
-  file { 'build_venv_tarball.sh':
-    ensure  => present,
-    path    => '/opt/jupyterhub/bin/build_venv_tarball.sh',
-    content => epp('jupyterhub/build_venv_tarball.sh', {'tarball_path' => $tarball_path,
-                                                        'python_path'  => $python_path}),
-    mode    => '0755',
-    require => File['/opt/jupyterhub/bin']
-  }
-
-  exec { 'jupyter_tarball':
-    command => '/opt/jupyterhub/bin/build_venv_tarball.sh',
-    creates => $tarball_path,
-    require => File['build_venv_tarball.sh']
   }
 }
