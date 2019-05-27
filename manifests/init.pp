@@ -185,7 +185,7 @@ class jupyterhub (String $domain_name = '',
   }
 
   exec {'create_self_signed_sslcert':
-    command => "openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem -subj '/CN=${::fqdn}'"
+    command => "openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem -subj '/CN=${::fqdn}'",
     cwd     => '/etc/jupyterhub/ssl',
     creates => ['/etc/jupyterhub/ssl/key.pem', '/etc/jupyterhub/ssl/cert.pem'],
     path    => ['/usr/bin', '/usr/sbin'],
