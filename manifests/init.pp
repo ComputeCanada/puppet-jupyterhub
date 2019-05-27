@@ -96,7 +96,7 @@ class jupyterhub (String $domain_name = '',
     require => File['jupyterhub-auth']
   }
 
-  file { '/etc/jupyterhub':
+  file { ['/etc/jupyterhub', '/etc/jupyterhub/ssl']:
     ensure => directory
   }
 
@@ -182,6 +182,25 @@ class jupyterhub (String $domain_name = '',
     proto  => 'tcp',
     source => '0.0.0.0/0',
     action => 'accept'
+  }
+
+  exec {'create_self_signed_sslcert':
+    command => "openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem -subj '/CN=${::fqdn}'"
+    cwd     => '/etc/jupyterhub/ssl',
+    creates => ['/etc/jupyterhub/ssl/key.pem', '/etc/jupyterhub/ssl/cert.pem'],
+    path    => ['/usr/bin', '/usr/sbin'],
+    umask   => '037'
+  }
+
+  file { '/etc/jupyterhub/ssl/cert.pem':
+    mode    => '0644',
+    require => [Exec['create_self_signed_sslcert']]
+  }
+
+  file { '/etc/jupyterhub/ssl/key.pem':
+    mode    => '0640',
+    group   => 'jupyterhub',
+    require => [Exec['create_self_signed_sslcert']]
   }
 
   if $domain_name != '' and $use_ssl {
