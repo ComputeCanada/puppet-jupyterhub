@@ -221,14 +221,12 @@ class jupyterhub (String $domain_name,
                   Service['nginx']],
     }
 
-    if $certbot_renew {
-      cron { 'certbot':
-        command => '/usr/bin/certbot renew --renew-hook "/usr/bin/systemctl reload nginx"',
-        user    => 'root',
-        minute  => 52,
-        hour    => [0, 12],
-        require => Exec['certbot-nginx']
-      }
+    cron { 'certbot':
+      command => '/usr/bin/certbot renew --renew-hook "/usr/bin/systemctl reload nginx"',
+      user    => 'root',
+      minute  => 52,
+      hour    => [0, 12],
+      require => Exec['certbot-nginx']
     }
   }
 }
