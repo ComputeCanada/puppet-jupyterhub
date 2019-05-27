@@ -166,7 +166,7 @@ class jupyterhub (String $domain_name,
   }
 
   exec {'create_dhparam.pem':
-    command => 'openssl dhparam -out /etc/nginx/ssl-dhparam.pem 2048',
+    command => 'openssl dhparam -out /etc/nginx/ssl-dhparams.pem 2048',
     creates => '/etc/nginx/ssl/dhparam.pem',
     path    => ['/usr/bin', '/usr/sbin'],
   }
