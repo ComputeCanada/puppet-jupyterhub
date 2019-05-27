@@ -219,7 +219,6 @@ class jupyterhub (String $domain_name,
       require => [Package['certbot-nginx'],
                   Firewall['200 nginx public'],
                   Service['nginx']],
-      notify  => Service['nginx']
     }
 
     if $certbot_renew {
