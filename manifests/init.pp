@@ -33,9 +33,9 @@ class jupyterhub::base {
   }
 }
 
-class jupyterhub (String $domain_name = '',
+class jupyterhub (String $domain_name,
                   String $slurm_home = '/opt/software/slurm',
-                  Boolean $use_ssl = true) {
+                  Boolean $use_certbot = true) {
   include jupyterhub::base
 
   selinux::boolean { 'httpd_can_network_connect': }
@@ -53,9 +53,6 @@ class jupyterhub (String $domain_name = '',
   }
 
   package { 'nginx':
-    ensure => 'installed'
-  }
-  package { 'certbot-nginx':
     ensure => 'installed'
   }
 
@@ -168,12 +165,18 @@ class jupyterhub (String $domain_name = '',
                 File['/etc/jupyterhub/ssl/key.pem']]
   }
 
+  exec {'create_dhparam.pem':
+    command => 'openssl dhparam -out /etc/nginx/ssl-dhparam.pem 2048',
+    creates => '/etc/nginx/ssl/dhparam.pem',
+    path    => ['/usr/bin', '/usr/sbin'],
+  }
+
   file { 'jupyterhub.conf':
     path    => '/etc/nginx/conf.d/jupyterhub.conf',
     content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name}),
     mode    => '0644',
-    replace => ! $use_ssl,
-    notify  => Service['nginx']
+    notify  => Service['nginx'],
+    require => Exec['create_dhparam.pem']
   }
 
   file_line { 'nginx_default_server_ipv4':
@@ -205,21 +208,28 @@ class jupyterhub (String $domain_name = '',
     action => 'accept'
   }
 
-  if $domain_name != '' and $use_ssl {
-    exec { 'certbot-nginx':
-      command => "/usr/bin/certbot --nginx --register-unsafely-without-email --noninteractive --redirect --agree-tos --domains ${domain_name}",
-      creates => "/etc/letsencrypt/live/${domain_name}/cert.pem",
-      require => [Package['certbot-nginx'],
-                  Firewall['200 nginx public'],
-                  Service['nginx']]
+  if $use_certbot {
+    package { 'certbot-nginx':
+      ensure => 'installed'
     }
 
-    cron { 'certbot':
-      command => '/usr/bin/certbot renew --renew-hook "/usr/bin/systemctl reload nginx"',
-      user    => 'root',
-      minute  => 52,
-      hour    => [0, 12],
-      require => Exec['certbot-nginx']
+    exec { 'certbot-nginx':
+      command => "/usr/bin/certbot --nginx certonly --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
+      creates => "/etc/letsencrypt/live/${domain_name}/privkey.pem",
+      require => [Package['certbot-nginx'],
+                  Firewall['200 nginx public'],
+                  Service['nginx']],
+      notify  => Service['nginx']
+    }
+
+    if $certbot_renew {
+      cron { 'certbot':
+        command => '/usr/bin/certbot renew --renew-hook "/usr/bin/systemctl reload nginx"',
+        user    => 'root',
+        minute  => 52,
+        hour    => [0, 12],
+        require => Exec['certbot-nginx']
+      }
     }
   }
 }
