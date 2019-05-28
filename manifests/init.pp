@@ -166,7 +166,7 @@ class jupyterhub (String $domain_name,
   }
 
   # https://wiki.mozilla.org/Security/Server_Side_TLS#ffdhe4096.pem
-  file {'ffdhe4096.pem':
+  file { 'ffdhe4096.pem':
     ensure => 'present',
     path   => '/etc/nginx/ffdhe4096.pem',
     source => 'puppet:///modules/jupyterhub/ffdhe4096.pem',
@@ -178,7 +178,7 @@ class jupyterhub (String $domain_name,
     content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name}),
     mode    => '0644',
     notify  => Service['nginx'],
-    require => Exec['create_dhparam.pem']
+    require => File['ffdhe4096.pem']
   }
 
   file_line { 'nginx_default_server_ipv4':
