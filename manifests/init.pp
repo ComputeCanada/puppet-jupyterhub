@@ -165,10 +165,12 @@ class jupyterhub (String $domain_name,
                 File['/etc/jupyterhub/ssl/key.pem']]
   }
 
-  exec {'create_dhparam.pem':
-    command => 'openssl dhparam -out /etc/nginx/ssl-dhparams.pem 2048',
-    creates => '/etc/nginx/ssl-dhparams.pem',
-    path    => ['/usr/bin', '/usr/sbin'],
+  # https://wiki.mozilla.org/Security/Server_Side_TLS#ffdhe4096.pem
+  file {'ffdhe4096.pem':
+    ensure => 'present',
+    path   => '/etc/nginx/ffdhe4096.pem',
+    source => 'puppet:///modules/jupyterhub/ffdhe4096.pem',
+    mode   => '0644'
   }
 
   file { 'jupyterhub.conf':
