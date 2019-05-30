@@ -215,11 +215,12 @@ class jupyterhub (String $domain_name,
   }
 
   exec { 'certbot-nginx':
-    command => "/usr/bin/certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
+    command => "certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
     unless  => 'grep -q ssl_certificate /etc/nginx/conf.d/jupyterhub.conf',
     require => [Package['certbot-nginx'],
                 Firewall['200 nginx public'],
                 Service['nginx']],
+    path    => ['/usr/bin', '/usr/sbin'],
   }
 }
 
