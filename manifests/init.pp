@@ -34,8 +34,7 @@ class jupyterhub::base {
 }
 
 class jupyterhub (String $domain_name,
-                  String $slurm_home = '/opt/software/slurm',
-                  Boolean $use_certbot = true) {
+                  String $slurm_home = '/opt/software/slurm') {
   include jupyterhub::base
 
   selinux::boolean { 'httpd_can_network_connect': }
@@ -178,6 +177,7 @@ class jupyterhub (String $domain_name,
     content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name}),
     mode    => '0644',
     notify  => Service['nginx'],
+    replace => false,
     require => File['ffdhe4096.pem']
   }
 
@@ -210,26 +210,16 @@ class jupyterhub (String $domain_name,
     action => 'accept'
   }
 
-  if $use_certbot {
-    package { 'certbot-nginx':
-      ensure => 'installed'
-    }
+  package { 'certbot-nginx':
+    ensure => 'installed'
+  }
 
-    exec { 'certbot-nginx':
-      command => "/usr/bin/certbot --nginx certonly --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
-      creates => "/etc/letsencrypt/live/${domain_name}/privkey.pem",
-      require => [Package['certbot-nginx'],
-                  Firewall['200 nginx public'],
-                  Service['nginx']],
-    }
-
-    cron { 'certbot':
-      command => '/usr/bin/certbot renew --renew-hook "/usr/bin/systemctl reload nginx"',
-      user    => 'root',
-      minute  => 52,
-      hour    => [0, 12],
-      require => Exec['certbot-nginx']
-    }
+  exec { 'certbot-nginx':
+    command => "/usr/bin/certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
+    unless  => 'grep -q ssl_certificate /etc/nginx/conf.d/jupyterhub.conf',
+    require => [Package['certbot-nginx'],
+                Firewall['200 nginx public'],
+                Service['nginx']],
   }
 }
 
