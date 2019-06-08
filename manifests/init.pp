@@ -27,7 +27,7 @@ class jupyterhub::base {
   }
 
   exec { 'pip_batchspawner':
-    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${$batchspawner_url}",
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${batchspawner_url}",
     creates => '/opt/jupyterhub/lib/python3.6/site-packages/batchspawner/',
     require => Exec['pip_jupyterhub']
   }
