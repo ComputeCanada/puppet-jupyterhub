@@ -3,4 +3,5 @@
 jupyterhub::jupyterhub::version: 1.0.0
 jupyterhub::batchspawner::url: https://github.com/cmd-ntrf/batchspawner/archive/jupyterhub1.0.zip
 jupyterhub::slurmformspawner::url: https://github.com/cmd-ntrf/slurmformspawner/archive/master.zip
+jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 jupyterhub::kernel::python: /cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.0/bin/python

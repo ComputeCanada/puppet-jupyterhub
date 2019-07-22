@@ -110,6 +110,7 @@ class jupyterhub (String $domain_name,
   }
 
   $slurmformspawner_url = lookup('jupyterhub::slurmformspawner::url')
+  $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
 
   file { 'jupyterhub_config.py':
     ensure => 'present',
@@ -131,6 +132,18 @@ class jupyterhub (String $domain_name,
     command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${slurmformspawner_url}",
     creates => '/opt/jupyterhub/lib/python3.6/site-packages/slurmformspawner/',
     require => Exec['pip_batchspawner']
+  }
+
+  exec { 'pip_pamela':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/pamela/archive/otp_support.zip',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/pamela-1.0.1.dev0-py3.6.egg-info/',
+    require => Exec['pip_jupyterhub']
+  }
+
+  exec { 'pip_pammfauthenticator':
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir ${pammfauthenticator_url}",
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/pammfauthenticator/',
+    require => [Exec['pip_jupyterhub'], Exec['pip_pamela']]
   }
 
   exec {'create_self_signed_sslcert':
@@ -156,6 +169,7 @@ class jupyterhub (String $domain_name,
     ensure  => running,
     enable  => true,
     require => [Exec['pip_slurmformspawner'],
+                Exec['pip_pammfauthenticator'],
                 File['jupyterhub-login'],
                 File['jupyterhub.service'],
                 File['jupyterhub_config.py'],

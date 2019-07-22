@@ -5,6 +5,7 @@ c.JupyterHub.allow_named_servers = True
 c.JupyterHub.ssl_key = '/etc/jupyterhub/ssl/key.pem'
 c.JupyterHub.ssl_cert = '/etc/jupyterhub/ssl/cert.pem'
 
+c.JupyterHub.authenticator_class = 'pammfauthenticator'
 c.PAMAuthenticator.open_sessions = False
 c.PAMAuthenticator.service = "jupyterhub-login"
 
