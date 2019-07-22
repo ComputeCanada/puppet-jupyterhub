@@ -44,6 +44,11 @@ server {
     gzip off;
 
     add_header Strict-Transport-Security max-age=15768000;
+
+    <% if $puppet_managed_cert { -%>
+    ssl_certificate /etc/letsencrypt/live/<%= $domain_name %>/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<%= $domain_name %>/privkey.pem;
+    <% } -%>
 }
 
 server {

@@ -172,15 +172,6 @@ class jupyterhub (String $domain_name,
     mode   => '0644'
   }
 
-  file { 'jupyterhub.conf':
-    path    => '/etc/nginx/conf.d/jupyterhub.conf',
-    content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name}),
-    mode    => '0644',
-    notify  => Service['nginx'],
-    replace => false,
-    require => File['ffdhe4096.pem']
-  }
-
   file_line { 'nginx_default_server_ipv4':
     ensure            => absent,
     path              => '/etc/nginx/nginx.conf',
@@ -214,13 +205,34 @@ class jupyterhub (String $domain_name,
     ensure => 'installed'
   }
 
-  exec { 'certbot-nginx':
-    command => "certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
-    unless  => 'grep -q ssl_certificate /etc/nginx/conf.d/jupyterhub.conf',
-    require => [Package['certbot-nginx'],
-                Firewall['200 nginx public'],
-                Service['nginx']],
-    path    => ['/usr/bin', '/usr/sbin'],
+  if $facts['letsencrypt'][$domain_name] != '' {
+    file { 'jupyterhub.conf':
+      path    => '/etc/nginx/conf.d/jupyterhub.conf',
+      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_cert' => true}),
+      mode    => '0644',
+      notify  => Service['nginx'],
+      require => File['ffdhe4096.pem']
+    }
+  }
+  else {
+    file { 'jupyterhub.conf':
+      path    => '/etc/nginx/conf.d/jupyterhub.conf',
+      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_cert' => false}),
+      mode    => '0644',
+      replace => false,
+      notify  => Service['nginx'],
+      require => File['ffdhe4096.pem']
+    }
+
+    exec { 'certbot-nginx':
+      command => "certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
+      unless  => 'grep -q ssl_certificate /etc/nginx/conf.d/jupyterhub.conf',
+      require => [Package['certbot-nginx'],
+                  File['certbot-nginx'],
+                  Firewall['200 nginx public'],
+                  Service['nginx']],
+      path    => ['/usr/bin', '/usr/sbin'],
+    }
   }
 }
 
