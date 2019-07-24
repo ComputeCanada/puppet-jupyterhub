@@ -135,7 +135,7 @@ class jupyterhub (String $domain_name,
   }
 
   exec { 'pip_pamela':
-    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/pamela/archive/otp_support.zip',
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir https://github.com/minrk/pamela/archive/master.zip',
     creates => '/opt/jupyterhub/lib/python3.6/site-packages/pamela-1.0.1.dev0-py3.6.egg-info/',
     require => Exec['pip_jupyterhub']
   }
