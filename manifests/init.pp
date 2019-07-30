@@ -166,16 +166,17 @@ class jupyterhub (String $domain_name,
   }
 
   service { 'jupyterhub':
-    ensure  => running,
-    enable  => true,
-    require => [Exec['pip_slurmformspawner'],
-                Exec['pip_pammfauthenticator'],
-                File['jupyterhub-login'],
-                File['jupyterhub.service'],
-                File['jupyterhub_config.py'],
-                File['submit.sh'],
-                File['/etc/jupyterhub/ssl/cert.pem'],
-                File['/etc/jupyterhub/ssl/key.pem']]
+    ensure    => running,
+    enable    => true,
+    require   => [Exec['pip_slurmformspawner'],
+                  Exec['pip_pammfauthenticator'],
+                  File['jupyterhub-login'],
+                  File['jupyterhub.service'],
+                  File['jupyterhub_config.py'],
+                  File['submit.sh'],
+                  File['/etc/jupyterhub/ssl/cert.pem'],
+                  File['/etc/jupyterhub/ssl/key.pem']],
+    subscribe => Service['sssd']
   }
 
   # https://wiki.mozilla.org/Security/Server_Side_TLS#ffdhe4096.pem
