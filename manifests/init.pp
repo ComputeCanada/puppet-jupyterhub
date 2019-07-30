@@ -220,7 +220,7 @@ class jupyterhub (String $domain_name,
     ensure => 'installed'
   }
 
-  if $facts['letsencrypt'][$domain_name] != '' {
+  if $facts['letsencrypt'] != undef and $facts['letsencrypt'][$domain_name] != '' {
     file { 'jupyterhub.conf':
       path    => '/etc/nginx/conf.d/jupyterhub.conf',
       content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_cert' => true}),
@@ -243,7 +243,7 @@ class jupyterhub (String $domain_name,
       command => "certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
       unless  => 'grep -q ssl_certificate /etc/nginx/conf.d/jupyterhub.conf',
       require => [Package['certbot-nginx'],
-                  File['certbot-nginx'],
+                  File['jupyterhub.conf'],
                   Firewall['200 nginx public'],
                   Service['nginx']],
       path    => ['/usr/bin', '/usr/sbin'],
