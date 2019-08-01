@@ -346,14 +346,4 @@ class jupyterhub::node {
     creates => '/opt/jupyterhub/share/jupyter/kernels/python3/kernel.json',
     require => [Exec['pip_ipykernel'], Exec['pip_uninstall_ipykernel']]
   }
-
-  $jupyterhub_path = @(END)
-# Add JupyterHub path
-[[ ":$PATH:" != *":/opt/jupyterhub/bin:"* ]] && export PATH="/opt/jupyterhub/bin:${PATH}"
-END
-
-  file { '/etc/profile.d/z-01-jupyterhub.sh':
-    ensure  => 'present',
-    content => $jupyterhub_path
-  }
 }

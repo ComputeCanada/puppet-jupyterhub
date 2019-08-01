@@ -19,6 +19,7 @@ export SBATCH_EXPORT=NONE
 export PIP_PREFIX=${SLURM_TMPDIR}
 SITE="${PIP_PREFIX}/lib/$(ls /opt/ipython-kernel/lib/)/site-packages"
 mkdir -p $SITE
+export PATH="/opt/jupyterhub/bin:${PATH}"
 export PATH=${PIP_PREFIX}/bin:${PATH}
 export PYTHONPATH=${SITE}:${PYTHONPATH}
 
