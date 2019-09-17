@@ -3,7 +3,7 @@ class jupyterhub::base {
     repo_url_suffix => '8.x',
   }
 
-  package { 'python36':
+  package { 'python3':
     ensure => 'installed'
   }
 
@@ -12,9 +12,9 @@ class jupyterhub::base {
   }
 
   exec { 'jupyterhub_venv':
-    command => '/usr/bin/python36 -m venv /opt/jupyterhub',
+    command => '/usr/bin/python3 -m venv /opt/jupyterhub',
     creates => '/opt/jupyterhub/bin/python',
-    require => Package['python36']
+    require => Package['python3']
   }
 
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
@@ -329,7 +329,7 @@ class jupyterhub::node {
   }
 
   $kernel_python_bin = lookup({'name'          => 'jupyterhub::kernel::python',
-                               'default_value' => '/usr/bin/python36'})
+                               'default_value' => '/usr/bin/python3'})
   exec { 'kernel_venv':
     command => "${kernel_python_bin} -m venv /opt/ipython-kernel",
     creates => '/opt/ipython-kernel/bin/python',
