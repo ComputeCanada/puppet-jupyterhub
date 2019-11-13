@@ -8,7 +8,7 @@ map $http_upgrade $connection_upgrade {
 
 # HTTP server to handle JupyterHub
 server {
-    <% if $puppet_managed_cert { %>
+    <% if $puppet_managed_ssl { %>
     listen 443 ssl;
     <% } else { %>
     listen 80;
@@ -34,6 +34,14 @@ server {
         allow all;
     }
 
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
+    gzip off;
+
+    add_header Strict-Transport-Security max-age=15768000;
+
+    <% if $puppet_managed_ssl { %>
     ssl_session_timeout 1d;
     ssl_session_cache shared:le_nginx_SSL:10m;
     ssl_session_tickets off;
@@ -43,20 +51,12 @@ server {
     ssl_prefer_server_ciphers on;
     ssl_dhparam /etc/nginx/ffdhe4096.pem;
 
-    ssl_stapling on;
-    ssl_stapling_verify on;
-
-    gzip off;
-
-    add_header Strict-Transport-Security max-age=15768000;
-
-    <% if $puppet_managed_cert { %>
     ssl_certificate /etc/letsencrypt/live/<%= $domain_name %>/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/<%= $domain_name %>/privkey.pem;
     <% } %>
 }
 
-<% if $puppet_managed_cert { %>
+<% if $puppet_managed_ssl { %>
 server {
     if ($host = <%= $domain_name %>) {
         return 301 https://$host$request_uri;

@@ -223,7 +223,7 @@ class jupyterhub (String $domain_name,
   if $facts['letsencrypt'] != undef and $facts['letsencrypt'][$domain_name] != '' {
     file { 'jupyterhub.conf':
       path    => '/etc/nginx/conf.d/jupyterhub.conf',
-      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_cert' => true}),
+      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_ssl' => true}),
       mode    => '0644',
       notify  => Service['nginx'],
       require => File['ffdhe4096.pem']
@@ -232,7 +232,7 @@ class jupyterhub (String $domain_name,
   else {
     file { 'jupyterhub.conf':
       path    => '/etc/nginx/conf.d/jupyterhub.conf',
-      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_cert' => false}),
+      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_ssl' => false}),
       mode    => '0644',
       replace => false,
       notify  => Service['nginx'],
