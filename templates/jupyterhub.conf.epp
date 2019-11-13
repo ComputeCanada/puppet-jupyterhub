@@ -8,7 +8,12 @@ map $http_upgrade $connection_upgrade {
 
 # HTTP server to handle JupyterHub
 server {
+    <% if $puppet_managed_cert { %>
     listen 443 ssl;
+    <% } else { %>
+    listen 80;
+    <% } %>
+
     server_name <%= $domain_name %>;
 
     location / {
@@ -51,6 +56,7 @@ server {
     <% } %>
 }
 
+<% if $puppet_managed_cert { %>
 server {
     if ($host = <%= $domain_name %>) {
         return 301 https://$host$request_uri;
@@ -60,3 +66,4 @@ server {
     server_name <%= $domain_name %>;
     return 404;
 }
+<% } %>
