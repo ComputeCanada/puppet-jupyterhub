@@ -33,11 +33,8 @@ class jupyterhub::base {
   }
 }
 
-class jupyterhub (String $domain_name,
-                  String $slurm_home = '/opt/software/slurm') {
+class jupyterhub (String $slurm_home = '/opt/software/slurm') {
   include jupyterhub::base
-
-  selinux::boolean { 'httpd_can_network_connect': }
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -49,10 +46,6 @@ class jupyterhub (String $domain_name,
   }
   group { 'jupyterhub':
     ensure => 'present'
-  }
-
-  package { 'nginx':
-    ensure => 'installed'
   }
 
   package { 'configurable-http-proxy':
@@ -177,6 +170,14 @@ class jupyterhub (String $domain_name,
                   File['/etc/jupyterhub/ssl/cert.pem'],
                   File['/etc/jupyterhub/ssl/key.pem']],
     subscribe => Service['sssd']
+  }
+}
+
+class jupyterhub::reverse_proxy(String $domain_name) {
+  selinux::boolean { 'httpd_can_network_connect': }
+
+  package { 'nginx':
+    ensure => 'installed'
   }
 
   # https://wiki.mozilla.org/Security/Server_Side_TLS#ffdhe4096.pem
