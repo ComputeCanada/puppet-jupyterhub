@@ -29,6 +29,7 @@ mainly : `squeue`, `sbatch`, `sinfo`, `sacctmgr` and `scontrol`.
 
 ## Setup
 
+### hub
 To install JuptyerHub with the default options:
 
 ```
@@ -43,6 +44,8 @@ and in your hieradata, define the domain name:
 ```
 jupyterhub::reverse_proxy::domain_name: 'jupyter.mydomain.tld'
 ```
+
+### compute
 
 To install the Jupyter notebook component on the compute node:
 
