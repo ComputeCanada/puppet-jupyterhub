@@ -83,13 +83,13 @@ nodejs::manage_package_repo: false
 
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
-| `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | `1.0` |
-| `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | |
-| `jupyterhub::slurmformspawner::url` | String | Url to slurmformspawner source code release file | |
-| `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | |
-| `jupyterhub::kernel::python` | String | Local path to the Python binary that will be used as the default kernel | |
-| `jupyterhub::slurm_home` | String | Path to Slurm installation folder | |
-| `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | |
+| `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::slurmformspawner::url` | String | Url to slurmformspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::kernel::python` | String | Local path to the Python binary that will be used as the default kernel | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::slurm_home` | String | Path to Slurm installation folder | `/opt/software/slurm` |
+| `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
 | `jupyterhub::enable_otp_auth` | Boolean | Enable the OTP field in authentication | `true` |
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
