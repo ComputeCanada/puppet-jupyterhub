@@ -33,7 +33,14 @@ class jupyterhub::base {
   }
 }
 
-class jupyterhub (String $slurm_home = '/opt/software/slurm') {
+class jupyterhub (
+  String $slurm_home = '/opt/software/slurm',
+  Boolean $allow_named_servers = True,
+  Integer $named_server_limit_per_user = 0,
+  Boolean $activate_otp = True,
+  Array[String] $admin_groups = undef,
+  Integer $idle_timeout = undef,
+  ) {
   include jupyterhub::base
 
   user { 'jupyterhub':
@@ -106,10 +113,16 @@ class jupyterhub (String $slurm_home = '/opt/software/slurm') {
   $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
 
   file { 'jupyterhub_config.py':
-    ensure => 'present',
-    path   => '/etc/jupyterhub/jupyterhub_config.py',
-    source => 'puppet:///modules/jupyterhub/jupyterhub_config.py',
-    mode   => '0644',
+    ensure  => 'present',
+    path    => '/etc/jupyterhub/jupyterhub_config.py',
+    content => epp('jupyterhub/jupyterhub_config.py', {
+        'allow_named_servers'         => $allow_named_servers,
+        'named_server_limit_per_user' => $named_server_limit_per_user,
+        'activate_otp'                => $activate_otp,
+        'admin_groups'                => $admin_groups,
+        'idle_timeout'                => $idle_timeout,
+      }),
+    mode    => '0644',
   }
 
   file { 'submit.sh':
