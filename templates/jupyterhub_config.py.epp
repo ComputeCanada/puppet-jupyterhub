@@ -1,38 +1,38 @@
 c.JupyterHub.spawner_class = 'slurmformspawner.SlurmFormSpawner'
 c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.ip = '127.0.0.1'
-<% if $allow_named_servers { %>
+<% if $allow_named_servers { =%>
 c.JupyterHub.allow_named_servers = True
 c.JupyterHub.named_server_limit_per_user = <%= $named_server_limit_per_user %>
- <% } else { %>
+ <% } else { =%>
 c.JupyterHub.allow_named_servers = False
-<% } %>
+<% } =%>
 c.JupyterHub.ssl_key = '/etc/jupyterhub/ssl/key.pem'
 c.JupyterHub.ssl_cert = '/etc/jupyterhub/ssl/cert.pem'
 
-<% if $activate_otp { %>
+<% if $activate_otp { =%>
 c.JupyterHub.authenticator_class = 'pammfauthenticator'
- <% } else { %>
+ <% } else { =%>
 c.JupyterHub.authenticator_class = 'pamauthenticator'
-<% } %>
+<% } =%>
 c.PAMAuthenticator.open_sessions = False
 c.PAMAuthenticator.service = "jupyterhub-login"
 
-<% if $admin_groups != undef { %>
+<% if $admin_groups != undef { =%>
 c.JupyterHub.admin_access = True
 c.PAMAuthenticator.admin_groups = {<% join(regsubst($admin_groups, "(.*)", '"\1"'), ", ") %>}
- <% } else { %>
+ <% } else { =%>
 c.JupyterHub.admin_access = False
-<% } %>
+<% } =%>
 
 c.Spawner.args = ['--KernelSpecManager.ensure_native_kernel=False']
 
 c.JupyterHub.services = [
-<% if $idle_timeout != undef { %>
+<% if $idle_timeout != undef { =%>
     {
         'name': 'cull-idle',
         'admin': True,
         'command': [sys.executable, 'cull_idle_servers.py', '--timeout=<%= $idle_timeout %>'],
     },
-<% } %>
+<% } =%>
 ]
