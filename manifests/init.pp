@@ -38,8 +38,8 @@ class jupyterhub (
   Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
   Boolean $activate_otp = true,
-  Array[String] $admin_groups = undef,
-  Integer $idle_timeout = undef,
+  Optional[Array[String]] $admin_groups = undef,
+  Optional[Integer] $idle_timeout = undef,
   ) {
   include jupyterhub::base
 
