@@ -31,7 +31,7 @@ c.JupyterHub.services = [
     {
         'name': 'cull-idle',
         'admin': True,
-        'command': [sys.executable, sys.prefix + 'bin/cull_idle_servers.py', '--timeout=<%= $idle_timeout %>'],
+        'command': [sys.executable, sys.prefix + '/bin/cull_idle_servers.py', '--timeout=<%= $idle_timeout %>'],
     },
 <% } -%>
 ]
