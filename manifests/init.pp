@@ -37,7 +37,7 @@ class jupyterhub (
   String $slurm_home = '/opt/software/slurm',
   Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
-  Boolean $activate_otp = true,
+  Boolean $enable_otp_auth = true,
   Optional[Array[String]] $admin_groups = undef,
   Optional[Integer] $idle_timeout = undef,
   ) {
@@ -118,7 +118,7 @@ class jupyterhub (
     content => epp('jupyterhub/jupyterhub_config.py', {
         'allow_named_servers'         => $allow_named_servers,
         'named_server_limit_per_user' => $named_server_limit_per_user,
-        'activate_otp'                => $activate_otp,
+        'enable_otp_auth'             => $enable_otp_auth,
         'admin_groups'                => $admin_groups,
         'idle_timeout'                => $idle_timeout,
       }),

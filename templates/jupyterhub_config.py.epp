@@ -10,7 +10,7 @@ c.JupyterHub.allow_named_servers = False
 c.JupyterHub.ssl_key = '/etc/jupyterhub/ssl/key.pem'
 c.JupyterHub.ssl_cert = '/etc/jupyterhub/ssl/cert.pem'
 
-<% if $activate_otp { -%>
+<% if $enable_otp_auth { -%>
 c.JupyterHub.authenticator_class = 'pammfauthenticator'
 <% } -%>
 c.PAMAuthenticator.open_sessions = False
