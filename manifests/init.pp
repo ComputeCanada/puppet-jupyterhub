@@ -171,13 +171,11 @@ class jupyterhub (
     require => [Exec['create_self_signed_sslcert']]
   }
 
-  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   file { '/opt/jupyterhub/bin/cull_idle_servers.py':
-    source   => "https://raw.githubusercontent.com/jupyterhub/jupyterhub/${jupyterhub_version}/examples/cull-idle/cull_idle_servers.py",
-    owner    => 'jupyterhub',
-    group    => 'jupyterhub',
-    mode     => '0755',
-    checksum => 'mtime',
+    source => 'puppet:///modules/jupyterhub/cull_idle_servers.py',
+    owner  => 'jupyterhub',
+    group  => 'jupyterhub',
+    mode   => '0755',
   }
 
   service { 'jupyterhub':
