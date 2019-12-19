@@ -12,8 +12,6 @@ c.JupyterHub.ssl_cert = '/etc/jupyterhub/ssl/cert.pem'
 
 <% if $activate_otp { -%>
 c.JupyterHub.authenticator_class = 'pammfauthenticator'
-<% } else { -%>
-c.JupyterHub.authenticator_class = 'pamauthenticator'
 <% } -%>
 c.PAMAuthenticator.open_sessions = False
 c.PAMAuthenticator.service = "jupyterhub-login"
@@ -27,6 +25,7 @@ c.JupyterHub.admin_access = False
 
 c.Spawner.args = ['--KernelSpecManager.ensure_native_kernel=False']
 
+import sys
 c.JupyterHub.services = [
 <% if $idle_timeout != undef { -%>
     {
