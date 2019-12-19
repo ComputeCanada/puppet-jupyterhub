@@ -90,4 +90,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::kernel::python` | String | Local path to the Python binary that will be used as the default kernel | |
 | `jupyterhub::slurm_home` | String | Path to Slurm installation folder | |
 | `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | |
-| | | | |
+| `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
+| `jupyterhub::enable_otp_auth` | Boolean | Enable the OTP field in authentication | `true` |
+| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
+| `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
