@@ -35,9 +35,9 @@ class jupyterhub::base {
 
 class jupyterhub (
   String $slurm_home = '/opt/software/slurm',
-  Boolean $allow_named_servers = True,
+  Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
-  Boolean $activate_otp = True,
+  Boolean $activate_otp = true,
   Array[String] $admin_groups = undef,
   Integer $idle_timeout = undef,
   ) {
