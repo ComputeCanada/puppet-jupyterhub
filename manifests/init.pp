@@ -339,10 +339,11 @@ class jupyterhub::node (
     require => Exec['pip_jupyterlab']
   }
 
-  exec { 'pip_jupyterlab-lmod':
+  exec { 'jupyter-labextension-lmod':
     command => '/opt/jupyterhub/bin/jupyter labextension install jupyterlab-lmod',
     creates => '/opt/jupyterhub/share/jupyter/lab/staging/node_modules/jupyterlab-lmod',
-    require => Exec['pip_jupyterlab']
+    timeout => 0,
+    require => Exec['pip_jupyterlab'],
   }
 
   exec { 'enable_nbserverproxy_srv':
