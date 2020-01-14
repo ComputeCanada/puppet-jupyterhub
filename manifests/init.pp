@@ -377,6 +377,12 @@ class jupyterhub::node (
     creates => '/opt/ipython-kernel/bin/python',
   }
 
+  exec { 'upgrade_pip_setuptools':
+    command     => '/opt/ipython-kernel/bin/pip install --no-cache-dir --upgrade pip setuptools',
+    subscribe   => Exec['kernel_venv'],
+    refreshonly => true,
+  }
+
   exec { 'pip_ipykernel':
     command => '/opt/ipython-kernel/bin/pip install --no-cache-dir ipykernel',
     creates => '/opt/ipython-kernel/bin/ipython',
