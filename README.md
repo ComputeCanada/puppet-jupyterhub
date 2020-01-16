@@ -1,7 +1,7 @@
 # puppet-jupyterhub
 
-The module installs, configures, and manages the JupyterHub service 
-with [batchspawner](https://github.com/jupyterhub/batchspawner) as a 
+The module installs, configures, and manages the JupyterHub service
+with [batchspawner](https://github.com/jupyterhub/batchspawner) as a
 spawner and in conjunction with the job scheduler [Slurm](https://slurm.schedmd.com/).
 
 ## Requirements
@@ -12,7 +12,7 @@ spawner and in conjunction with the job scheduler [Slurm](https://slurm.schedmd.
 ### Hub
 
 - The hub ports 80 and 443 need to be opened to the users incoming network (i.e: Internet).
-- The hub needs to allow authentication of users through pam and sssd. 
+- The hub needs to allow authentication of users through pam and sssd.
 - The hub needs `Service['sssd']` to be defined by external authentication module.
 - The hub must be able to talk to `slurmctld` to submit jobs on the users' behalf.
 - The hub port `8081` needs to be accessible from the compute node network.
@@ -85,7 +85,7 @@ nodejs::manage_package_repo: false
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
-| `jupyterhub::slurmformspawner::url` | String | Url to slurmformspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::kernel::python` | String | Local path to the Python binary that will be used as the default kernel | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurm_home` | String | Path to Slurm installation folder | `/opt/software/slurm` |
@@ -94,3 +94,67 @@ nodejs::manage_package_repo: false
 | `jupyterhub::enable_otp_auth` | Boolean | Enable the OTP field in authentication | `true` |
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
+| `jupyterhub::slurmformspawner::form_params` | Hash | Hash of parameters to configure the spawner form | `undef` |
+
+### `jupyterhub::slurmformspawner::form_params` schema
+```
+jupyterhub::slurmformspawner::form_params:
+  runtime:
+    min: Float
+    def: Float
+    max: Float
+    step: Float
+    lock: Boolean
+  core:
+    min: Integer
+    def: Integer
+    max: Integer
+    step: Integer
+    lock: Boolean
+  mem:
+    min: Integer
+    def: Integer
+    max: Integer
+    step: Integer
+    lock: Boolean
+  gpus:
+    def: String
+    choices: List(String)
+    lock: Boolean
+  oversubscribe:
+    def: Boolean
+    lock: Boolean
+  ui:
+    def: String
+    lock: Boolean
+```
+
+Refer to [slurmformspawner documentation](https://github.com/cmd-ntrf/slurmformspawner) for more details on each parameter.
+
+### `jupyterhub::slurmformspawner::form_params`  example
+```
+jupyterhub::slurmformspawner::form_params:
+  runtime:
+    min: 1.0
+    def: 2.0
+    max: 5.0
+    step: 0.5
+  core:
+    min: 1
+    def: 2
+    max: 8
+    step: 1
+  mem:
+    min: 1024
+    def: 2048
+    max: 4096
+    step: 512
+  gpus:
+    def: 'gpu:0'
+    choices: ['gpu:0', 'gpu:k20:1', 'gpu:k80:1']
+  oversubscribe:
+    def: false
+    lock: true
+  ui:
+    def: 'lab'
+```

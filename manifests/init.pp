@@ -111,6 +111,17 @@ class jupyterhub (
 
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
   $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
+  $form_params = merge(
+    {
+      'core'          => {},
+      'gpus'          => {},
+      'mem'           => {},
+      'oversubscribe' => {},
+      'runtime'       => {},
+      'ui'            => {},
+    },
+    lookup('jupyterhub::slurmformspawner::form_params', undef, undef, {})
+  )
 
   file { 'jupyterhub_config.py':
     ensure  => 'present',
@@ -121,6 +132,7 @@ class jupyterhub (
         'enable_otp_auth'             => $enable_otp_auth,
         'admin_groups'                => $admin_groups,
         'idle_timeout'                => $idle_timeout,
+        'form_params'                 => $form_params,
       }),
     mode    => '0644',
   }
