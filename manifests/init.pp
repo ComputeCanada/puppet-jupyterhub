@@ -191,6 +191,8 @@ class jupyterhub (
     ],
     subscribe => [
       Service['sssd'],
+      Exec['pip_jupyterhub'],
+      Exec['pip_batchspawner'],
       Exec['pip_slurmformspawner'],
       Exec['pip_pammfauthenticator'],
       File['jupyterhub-login'],
