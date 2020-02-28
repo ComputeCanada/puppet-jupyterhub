@@ -1,6 +1,6 @@
 class jupyterhub::base {
   class { 'nodejs':
-    repo_url_suffix => '8.x',
+    repo_url_suffix => '12.x',
   }
 
   package { 'python3':
