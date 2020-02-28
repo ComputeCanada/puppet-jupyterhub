@@ -408,4 +408,27 @@ class jupyterhub::node (
     creates => '/opt/jupyterhub/share/jupyter/kernels/python3/kernel.json',
     require => [Exec['pip_ipykernel'], Exec['pip_uninstall_ipykernel']]
   }
+
+  $requirements = lookup({'name' => 'jupyterhub::kernel::requirements', 'default_value' => []})
+  $pip_environment = lookup({'name' => 'jupyterhub::kernel::pip_environment', 'default_value' => {}})
+  $pip_env_list = $pip_environment.reduce([]) |Array $list, Array $value| {
+    $list + ["${value[0]}=${value[1]}"]
+  }
+  if (!$requirements.empty) {
+    $requirements_string = join($requirements, ' ')
+    exec { 'install_kernel_requirements_nodeps':
+      command     => "/opt/ipython-kernel/bin/pip install --no-deps --no-cache-dir --upgrade ${requirements_string}",
+      subscribe   => Exec['upgrade_pip_setuptools'],
+      refreshonly => true,
+      environment => $pip_env_list,
+      timeout     => 0,
+    }
+    exec { 'install_kernel_requirements_deps':
+      command     => "/opt/ipython-kernel/bin/pip install --no-cache-dir --upgrade ${requirements_string}",
+      subscribe   => Exec['install_kernel_requirements_nodeps'],
+      refreshonly => true,
+      environment => $pip_env_list,
+      timeout     => 0,
+    }
+  }
 }
