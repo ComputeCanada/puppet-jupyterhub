@@ -94,6 +94,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::enable_otp_auth` | Boolean | Enable the OTP field in authentication | `true` |
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
+| `jupyterhub::skip_form` | Boolean | Skip user spawning form and use `form_params` `def` values as job parameters | `false` |
 | `jupyterhub::slurmformspawner::form_params` | Hash | Hash of parameters to configure the spawner form | `undef` |
 
 ### `jupyterhub::slurmformspawner::form_params` schema

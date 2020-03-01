@@ -38,6 +38,7 @@ class jupyterhub (
   Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
   Boolean $enable_otp_auth = true,
+  Boolean $skip_form = false,
   Optional[Array[String]] $admin_groups = undef,
   Optional[Integer] $idle_timeout = undef,
   ) {
@@ -132,6 +133,7 @@ class jupyterhub (
         'enable_otp_auth'             => $enable_otp_auth,
         'admin_groups'                => $admin_groups,
         'idle_timeout'                => $idle_timeout,
+        'skip_form'                   => $skip_form,
         'form_params'                 => $form_params,
       }),
     mode    => '0644',

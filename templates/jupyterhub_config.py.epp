@@ -36,6 +36,10 @@ c.JupyterHub.services = [
 <% } -%>
 ]
 
+<% if $skip_form { -%>
+c.SlurmFormSpawner.skip_form = True
+<% } -%>
+
 <% if $form_params['runtime']['min'] != undef { -%>
 c.SlurmFormSpawner.runtime_min = <%= $form_params['runtime']['min'] %>
 <% } -%>
