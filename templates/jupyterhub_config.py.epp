@@ -36,69 +36,69 @@ c.JupyterHub.services = [
 <% } -%>
 ]
 
-<% if $form['runtime']['min'] != undef { -%>
-c.SlurmFormSpawner.runtime_min = <%= $form['runtime']['min'] %>
+<% if $form_params['runtime']['min'] != undef { -%>
+c.SlurmFormSpawner.runtime_min = <%= $form_params['runtime']['min'] %>
 <% } -%>
-<% if $form['runtime']['def'] != undef { -%>
-c.SlurmFormSpawner.runtime_def = <%= $form['runtime']['def'] %>
+<% if $form_params['runtime']['def'] != undef { -%>
+c.SlurmFormSpawner.runtime_def = <%= $form_params['runtime']['def'] %>
 <% } -%>
-<% if $form['runtime']['max'] != undef { -%>
-c.SlurmFormSpawner.runtime_max = <%= $form['runtime']['max'] %>
+<% if $form_params['runtime']['max'] != undef { -%>
+c.SlurmFormSpawner.runtime_max = <%= $form_params['runtime']['max'] %>
 <% } -%>
-<% if $form['runtime']['step'] != undef { -%>
-c.SlurmFormSpawner.runtime_step = <%= $form['runtime']['step'] %>
+<% if $form_params['runtime']['step'] != undef { -%>
+c.SlurmFormSpawner.runtime_step = <%= $form_params['runtime']['step'] %>
 <% } -%>
-<% if $form['runtime']['lock'] != undef { -%>
-c.SlurmFormSpawner.runtime_lock = "<%= $form['runtime']['lock'] %>"
+<% if $form_params['runtime']['lock'] != undef { -%>
+c.SlurmFormSpawner.runtime_lock = "<%= $form_params['runtime']['lock'] %>"
 <% } -%>
-<% if $form['mem']['min'] != undef { -%>
-c.SlurmFormSpawner.mem_min = <%= $form['mem']['min'] %>
+<% if $form_params['mem']['min'] != undef { -%>
+c.SlurmFormSpawner.mem_min = <%= $form_params['mem']['min'] %>
 <% } -%>
-<% if $form['mem']['def'] != undef { -%>
-c.SlurmFormSpawner.mem_def = <%= $form['mem']['def'] %>
+<% if $form_params['mem']['def'] != undef { -%>
+c.SlurmFormSpawner.mem_def = <%= $form_params['mem']['def'] %>
 <% } -%>
-<% if $form['mem']['max'] != undef { -%>
-c.SlurmFormSpawner.mem_max = <%= $form['mem']['max'] %>
+<% if $form_params['mem']['max'] != undef { -%>
+c.SlurmFormSpawner.mem_max = <%= $form_params['mem']['max'] %>
 <% } -%>
-<% if $form['mem']['step'] != undef { -%>
-c.SlurmFormSpawner.mem_step = <%= $form['mem']['step'] %>
+<% if $form_params['mem']['step'] != undef { -%>
+c.SlurmFormSpawner.mem_step = <%= $form_params['mem']['step'] %>
 <% } -%>
-<% if $form['mem']['lock'] != undef { -%>
-c.SlurmFormSpawner.mem_lock = "<%= $form['mem']['lock'] %>"
+<% if $form_params['mem']['lock'] != undef { -%>
+c.SlurmFormSpawner.mem_lock = "<%= $form_params['mem']['lock'] %>"
 <% } -%>
-<% if $form['core']['min'] != undef { -%>
-c.SlurmFormSpawner.core_min = <%= $form['core']['min'] %>
+<% if $form_params['core']['min'] != undef { -%>
+c.SlurmFormSpawner.core_min = <%= $form_params['core']['min'] %>
 <% } -%>
-<% if $form['core']['def'] != undef { -%>
-c.SlurmFormSpawner.core_def = <%= $form['core']['def'] %>
+<% if $form_params['core']['def'] != undef { -%>
+c.SlurmFormSpawner.core_def = <%= $form_params['core']['def'] %>
 <% } -%>
-<% if $form['core']['max'] != undef { -%>
-c.SlurmFormSpawner.core_max = <%= $form['core']['max'] %>
+<% if $form_params['core']['max'] != undef { -%>
+c.SlurmFormSpawner.core_max = <%= $form_params['core']['max'] %>
 <% } -%>
-<% if $form['core']['step'] != undef { -%>
-c.SlurmFormSpawner.core_step = <%= $form['core']['step'] %>
+<% if $form_params['core']['step'] != undef { -%>
+c.SlurmFormSpawner.core_step = <%= $form_params['core']['step'] %>
 <% } -%>
-<% if $form['core']['lock'] != undef { -%>
-c.SlurmFormSpawner.core_lock = "<%= $form['core']['lock'] %>"
+<% if $form_params['core']['lock'] != undef { -%>
+c.SlurmFormSpawner.core_lock = "<%= $form_params['core']['lock'] %>"
 <% } -%>
-<% if $form['oversubscribe']['def'] != undef { -%>
-c.SlurmFormSpawner.oversubscribe_def = "<%= $form['oversubscribe']['def'] %>"
+<% if $form_params['oversubscribe']['def'] != undef { -%>
+c.SlurmFormSpawner.oversubscribe_def = "<%= $form_params['oversubscribe']['def'] %>"
 <% } -%>
-<% if $form['oversubscribe']['lock'] != undef { -%>
-c.SlurmFormSpawner.oversubscribe_lock = "<%= $form['oversubscribe']['lock'] %>"
+<% if $form_params['oversubscribe']['lock'] != undef { -%>
+c.SlurmFormSpawner.oversubscribe_lock = "<%= $form_params['oversubscribe']['lock'] %>"
 <% } -%>
-<% if $form['gpus']['def'] != undef { -%>
-c.SlurmFormSpawner.gpus_def = "<%= $form['gpus']['def'] %>"
+<% if $form_params['gpus']['def'] != undef { -%>
+c.SlurmFormSpawner.gpus_def = "<%= $form_params['gpus']['def'] %>"
 <% } -%>
-<% if $form['gpus']['choices'] != undef { -%>
-c.SlurmFormSpawner.gpus_choices = <%= String($form['gpus']['choices']) %>
+<% if $form_params['gpus']['choices'] != undef { -%>
+c.SlurmFormSpawner.gpus_choices = <%= String($form_params['gpus']['choices']) %>
 <% } -%>
-<% if $form['gpus']['lock'] != undef { -%>
-c.SlurmFormSpawner.gpus_lock = "<%= $form['gpus']['lock'] %>"
+<% if $form_params['gpus']['lock'] != undef { -%>
+c.SlurmFormSpawner.gpus_lock = "<%= $form_params['gpus']['lock'] %>"
 <% } -%>
-<% if $form['ui']['def'] != undef { -%>
-c.SlurmFormSpawner.ui_def = "<%= $form['ui']['def'] %>"
+<% if $form_params['ui']['def'] != undef { -%>
+c.SlurmFormSpawner.ui_def = "<%= $form_params['ui']['def'] %>"
 <% } -%>
-<% if $form['ui']['lock'] != undef { -%>
-c.SlurmFormSpawner.ui_lock = "<%= $form['ui']['lock'] %>"
+<% if $form_params['ui']['lock'] != undef { -%>
+c.SlurmFormSpawner.ui_lock = "<%= $form_params['ui']['lock'] %>"
 <% } -%>
