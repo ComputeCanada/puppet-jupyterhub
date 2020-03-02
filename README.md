@@ -88,6 +88,8 @@ nodejs::manage_package_repo: false
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::kernel::python` | String | Local path to the Python binary that will be used as the default kernel | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::kernel::pip_environment`| Hash[String, String] | Environment variables (keys) and their values that needs to be set before calling pip when installing packages in the kernel  | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::kernel::requirements` | Array[String] | Python packages to install in the default kernel | `[]` |
 | `jupyterhub::slurm_home` | String | Path to Slurm installation folder | `/opt/software/slurm` |
 | `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
