@@ -341,6 +341,12 @@ class jupyterhub::node (
     require => Exec['pip_notebook']
   }
 
+  exec { 'pip_nbzip':
+    command => '/opt/jupyterhub/bin/pip install --no-cache-dir --no-deps nbzip',
+    creates => '/opt/jupyterhub/lib/python3.6/site-packages/nbzip',
+    require => Exec['pip_notebook']
+  }
+
   # This makes sure the /opt/jupyterhub install does not provide the default kernel.
   # The kernel is provided by the local install in /opt/ipython-kernel.
   exec { 'pip_uninstall_ipykernel':
@@ -384,6 +390,24 @@ class jupyterhub::node (
     command => '/opt/jupyterhub/bin/jupyter nbextension enable --py nbrsessionproxy --sys-prefix',
     unless  => '/usr/bin/grep -q nbrsessionproxy/tree /opt/jupyterhub/etc/jupyter/nbconfig/tree.json',
     require => Exec['pip_nbrsessionproxy']
+  }
+
+  exec { 'enable_nbzip_srv':
+    command => '/opt/jupyterhub/bin/jupyter serverextension enable --py nbzip --sys-prefix',
+    unless  => '/usr/bin/grep -q nbzip /opt/jupyterhub/etc/jupyter/jupyter_notebook_config.json',
+    require => Exec['pip_nbzip']
+  }
+
+  exec { 'install_nbzip_nb':
+    command => '/opt/jupyterhub/bin/jupyter nbextension install --py nbzip --sys-prefix',
+    creates => '/opt/jupyterhub/share/jupyter/nbextensions/nbzip',
+    require => Exec['pip_nbzip']
+  }
+
+  exec { 'enable_nbzip_nb':
+    command => '/opt/jupyterhub/bin/jupyter nbextension enable --py nbzip --sys-prefix',
+    unless  => '/usr/bin/grep -q nbzip/tree /opt/jupyterhub/etc/jupyter/nbconfig/tree.json',
+    require => Exec['pip_nbzip']
   }
 
   $kernel_python_bin = lookup({'name'          => 'jupyterhub::kernel::python',
