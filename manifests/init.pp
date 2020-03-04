@@ -149,7 +149,7 @@ class jupyterhub (
 
   # JupyterHub virtual environment
   exec { 'pip_slurmformspawner':
-    command => "/opt/jupyterhub/bin/pip install --upgrade --no-cache-dir slurmformspawner==${slurmformspawner_version}",
+    command => "/opt/jupyterhub/bin/pip install --no-cache-dir slurmformspawner==${slurmformspawner_version}",
     creates => "/opt/jupyterhub/lib/python3.6/site-packages/slurmformspawner-${slurmformspawner_version}.dist-info/",
     require => Exec['pip_batchspawner']
   }
