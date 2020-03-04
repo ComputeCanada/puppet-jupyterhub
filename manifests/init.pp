@@ -56,6 +56,10 @@ class jupyterhub (
     ensure => 'present'
   }
 
+  package { 'python36-pycurl':
+    ensure => 'installed'
+  }
+
   package { 'configurable-http-proxy':
     ensure   => 'installed',
     provider => 'npm'
