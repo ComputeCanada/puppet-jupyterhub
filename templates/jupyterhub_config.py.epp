@@ -13,6 +13,9 @@ c.JupyterHub.ssl_cert = '/etc/jupyterhub/ssl/cert.pem'
 # Leave the notebooks up and running during maintenance or restart
 c.JupyterHub.cleanup_servers = False
 
+# Shutdown the notebook when the user logout
+c.JupyterHub.shutdown_on_logout = True
+
 <% if $enable_otp_auth { -%>
 c.JupyterHub.authenticator_class = 'pammfauthenticator'
 <% } -%>
