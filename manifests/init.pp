@@ -355,12 +355,6 @@ class jupyterhub::node (
     require => Exec['pip_notebook']
   }
 
-  exec { 'pip_jupyterlab-hub':
-    command => '/opt/jupyterhub/bin/jupyter labextension install @jupyterlab/hub-extension',
-    creates => '/opt/jupyterhub/bin/jupyter-labhub',
-    require => Exec['pip_jupyterlab']
-  }
-
   exec { 'jupyter-labextension-lmod':
     command => '/opt/jupyterhub/bin/jupyter labextension install jupyterlab-lmod',
     creates => '/opt/jupyterhub/share/jupyter/lab/staging/node_modules/jupyterlab-lmod',
