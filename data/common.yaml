@@ -2,7 +2,7 @@
 ---
 jupyterhub::jupyterhub::version: 1.1.0
 jupyterhub::batchspawner::url: https://github.com/cmd-ntrf/batchspawner/archive/puppet-jh.zip
-jupyterhub::slurmformspawner::version: 1.1.0
+jupyterhub::slurmformspawner::version: 1.1.1
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 jupyterhub::kernel::python: /cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.4/bin/python
 jupyterhub::kernel::requirements: []
