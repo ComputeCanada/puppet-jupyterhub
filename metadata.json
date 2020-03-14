@@ -1,12 +1,12 @@
 {
     "name": "puppet-jupyterhub",
-    "version": "1.8.1",
+    "version": "1.9.0",
     "author": "Félix-Antoine Fortin",
-    "summary": "Installs, configures, and manage JupyterHub service.",
+    "summary": "Install, configure, and manage JupyterHub with slurmformspawner",
     "license": "MIT",
-    "source": "https://git.computecanada.ca/magic_castle/puppet-jupyterhub",
-    "project_page": "https://git.computecanada.ca/magic_castle/puppet-jupyterhub",
-    "issues_url": "https://git.computecanada.ca/magic_castle/puppet-jupyterhub/issues",
+    "source": "https://github.com/ComputeCanada/puppet-jupyterhub",
+    "project_page": "https://github.com/ComputeCanada/puppet-jupyterhub",
+    "issues_url": "https://github.com/ComputeCanada/puppet-jupyterhub/issues",
     "dependencies": [ 
         { "name":"puppet/nodejs", "version_requirement": " >= 7.0.0" },
         { "name":"puppet/selinux", "version_requirement": " >= 1.6.1"  },
