@@ -1,4 +1,9 @@
-class jupyterhub::reverse_proxy(String $domain_name) {
+class jupyterhub::reverse_proxy(
+  String $domain_name,
+  Boolean $config_firewall = true,
+  String $ssl_certificate_path = '',
+  String $ssl_certificate_key_path = '',
+  ) {
   selinux::boolean { 'httpd_can_network_connect': }
 
   package { 'nginx':
@@ -34,45 +39,41 @@ class jupyterhub::reverse_proxy(String $domain_name) {
     enable => true
   }
 
-  firewall { '200 nginx public':
-    chain  => 'INPUT',
-    dport  => [80, 443],
-    proto  => 'tcp',
-    source => '0.0.0.0/0',
-    action => 'accept'
-  }
-
-  package { 'certbot-nginx':
-    ensure => 'installed'
-  }
-
-  if $facts['letsencrypt'] != undef and $facts['letsencrypt'][$domain_name] != '' {
-    file { 'jupyterhub.conf':
-      path    => '/etc/nginx/conf.d/jupyterhub.conf',
-      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_ssl' => true}),
-      mode    => '0644',
-      notify  => Service['nginx'],
-      require => File['ffdhe4096.pem']
+  if ($config_firewall) {
+    firewall { '200 nginx public':
+      chain  => 'INPUT',
+      dport  => [80, 443],
+      proto  => 'tcp',
+      source => '0.0.0.0/0',
+      action => 'accept'
     }
   }
-  else {
-    file { 'jupyterhub.conf':
-      path    => '/etc/nginx/conf.d/jupyterhub.conf',
-      content => epp('jupyterhub/jupyterhub.conf', {'domain_name' => $domain_name, 'puppet_managed_ssl' => false}),
-      mode    => '0644',
-      replace => false,
-      notify  => Service['nginx'],
-      require => File['ffdhe4096.pem']
-    }
 
-    exec { 'certbot-nginx':
-      command => "certbot --nginx --register-unsafely-without-email --noninteractive --agree-tos --domains ${domain_name}",
-      unless  => 'grep -q ssl_certificate /etc/nginx/conf.d/jupyterhub.conf',
-      require => [Package['certbot-nginx'],
-                  File['jupyterhub.conf'],
-                  Firewall['200 nginx public'],
-                  Service['nginx']],
-      path    => ['/usr/bin', '/usr/sbin'],
+  $use_letsencrypt = lookup('jupyterhub::reverse_proxy::letsencrypt::enable', Boolean, undef, true)
+  file { 'jupyterhub.conf':
+    path    => '/etc/nginx/conf.d/jupyterhub.conf',
+    content => epp('jupyterhub/jupyterhub.conf', {
+      'domain_name'              => $domain_name,
+      'use_letsencrypt'          => $use_letsencrypt,
+      'ssl_certificate_path'     => $ssl_certificate_path,
+      'ssl_certificate_key_path' => $ssl_certificate_key_path,
+    }),
+    mode    => '0644',
+    notify  => Service['nginx'],
+    require => File['ffdhe4096.pem']
+  }
+
+  if ($use_letsencrypt) {
+    class{ '::letsencrypt':
+      configure_epel      => lookup('jupyterhub::reverse_proxy::letsencrypt::configure_epel', Boolean, undef,  false),
+      renew_cron_ensure   => lookup('jupyterhub::reverse_proxy::letsencrypt::renew_cron_ensure', String, undef, 'present'),
+      unsafe_registration => lookup('jupyterhub::reverse_proxy::letsencrypt::unsafe_registration', Boolean, undef, true),
+      email               => lookup('jupyterhub::reverse_proxy::letsencrypt::email', undef, undef, undef),
+    }
+    letsencrypt::certonly { $domain_name:
+      plugin               => lookup('jupyterhub::reverse_proxy::letsencrypt::certonly::plugin', String, undef, 'standalone'),
+      pre_hook_commands    => ['/bin/systemctl stop nginx'],
+      deploy_hook_commands => ['/bin/systemctl start nginx'],
     }
   }
 }
