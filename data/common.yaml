@@ -7,3 +7,14 @@ jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthentica
 
 jupyterhub::kernel::setup: module
 jupyterhub::kernel::module::list: ['ipython-kernel/3.7']
+
+jupyterhub::reverse_proxy::ssl_certificate_path: ''
+jupyterhub::reverse_proxy::ssl_certificate_key_path: ''
+
+# letsencrypt options
+jupyterhub::reverse_proxy::letsencrypt::enable: true
+jupyterhub::reverse_proxy::letsencrypt::configure_epel: false
+jupyterhub::reverse_proxy::letsencrypt::renew_cron_ensure: present
+jupyterhub::reverse_proxy::letsencrypt::unsafe_registration: true
+jupyterhub::reverse_proxy::letsencrypt::email: null
+jupyterhub::reverse_proxy::letsencrypt::certonly::plugin: standalone
