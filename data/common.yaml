@@ -4,8 +4,11 @@ jupyterhub::jupyterhub::version: 1.1.0
 jupyterhub::batchspawner::url: https://github.com/cmd-ntrf/batchspawner/archive/puppet-jh.zip
 jupyterhub::slurmformspawner::version: 1.1.1
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
-jupyterhub::kernel::python: /cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.4/bin/python
-jupyterhub::kernel::requirements: []
-jupyterhub::kernel::pip_environment:
+
+jupyterhub::kernel::setup: venv
+jupyterhub::kernel::module::list: ['ipython-kernel/3.7']
+jupyterhub::kernel::venv::python: /cvmfs/soft.computecanada.ca/easybuild/software/2017/Core/python/3.7.4/bin/python
+jupyterhub::kernel::venv::packages: []
+jupyterhub::kernel::venv::pip_environment:
   PYTHONPATH: "/cvmfs/soft.computecanada.ca/custom/python/site-packages"
   PIP_CONFIG_FILE: "/cvmfs/soft.computecanada.ca/config/python/pip-avx2.conf"

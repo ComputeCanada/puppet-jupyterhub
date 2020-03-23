@@ -15,17 +15,18 @@ unset XDG_RUNTIME_DIR
 # Disable variable export with sbatch
 export SBATCH_EXPORT=NONE
 
-# Create user pip install folder
+# Setup user pip install folder
 export PIP_PREFIX=${SLURM_TMPDIR}
-SITE="${PIP_PREFIX}/lib/$(ls /opt/ipython-kernel/lib/)/site-packages"
-mkdir -p $SITE
-export PATH="/opt/jupyterhub/bin:${PATH}"
-export PATH=${PIP_PREFIX}/bin:${PATH}
-export PYTHONPATH=${SITE}:${PYTHONPATH}
+export PATH="${PIP_PREFIX}/bin":"<%= $node_prefix %>/bin":${PATH}
+export PYTHONPATH=${PYTHONPATH}:"<%= $node_prefix %>/lib/usercustomize"
 
+<% if $kernel_setup == 'module' { %>
+module load <%= $module_list %>
+<% } elsif $kernel_setup == 'venv' { %>
 # Activate kernel virtual environment
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-source /opt/ipython-kernel/bin/activate
+source <%= $venv_prefix %>/bin/activate
+<% } %>
 
 # Launch jupyterhub single server
 {{cmd}}
