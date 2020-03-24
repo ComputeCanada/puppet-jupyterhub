@@ -42,6 +42,7 @@ c.JupyterHub.services = [
 <% } -%>
 ]
 
+c.SlurmFormSpawner.submit_template_path = '/etc/jupyterhub/submit.sh'
 <% if $skip_form { -%>
 c.SlurmFormSpawner.skip_form = True
 <% } -%>
