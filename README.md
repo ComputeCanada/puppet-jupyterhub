@@ -87,8 +87,8 @@ nodejs::manage_package_repo: false
 | `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
-| `jupyterhub::kernel::setup` | Enum['venv', 'module'] | Determine if the Python kernel is provided by a local virtual environment or a module | `'venv'` |
-| `jupyterhub::kernel::module::list` | Array[String] | List of modules that provide a IPython kernel and package environment | `[ipython-kernel/3.7]` |
+| `jupyterhub::kernel::setup` | Enum['venv', 'module'] | Determine if the Python kernel is provided by a local virtual environment or a module | `venv` |
+| `jupyterhub::kernel::module::list` | Array[String] | List of modules that provide a IPython kernel and package environment | `['ipython-kernel/3.7']` |
 | `jupyterhub::kernel::venv::prefix` | Stdlib::Absolutepath | Absolute path where the IPython kernel virtual environment will be installed | `/opt/ipython-kernel` |
 | `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | `/usr/bin/python3` |
 | `jupyterhub::kernel::venv::pip_environment`| Hash[String, String] | Hash of environment variables configured before calling installing `venv::packages` | `{}` |
