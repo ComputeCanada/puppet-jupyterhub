@@ -89,12 +89,12 @@ nodejs::manage_package_repo: false
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::kernel::setup` | Enum['venv', 'module'] | Determine if the Python kernel is provided by a local virtual environment or a module | `'venv'` |
 | `jupyterhub::kernel::module::list` | Array[String] | List of modules that provide a IPython kernel and package environment | `[ipython-kernel/3.7]` |
-| `jupyterhub::kernel::venv::prefix` | Stdlib::Absolutepath | Absolute path where the IPython kernel virtual environment will be installed | '/opt/ipython-kernel' |
-| `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | '/usr/bin/python3' |
+| `jupyterhub::kernel::venv::prefix` | Stdlib::Absolutepath | Absolute path where the IPython kernel virtual environment will be installed | `/opt/ipython-kernel` |
+| `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | `/usr/bin/python3` |
 | `jupyterhub::kernel::venv::pip_environment`| Hash[String, String] | Hash of environment variables configured before calling installing `venv::packages` | `{}` |
 | `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
-| `jupyterhub::node::prefix` | Stdlib::Absolutepath | Absolute path where Jupyter Notebook and jupyterhub-singleuser will be installed | '/opt/jupyterhub' |
-| `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | '/opt/jupyterhub' |
+| `jupyterhub::node::prefix` | Stdlib::Absolutepath | Absolute path where Jupyter Notebook and jupyterhub-singleuser will be installed | `/opt/jupyterhub` |
+| `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | `/opt/jupyterhub` |
 | `jupyterhub::slurm_home` | String | Path to Slurm installation folder | `/opt/software/slurm` |
 | `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
