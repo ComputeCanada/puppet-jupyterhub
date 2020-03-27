@@ -5,5 +5,5 @@ jupyterhub::batchspawner::url: https://github.com/cmd-ntrf/batchspawner/archive/
 jupyterhub::slurmformspawner::version: 1.1.1
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 
-jupyterhub::kernel::setup: venv
+jupyterhub::kernel::setup: module
 jupyterhub::kernel::module::list: ['ipython-kernel/3.7']
