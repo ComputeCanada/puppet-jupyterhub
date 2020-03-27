@@ -6,7 +6,7 @@ class jupyterhub::kernel::venv(
 ) {
 
   exec { 'kernel_venv':
-    command => "${python} -m venv ${prefix}",
+    command => "${python} -m venv --system-site-packages ${prefix}",
     creates => "${prefix}/bin/python",
   }
 
