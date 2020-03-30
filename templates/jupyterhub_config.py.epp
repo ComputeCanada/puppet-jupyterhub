@@ -10,6 +10,10 @@ c.JupyterHub.allow_named_servers = False
 c.JupyterHub.ssl_key = '/etc/jupyterhub/ssl/key.pem'
 c.JupyterHub.ssl_cert = '/etc/jupyterhub/ssl/cert.pem'
 
+# Location of the notebook app
+c.SlurmFormSpawner.batchspawner_singleuser_cmd = '<%= $node_prefix %>/bin/batchspawner-singleuser'
+c.SlurmFormSpawner.cmd = '<%= $node_prefix %>/bin/jupyterhub-singleuser'
+
 # Leave the notebooks up and running during maintenance or restart
 c.JupyterHub.cleanup_servers = False
 

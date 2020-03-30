@@ -17,7 +17,7 @@ export SBATCH_EXPORT=NONE
 
 # Setup user pip install folder
 export PIP_PREFIX=${SLURM_TMPDIR}
-export PATH="${PIP_PREFIX}/bin":"<%= $node_prefix %>/bin":${PATH}
+export PATH="${PIP_PREFIX}/bin":${PATH}
 export PYTHONPATH=${PYTHONPATH}:"<%= $node_prefix %>/lib/usercustomize"
 
 <% if $kernel_setup == 'module' { %>

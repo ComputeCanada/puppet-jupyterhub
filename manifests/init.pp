@@ -93,6 +93,7 @@ class jupyterhub (
     lookup('jupyterhub::slurmformspawner::form_params', undef, undef, {})
   )
 
+  $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   file { 'jupyterhub_config.py':
     ensure  => 'present',
     path    => '/etc/jupyterhub/jupyterhub_config.py',
@@ -104,13 +105,13 @@ class jupyterhub (
         'idle_timeout'                => $idle_timeout,
         'skip_form'                   => $skip_form,
         'form_params'                 => $form_params,
+        'node_prefix'                 => $node_prefix,
       }),
     mode    => '0644',
   }
 
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   $module_list = lookup('jupyterhub::kernel::module::list', Array[String], undef, [])
-  $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $venv_prefix = lookup('jupyterhub::kernel::venv::prefix', String, undef, '/opt/ipython-kernel')
   file { 'submit.sh':
     ensure  => 'present',
