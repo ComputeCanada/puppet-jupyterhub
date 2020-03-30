@@ -81,30 +81,61 @@ nodejs::manage_package_repo: false
 
 ## Hieradata Configuration
 
+### General options
+
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
+
+### Hub options
+
+| Variable | Type | Description | Default |
+| -------- | :----| :-----------| ------- |
+| `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | `/opt/jupyterhub` |
+| `jupyterhub::slurm_home` | Stdlib::Absolutepath | Path to Slurm installation folder | `/opt/software/slurm` |
+| `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
+| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
+| `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
+| `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
+| `jupyterhub::skip_form` | Boolean | Skip user spawning form and use `form_params` `def` values as job parameters | `false` |
+
+### Compute node options
+
+| Variable | Type | Description | Default |
+| -------- | :----| :-----------| ------- |
+| `jupyterhub::node::prefix` | Stdlib::Absolutepath | Absolute path where Jupyter Notebook and jupyterhub-singleuser will be installed | `/opt/jupyterhub` |
 | `jupyterhub::kernel::setup` | Enum['venv', 'module'] | Determine if the Python kernel is provided by a local virtual environment or a module | `module` |
 | `jupyterhub::kernel::module::list` | Array[String] | List of modules that provide a IPython kernel and package environment | `['ipython-kernel/3.7']` |
 | `jupyterhub::kernel::venv::prefix` | Stdlib::Absolutepath | Absolute path where the IPython kernel virtual environment will be installed | `/opt/ipython-kernel` |
 | `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | `/usr/bin/python3` |
 | `jupyterhub::kernel::venv::pip_environment`| Hash[String, String] | Hash of environment variables configured before calling installing `venv::packages` | `{}` |
 | `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
-| `jupyterhub::node::prefix` | Stdlib::Absolutepath | Absolute path where Jupyter Notebook and jupyterhub-singleuser will be installed | `/opt/jupyterhub` |
-| `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | `/opt/jupyterhub` |
-| `jupyterhub::slurm_home` | Stdlib::Absolutepath | Path to Slurm installation folder | `/opt/software/slurm` |
-| `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
-| `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
-| `jupyterhub::enable_otp_auth` | Boolean | Enable the OTP field in authentication | `true` |
-| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
-| `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
-| `jupyterhub::skip_form` | Boolean | Skip user spawning form and use `form_params` `def` values as job parameters | `false` |
+
+### Reverse proxy options
+
+jupyterhub::reverse_proxy::ssl_certificate_path: ''
+jupyterhub::reverse_proxy::ssl_certificate_key_path: ''
+
+| Variable | Type | Description | Default |
+| -------- | :----| :-----------| ------- |
+| `jupyterhub::reverse_proxy::ssl_certificate_path` | Stdlib::Absolutepath | Path to SSL certificate fullchain PEM file when letsencrypt::enable is false. | `''` |
+| `jupyterhub::reverse_proxy::ssl_certificate_key_path` | Stdlib::Absolutepath | Path to SSL certificate key PEM file when letsencrypt::enable is false. | `''` |
+| `jupyterhub::reverse_proxy::letsencrypt::enable` | Boolean | Use Let's Encrypt to issue and renew SSL certificate for JupyterHub | `true` |
+| `jupyterhub::reverse_proxy::letsencrypt::renew_cron_ensure` | Enum['present', 'absent'] | Enable cron to renew SSL certificate | `present` |
+| `jupyterhub::reverse_proxy::letsencrypt::unsafe_registration` | Boolean | Disable registration of SSL certificate with email | `true` |
+| `jupyterhub::reverse_proxy::letsencrypt::email` | String | Registration email if `unsafe_registration` is false | `null` |
+| `jupyterhub::reverse_proxy::letsencrypt::certonly::plugin` | String | Letsencrypt plugin that should be used when issuing and renewing the certicifate | `standalone` |
+
+### slurmformspawner options
+
+| Variable | Type | Description | Default |
+| -------- | :----| :-----------| ------- |
 | `jupyterhub::slurmformspawner::form_params` | Hash | Hash of parameters to configure the spawner form | `undef` |
 
-### `jupyterhub::slurmformspawner::form_params` schema
+#### `form_params` schema
 ```
 jupyterhub::slurmformspawner::form_params:
   runtime:
