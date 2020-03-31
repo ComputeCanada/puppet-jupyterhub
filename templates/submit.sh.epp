@@ -9,7 +9,7 @@
 #SBATCH --export={{keepvars}}
 {% if oversubscribe %}#SBATCH --oversubscribe{% endif %}
 {% if reservation %}#SBATCH --reservation={{reservation}}{% endif %}
-#SBATCH --gres={{gpus}}
+{% if gpus != "gpu:0" %}#SBATCH --gres={{gpus}}{% endif %}
 unset XDG_RUNTIME_DIR
 
 # Disable variable export with sbatch
