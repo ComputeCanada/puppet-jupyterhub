@@ -101,6 +101,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
 | `jupyterhub::skip_form` | Boolean | Skip user spawning form and use `form_params` `def` values as job parameters | `false` |
+| `jupyterhub::enable_otp_auth` | Boolean | Enable one-time password field on the login page | `true` |
 
 ### Compute node options
 
@@ -115,9 +116,6 @@ nodejs::manage_package_repo: false
 | `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
 
 ### Reverse proxy options
-
-jupyterhub::reverse_proxy::ssl_certificate_path: ''
-jupyterhub::reverse_proxy::ssl_certificate_key_path: ''
 
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
