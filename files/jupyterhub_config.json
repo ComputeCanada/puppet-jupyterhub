@@ -1,0 +1,21 @@
+{
+    "JupyterHub": {
+        "spawner_class": "slurmformspawner.SlurmFormSpawner",
+        "hub_ip": "0.0.0.0",
+        "ip": "127.0.0.1",
+        "ssl_key": "/etc/jupyterhub/ssl/key.pem",
+        "ssl_cert": "/etc/jupyterhub/ssl/cert.pem",
+        "cleanup_servers": false,
+        "shutdown_on_logout": true
+    },
+    "SlurmFormSpawner": {
+        "submit_template_path": "/etc/jupyterhub/submit.sh",
+        "args": [
+            "--KernelSpecManager.ensure_native_kernel=False"
+        ]
+    },
+    "PAMAuthenticator": {
+        "open_sessions": false,
+        "service": "jupyterhub-login"
+    }
+}
