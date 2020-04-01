@@ -6,10 +6,8 @@ pip_prefix = os.environ.get('PIP_PREFIX', None)
 if pip_prefix:
     path = os.path.join(pip_prefix, 'lib', 'python' + sys.version[:3], 'site-packages')
     # Make sure the PIP_PREFIX is prepended to sys.path and not appended
-    # by keeping a reference to the old path list, then replace it by a clean list
-    # to which site will add our pip_prefix path, then we merge the old sys.path
-    # content.
-    prev_syspath = sys.path
-    sys.path = []
+    # by keeping the sys path list length, all paths that were appended at the end
+    # are moved at the beginning and the rest of the paths are appened at the end.
+    len_syspath = sys.path
     site.addsitedir(path)
-    sys.path.extend(prev_syspath)
+    sys.path = sys.path[len_syspath:] + sys.path[:len_syspath]
