@@ -4,9 +4,9 @@ class jupyterhub (
   Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
   Boolean $enable_otp_auth = true,
-  Boolean $skip_form = false,
-  Optional[Array[String]] $admin_groups = undef,
+  Optional[Array[String]] $admin_groups = [],
   Optional[Integer] $idle_timeout = undef,
+  Optional[Hash] $jupyterhub_config_hash = {},
 ) {
 
   class { 'jupyterhub::base':
@@ -81,32 +81,41 @@ class jupyterhub (
 
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
   $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
-  $form_params = merge(
-    {
-      'core'          => {},
-      'gpus'          => {},
-      'mem'           => {},
-      'oversubscribe' => {},
-      'runtime'       => {},
-      'ui'            => {},
-    },
-    lookup('jupyterhub::slurmformspawner::form_params', undef, undef, {})
-  )
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
-  file { 'jupyterhub_config.py':
+  $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
+  $jupyterhub_config_params = {
+    'JupyterHub' => {
+      'allow_named_servers'         => $allow_named_servers,
+      'named_server_limit_per_user' => $named_server_limit_per_user,
+      'authenticator_class'         => $enable_otp_auth ? { true => 'pammfauthenticator', false => undef },
+      'admin_access'                => Boolean(size($admin_groups) > 0),
+      'services'                    => $idle_timeout != undef ? {
+        true => [{
+          'name'    => 'cull-idle',
+          'admin'   => true,
+          'command' => [
+            "${prefix}/bin/python3",
+            "${prefix}/bin/cull_idle_servers.py",
+            "--timeout=${idle_timeout}"
+          ],
+        }],
+        false => [],
+      }
+    },
+    'PAMAuthenticator' => {
+      'admin_groups' => $admin_groups,
+    },
+    'SlurmFormSpawner' => {
+      'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
+      'cmd'                         => "${node_prefix}/bin/jupyterhub-singleuser",
+    }
+  }
+  $jupyterhub_config = deep_merge($jupyterhub_config_base, $jupyterhub_config_params, $jupyterhub_config_hash)
+  file { 'jupyterhub_config.json':
     ensure  => 'present',
-    path    => '/etc/jupyterhub/jupyterhub_config.py',
-    content => epp('jupyterhub/jupyterhub_config.py', {
-        'allow_named_servers'         => $allow_named_servers,
-        'named_server_limit_per_user' => $named_server_limit_per_user,
-        'enable_otp_auth'             => $enable_otp_auth,
-        'admin_groups'                => $admin_groups,
-        'idle_timeout'                => $idle_timeout,
-        'skip_form'                   => $skip_form,
-        'form_params'                 => $form_params,
-        'node_prefix'                 => $node_prefix,
-      }),
+    path    => '/etc/jupyterhub/jupyterhub_config.json',
+    content => to_json_pretty($jupyterhub_config, true),
     mode    => '0644',
   }
 
@@ -188,7 +197,7 @@ class jupyterhub (
       Exec['pip_pammfauthenticator'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
-      File['jupyterhub_config.py'],
+      File['jupyterhub_config.json'],
       File['/etc/jupyterhub/ssl/cert.pem'],
       File['/etc/jupyterhub/ssl/key.pem'],
       File["${prefix}/bin/cull_idle_servers.py"],

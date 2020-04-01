@@ -100,8 +100,8 @@ nodejs::manage_package_repo: false
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `undef` |
-| `jupyterhub::skip_form` | Boolean | Skip user spawning form and use `form_params` `def` values as job parameters | `false` |
 | `jupyterhub::enable_otp_auth` | Boolean | Enable one-time password field on the login page | `true` |
+| `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 
 ### Compute node options
 
@@ -127,71 +127,36 @@ nodejs::manage_package_repo: false
 | `jupyterhub::reverse_proxy::letsencrypt::email` | String | Registration email if `unsafe_registration` is false | `null` |
 | `jupyterhub::reverse_proxy::letsencrypt::certonly::plugin` | String | Letsencrypt plugin that should be used when issuing and renewing the certicifate | `standalone` |
 
-### slurmformspawner options
+### SlurmFormSpawner's options
 
-| Variable | Type | Description | Default |
-| -------- | :----| :-----------| ------- |
-| `jupyterhub::slurmformspawner::form_params` | Hash | Hash of parameters to configure the spawner form | `undef` |
+To control SlurmFormSpawner options, use `jupyterhub::jupyterhub_config_hash` like this:
 
-#### `form_params` schema
 ```
-jupyterhub::slurmformspawner::form_params:
-  runtime:
-    min: Float
-    def: Float
-    max: Float
-    step: Float
-    lock: Boolean
-  core:
-    min: Integer
-    def: Integer
-    max: Integer
-    step: Integer
-    lock: Boolean
-  mem:
-    min: Integer
-    def: Integer
-    max: Integer
-    step: Integer
-    lock: Boolean
-  gpus:
-    def: String
-    choices: List(String)
-    lock: Boolean
-  oversubscribe:
-    def: Boolean
-    lock: Boolean
-  ui:
-    def: String
-    lock: Boolean
+jupyterhub::jupyterhub_config_hash:
+  SbatchForm:
+    runtime:
+      min: 1.0
+      def: 2.0
+      max: 5.0
+    core:
+      min: 1
+      def: 2
+      max: 8
+    mem:
+      min: 1024
+      max: 2048
+    gpus:
+      def: 'gpu:0'
+      choices: ['gpu:0', 'gpu:k20:1', 'gpu:k80:1']
+    oversubscribe
+      def: false
+      lock: true
+    ui:
+      def: 'lab'
+  SlurmAPI:
+    info_cache_ttl: 3600 # refresh sinfo cache at most every hour
+    acct_cache_ttl: 3600 # refresh account cache at most every hour
+    res_cache_ttl: 3600  # refresh reservation cache at most every hour
 ```
 
 Refer to [slurmformspawner documentation](https://github.com/cmd-ntrf/slurmformspawner) for more details on each parameter.
-
-### `jupyterhub::slurmformspawner::form_params`  example
-```
-jupyterhub::slurmformspawner::form_params:
-  runtime:
-    min: 1.0
-    def: 2.0
-    max: 5.0
-    step: 0.5
-  core:
-    min: 1
-    def: 2
-    max: 8
-    step: 1
-  mem:
-    min: 1024
-    def: 2048
-    max: 4096
-    step: 512
-  gpus:
-    def: 'gpu:0'
-    choices: ['gpu:0', 'gpu:k20:1', 'gpu:k80:1']
-  oversubscribe:
-    def: false
-    lock: true
-  ui:
-    def: 'lab'
-```
