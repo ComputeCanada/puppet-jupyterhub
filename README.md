@@ -138,11 +138,11 @@ jupyterhub::jupyterhub_config_hash:
       min: 1.0
       def: 2.0
       max: 5.0
-    core:
+    nprocs:
       min: 1
       def: 2
       max: 8
-    mem:
+    memory:
       min: 1024
       max: 2048
     gpus:
