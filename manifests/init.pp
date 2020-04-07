@@ -90,7 +90,7 @@ class jupyterhub (
       'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $enable_otp_auth ? { true => 'pammfauthenticator', false => 'pam' },
       'admin_access'                => Boolean(size($admin_groups) > 0),
-      'services'                    => $idle_timeout != undef ? {
+      'services'                    => Boolean($idle_timeout != undef) ? {
         true => [{
           'name'    => 'cull-idle',
           'admin'   => true,
