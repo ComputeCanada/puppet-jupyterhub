@@ -119,6 +119,7 @@ nodejs::manage_package_repo: false
 
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
+| `jupyterhub::reverse_proxy::domain_name` | Variant[String, Array[String]] | Domain name(s) that will be used to access JupyterHub. | |
 | `jupyterhub::reverse_proxy::ssl_certificate_path` | Stdlib::Absolutepath | Path to SSL certificate fullchain PEM file when letsencrypt::enable is false. | `''` |
 | `jupyterhub::reverse_proxy::ssl_certificate_key_path` | Stdlib::Absolutepath | Path to SSL certificate key PEM file when letsencrypt::enable is false. | `''` |
 | `jupyterhub::reverse_proxy::letsencrypt::enable` | Boolean | Use Let's Encrypt to issue and renew SSL certificate for JupyterHub | `true` |
