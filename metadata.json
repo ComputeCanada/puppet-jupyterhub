@@ -1,6 +1,6 @@
 {
     "name": "puppet-jupyterhub",
-    "version": "3.2.0",
+    "version": "3.2.1",
     "author": "Félix-Antoine Fortin",
     "summary": "Install, configure, and manage JupyterHub with slurmformspawner",
     "license": "MIT",
