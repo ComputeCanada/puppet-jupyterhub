@@ -10,7 +10,7 @@ map $http_upgrade $connection_upgrade {
 server {
     listen 443 ssl http2;
 
-    server_name <%= $domain_name %>;
+    server_name <%= $domains.join(' ') %>;
 
     location / {
         client_max_body_size 50M;
@@ -48,8 +48,8 @@ server {
     ssl_dhparam /etc/nginx/ffdhe4096.pem;
 
 <% if $use_letsencrypt { %>
-    ssl_certificate     /etc/letsencrypt/live/<%= $domain_name %>/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/<%= $domain_name %>/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/<%= $certname %>/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<%= $certname %>/privkey.pem;
 <% } else { %>
     ssl_certificate     <%= $ssl_certificate_path %>;
     ssl_certificate_key <%= $ssl_certificate_key_path %>;
@@ -57,11 +57,13 @@ server {
 }
 
 server {
-    if ($host = <%= $domain_name %>) {
+<% $domains.each |$domain| { -%>
+    if ($host = <%= $domain %>) {
         return 301 https://$host$request_uri;
     }
+<% } -%>
 
     listen 80;
-    server_name <%= $domain_name %>;
+    server_name <%= $domains.join(' ') %>;
     return 404;
 }

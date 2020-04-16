@@ -1,5 +1,5 @@
 class jupyterhub::reverse_proxy(
-  String $domain_name,
+  Variant[String, Array[String]] $domain_name,
   Boolean $config_firewall = true,
   String $ssl_certificate_path = '',
   String $ssl_certificate_key_path = '',
@@ -49,11 +49,20 @@ class jupyterhub::reverse_proxy(
     }
   }
 
+  if $domain_name.is_a(String) {
+    $certname = $domain_name
+    $domains = [$domain_name]
+  } else {
+    $certname = $domain_name[0]
+    $domains = $domain_name
+  }
+
   $use_letsencrypt = lookup('jupyterhub::reverse_proxy::letsencrypt::enable', Boolean, undef, true)
   file { 'jupyterhub.conf':
     path    => '/etc/nginx/conf.d/jupyterhub.conf',
     content => epp('jupyterhub/jupyterhub.conf', {
-      'domain_name'              => $domain_name,
+      'domains'                  => $domains,
+      'certname'                 => $certname,
       'use_letsencrypt'          => $use_letsencrypt,
       'ssl_certificate_path'     => $ssl_certificate_path,
       'ssl_certificate_key_path' => $ssl_certificate_key_path,
@@ -70,7 +79,8 @@ class jupyterhub::reverse_proxy(
       unsafe_registration => lookup('jupyterhub::reverse_proxy::letsencrypt::unsafe_registration', Boolean, undef, true),
       email               => lookup('jupyterhub::reverse_proxy::letsencrypt::email', undef, undef, undef),
     }
-    letsencrypt::certonly { $domain_name:
+    letsencrypt::certonly { $certname:
+      domains              => $domains,
       plugin               => lookup('jupyterhub::reverse_proxy::letsencrypt::certonly::plugin', String, undef, 'standalone'),
       pre_hook_commands    => ['/bin/systemctl stop nginx'],
       deploy_hook_commands => ['/bin/systemctl start nginx'],
