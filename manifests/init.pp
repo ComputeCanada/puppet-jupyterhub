@@ -6,6 +6,7 @@ class jupyterhub (
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
   Optional[Array[String]] $admin_groups = [],
+  Optional[Array[String]] $user_blacklist = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Optional[Hash] $jupyterhub_config_hash = {},
 ) {
 
@@ -38,13 +39,11 @@ class jupyterhub (
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
     ensure  => 'present',
-    content => epp('jupyterhub/99-jupyterhub-user', {'slurm_home' => $slurm_home})
-  }
-
-  file_line { 'slurm_bin_sudo_secure_path':
-    path  => '/etc/sudoers',
-    line  => "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:${slurm_home}/bin",
-    match => '^Defaults\ \ \ \ secure_path\ \=',
+    content => epp('jupyterhub/99-jupyterhub-user', {
+      'user_blacklist' => $user_blacklist,
+      'hostname'       => $facts['hostname'],
+      'slurm_home'     => $slurm_home,
+    })
   }
 
   file { 'jupyterhub-auth':
@@ -103,12 +102,16 @@ class jupyterhub (
         false => [],
       }
     },
+    'Authenticator' => {
+      'blacklist' => $user_blacklist,
+    },
     'PAMAuthenticator' => {
       'admin_groups' => $admin_groups,
     },
     'SlurmFormSpawner' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
       'cmd'                         => "${node_prefix}/bin/jupyterhub-singleuser",
+      'slurm_bin_path'              => "${slurm_home}/bin",
     }
   }
   $jupyterhub_config = deep_merge($jupyterhub_config_base, $jupyterhub_config_params, $jupyterhub_config_hash)

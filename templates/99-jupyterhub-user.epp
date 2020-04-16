@@ -1,1 +1,4 @@
-jupyterhub      ALL=(ALL)       NOPASSWD:SETENV: <%= $slurm_home %>/bin/sbatch, <%= $slurm_home %>/bin/scancel [0-9]*
+Runas_Alias BLACKLIST = <%= $user_blacklist.join(', ') %>
+
+jupyterhub      <%= $hostname %>=(ALL,!BLACKLIST)       NOPASSWD:NOEXEC:SETENV:   <%= $slurm_home %>/bin/sbatch --parsable
+jupyterhub      <%= $hostname %>=(ALL,!BLACKLIST)       NOPASSWD:NOEXEC:NOSETENV: <%= $slurm_home %>/bin/scancel [0-9]*
