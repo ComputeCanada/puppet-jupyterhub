@@ -23,10 +23,29 @@ class jupyterhub::node (
 }
 
 class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
-    exec { 'pip_notebook':
+  exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook",
     creates => "${prefix}/lib/python3.6/site-packages/notebook/",
     require => Exec['jupyterhub_venv']
+  }
+
+
+  # This makes sure the /opt/jupyterhub install does not provide the default kernel.
+  # The kernel is provided by the local install in /opt/ipython-kernel.
+  exec { 'pip_uninstall_ipykernel':
+    command => "${prefix}/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso",
+    onlyif  => "/usr/bin/test -f ${prefix}/lib/python3.6/site-packages/ipykernel_launcher.py",
+    require => Exec['pip_notebook']
+  }
+
+  # This make sure that the removal of ipykernel does not cause exception when using
+  # pkg_resources module. This was found out when trying to load jupyter-rsession-proxy
+  # JupyterLab. The extension could not load unless the ipykernel requirement was removed
+  # from notebook metadata.
+  exec { 'sed_notebook_metadata':
+    command     => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python3.6/site-packages/notebook-*.dist-info/METADATA",
+    subscribe   => Exec['pip_notebook'],
+    refreshonly => true,
   }
 
   exec { 'pip_jupyterlab':
@@ -41,29 +60,21 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_notebook']
   }
 
-  exec { 'pip_nbserverproxy':
-    command => "${prefix}/bin/pip install --no-cache-dir nbserverproxy",
-    creates => "${prefix}/lib/python3.6/site-packages/nbserverproxy/",
+  exec { 'pip_jupyter-server-proxy':
+    command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyter-server-proxy/",
     require => Exec['pip_notebook']
   }
 
-  exec { 'pip_nbrsessionproxy':
-    command => "${prefix}/bin/pip install --no-cache-dir https://github.com/jupyterhub/nbrsessionproxy/archive/v0.8.0.zip",
-    creates => "${prefix}/lib/python3.6/site-packages/nbrsessionproxy/",
+  exec { 'pip_jupyter-rsession-proxy':
+    command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyter-rsession-proxy/",
     require => Exec['pip_notebook']
   }
 
   exec { 'pip_nbzip':
     command => "${prefix}/bin/pip install --no-cache-dir --no-deps nbzip",
     creates => "${prefix}/lib/python3.6/site-packages/nbzip",
-    require => Exec['pip_notebook']
-  }
-
-  # This makes sure the /opt/jupyterhub install does not provide the default kernel.
-  # The kernel is provided by the local install in /opt/ipython-kernel.
-  exec { 'pip_uninstall_ipykernel':
-    command => "${prefix}/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso",
-    onlyif  => "/usr/bin/test -f ${prefix}/lib/python3.6/site-packages/ipykernel_launcher.py",
     require => Exec['pip_notebook']
   }
 
@@ -74,28 +85,11 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_jupyterlab'],
   }
 
-  exec { 'enable_nbserverproxy_srv':
-    command => "${prefix}/bin/jupyter serverextension enable --py nbserverproxy --sys-prefix",
-    unless  => "/usr/bin/grep -q nbserverproxy ${prefix}/etc/jupyter/jupyter_notebook_config.json",
-    require => Exec['pip_nbserverproxy']
-  }
-
-  exec { 'enable_nbrsessionproxy_srv':
-    command => "${prefix}/bin/jupyter serverextension enable --py nbrsessionproxy --sys-prefix",
-    unless  => "/usr/bin/grep -q nbrsessionproxy ${prefix}/etc/jupyter/jupyter_notebook_config.json",
-    require => Exec['pip_nbrsessionproxy']
-  }
-
-  exec { 'install_nbrsessionproxy_nb':
-    command => "${prefix}/bin/jupyter nbextension install --py nbrsessionproxy --sys-prefix",
-    creates => "${prefix}/share/jupyter/nbextensions/nbrsessionproxy",
-    require => Exec['pip_nbrsessionproxy']
-  }
-
-  exec { 'enable_nbrsessionproxy_nb':
-    command => "${prefix}/bin/jupyter nbextension enable --py nbrsessionproxy --sys-prefix",
-    unless  => "/usr/bin/grep -q nbrsessionproxy/tree ${prefix}/etc/jupyter/nbconfig/tree.json",
-    require => Exec['pip_nbrsessionproxy']
+  exec { 'jupyter-labextension-server-proxy':
+    command => "${prefix}/bin/jupyter labextension install --minimize=False @jupyterlab/server-proxy",
+    creates => "${prefix}/share/jupyter/lab/staging/node_modules/@jupyterlab/server-proxy/",
+    timeout => 0,
+    require => Exec['pip_jupyterlab'],
   }
 
   exec { 'enable_nbzip_srv':
