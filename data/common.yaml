@@ -18,3 +18,23 @@ jupyterhub::reverse_proxy::letsencrypt::renew_cron_ensure: present
 jupyterhub::reverse_proxy::letsencrypt::unsafe_registration: true
 jupyterhub::reverse_proxy::letsencrypt::email: null
 jupyterhub::reverse_proxy::letsencrypt::certonly::plugin: standalone
+
+# Jupyter Notebook Server Proxy List
+jupyterhub::jupyter_notebook_config_hash:
+  ServerProxy:
+    servers:
+      rstudio:
+        command: ["rserver", "--www-address=127.0.0.1", "--www-port={port}", "--www-frame=same"]
+        timeout: 30
+        launcher_entry:
+          title: RStudio
+      code-server:
+        command: ["code-server", "--no-auth", "--disable-telemetry",  "--allow-http", "--port={port}"]
+        timeout: 30
+        launcher_entry:
+          title: VS Code
+      openrefine:
+        command: ["refine"]
+        timeout: 30
+        launcher_entry:
+          title: OpenRefine
