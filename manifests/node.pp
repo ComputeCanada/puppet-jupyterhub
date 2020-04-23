@@ -62,13 +62,13 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_jupyter-server-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy",
-    creates => "${prefix}/lib/python3.6/site-packages/jupyter-server-proxy/",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyter_server_proxy/",
     require => Exec['pip_notebook']
   }
 
   exec { 'pip_jupyter-rsession-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy",
-    creates => "${prefix}/lib/python3.6/site-packages/jupyter-rsession-proxy/",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyter_rsession_proxy/",
     require => Exec['pip_notebook']
   }
 
