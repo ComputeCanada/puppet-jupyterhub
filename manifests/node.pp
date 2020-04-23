@@ -66,12 +66,6 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_notebook']
   }
 
-  exec { 'pip_jupyter-rsession-proxy':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy",
-    creates => "${prefix}/lib/python3.6/site-packages/jupyter_rsession_proxy/",
-    require => Exec['pip_notebook']
-  }
-
   exec { 'pip_nbzip':
     command => "${prefix}/bin/pip install --no-cache-dir --no-deps nbzip",
     creates => "${prefix}/lib/python3.6/site-packages/nbzip",
@@ -85,17 +79,19 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_jupyterlab'],
   }
 
-  exec { 'jupyter-labextension-server-proxy':
-    command => "${prefix}/bin/jupyter labextension install --minimize=False @jupyterlab/server-proxy",
-    creates => "${prefix}/share/jupyter/lab/staging/node_modules/@jupyterlab/server-proxy/",
-    timeout => 0,
-    require => Exec['pip_jupyterlab'],
+  $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
+  file { 'jupyter_notebook_config.json' :
+    ensure  => present,
+    path    => "${prefix}/etc/jupyter/jupyter_notebook_config.json",
+    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    mode    => '0644'
   }
 
-  exec { 'enable_nbzip_srv':
-    command => "${prefix}/bin/jupyter serverextension enable --py nbzip --sys-prefix",
-    unless  => "/usr/bin/grep -q nbzip ${prefix}/etc/jupyter/jupyter_notebook_config.json",
-    require => Exec['pip_nbzip']
+  file { 'nbzip_enable_nbserver_extension' :
+    ensure  => present,
+    path    => "${prefix}/etc/jupyter/jupyter_notebook_config.d/nbzip.json",
+    content => '{ "NotebookApp": { "nbserver_extensions": { "nbzip": true } } }',
+    mode    => '0644'
   }
 
   exec { 'install_nbzip_nb':

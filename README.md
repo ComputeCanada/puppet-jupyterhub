@@ -161,3 +161,27 @@ jupyterhub::jupyterhub_config_hash:
 ```
 
 Refer to [slurmformspawner documentation](https://github.com/cmd-ntrf/slurmformspawner) for more details on each parameter.
+
+### Jupyter Notebook options
+
+To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::jupyter_notebook_config_hash` like this:
+```
+jupyterhub::jupyter_notebook_config_hash:
+  ServerProxy:
+    servers:
+      rstudio:
+        command: ["rserver", "--www-port={port}", "--www-frame=same", "--www-address=127.0.0.1"]
+        timeout: 30
+        launcher_entry:
+          title: RStudio
+      code-server:
+        command: ["code-server", "--no-auth", "--disable-telemetry",  "--allow-http", "--port={port}"]
+        timeout: 30
+        launcher_entry:
+          title: VS Code
+      openrefine:
+        command: ["refine"]
+        tiemout: 30
+        launcher_entry:
+          title: OpenRefine
+```
