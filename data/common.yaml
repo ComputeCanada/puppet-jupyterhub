@@ -29,7 +29,7 @@ jupyterhub::jupyter_notebook_config_hash:
         launcher_entry:
           title: RStudio
       code-server:
-        command: ["code-server", "--no-auth", "--disable-telemetry",  "--allow-http", "--port={port}"]
+        command: ["code-server", "--auth=none", "--disable-telemetry",  "--host=127.0.0.1", "--port={port}"]
         timeout: 30
         launcher_entry:
           title: VS Code
