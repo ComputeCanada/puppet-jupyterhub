@@ -34,7 +34,7 @@ jupyterhub::jupyter_notebook_config_hash:
         launcher_entry:
           title: VS Code
       openrefine:
-        command: ["refine"]
+        command: ["refine", "-p {port}", "-x refine.headless=true", ]
         timeout: 30
         launcher_entry:
           title: OpenRefine
