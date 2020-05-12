@@ -43,9 +43,9 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # JupyterLab. The extension could not load unless the ipykernel requirement was removed
   # from notebook metadata.
   exec { 'sed_notebook_metadata':
-    command     => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python3.6/site-packages/notebook-*.dist-info/METADATA",
-    subscribe   => Exec['pip_notebook'],
-    refreshonly => true,
+    command => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python3.6/site-packages/notebook-*.dist-info/METADATA",
+    onlyif  => "/usr/bin/grep -q '^Requires-Dist: ipykernel$' ${prefix}/lib/python3.6/site-packages/notebook-*.dist-info/METADATA",
+    require => Exec['pip_notebook'],
   }
 
   exec { 'pip_jupyterlab':
