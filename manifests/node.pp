@@ -79,6 +79,13 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_jupyterlab'],
   }
 
+  exec { 'jupyter-labextension-server-proxy':
+    command => "${prefix}/bin/jupyter labextension install --minimize=False @jupyterlab/server-proxy",
+    creates => "${prefix}/share/jupyter/lab/staging/node_modules/@jupyterlab/server-proxy",
+    timeout => 0,
+    require => Exec['pip_jupyterlab'],
+  }
+
   $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
   file { 'jupyter_notebook_config.json' :
     ensure  => present,

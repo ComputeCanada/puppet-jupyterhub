@@ -28,13 +28,16 @@ jupyterhub::jupyter_notebook_config_hash:
         timeout: 30
         launcher_entry:
           title: RStudio
+          enabled: false
       code-server:
         command: ["code-server", "--auth=none", "--disable-telemetry",  "--host=127.0.0.1", "--port={port}"]
         timeout: 30
         launcher_entry:
           title: VS Code
+          enabled: false
       openrefine:
         command: ["refine", "-i", "127.0.0.1", "-p", "{port}", "-x", "refine.headless=true"]
         timeout: 60
         launcher_entry:
           title: OpenRefine
+          enabled: false
