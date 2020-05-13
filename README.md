@@ -181,7 +181,7 @@ jupyterhub::jupyter_notebook_config_hash:
           title: VS Code
       openrefine:
         command: ["refine"]
-        tiemout: 30
+        timeout: 30
         launcher_entry:
           title: OpenRefine
 ```
