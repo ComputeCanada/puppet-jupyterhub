@@ -18,7 +18,7 @@ class jupyterhub (
     ensure  => 'present',
     groups  => 'jupyterhub',
     comment => 'JupyterHub',
-    home    => '/var/run/jupyterhub',
+    home    => '/run/jupyterhub',
     shell   => '/sbin/nologin',
     system  => true
   }
@@ -65,7 +65,7 @@ class jupyterhub (
     ensure => directory
   }
 
-  file { '/var/run/jupyterhub':
+  file { '/run/jupyterhub':
     ensure => directory,
     owner  => 'jupyterhub',
     group  => 'jupyterhub',
