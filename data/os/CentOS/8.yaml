@@ -1,0 +1,2 @@
+---
+jupyterhub::pycurl::package_name: python3-pycurl

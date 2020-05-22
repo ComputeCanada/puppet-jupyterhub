@@ -175,9 +175,7 @@ class jupyterhub (
     require => [Exec['create_self_signed_sslcert']]
   }
 
-  package { 'python36-pycurl':
-    ensure => 'installed'
-  }
+  ensure_packages ($::jupyterhub::pycurl::package_name)
 
   file { "${prefix}/bin/cull_idle_servers.py":
     source  => 'puppet:///modules/jupyterhub/cull_idle_servers.py',
@@ -189,7 +187,7 @@ class jupyterhub (
     ensure    => running,
     enable    => true,
     require   => [
-      Package['python36-pycurl'],
+      Package[$::jupyterhub::pycurl::package_name],
       File['submit.sh'],
     ],
     subscribe => [
