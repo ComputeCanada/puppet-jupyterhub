@@ -13,7 +13,7 @@ spawner and in conjunction with the job scheduler [Slurm](https://slurm.schedmd.
 
 - The hub ports 80 and 443 need to be opened to the users incoming network (i.e: Internet).
 - The hub needs to allow authentication of users through pam and sssd.
-- The hub needs `Service['sssd']` to be defined by external authentication module.
+- The hub needs `Service['sssd']` to be defined by an external authentication module.
 - The hub must be able to talk to `slurmctld` to submit jobs on the users' behalf.
 - The hub port `8081` needs to be accessible from the compute node network.
 - The slurm binaries needs to be installed and accessible from `PATH` for the user `jupyterhub`,
@@ -23,7 +23,7 @@ mainly : `squeue`, `sbatch`, `sinfo`, `sacctmgr` and `scontrol`.
 
 ### Compute Node
 
-- The computes nodes tcp ephemeral port range need to be accessible from the hub.
+- The compute nodes' tcp ephemeral port range needs to be accessible from the hub.
 - Optional: configure [Compute Canada Software Stack with CVMFS](https://docs.computecanada.ca/wiki/Accessing_CVMFS)
 
 
