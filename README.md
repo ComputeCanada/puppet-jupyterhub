@@ -6,7 +6,7 @@ spawner and in conjunction with the job scheduler [Slurm](https://slurm.schedmd.
 
 ## Requirements
 
-- CentOS 7
+- CentOS 7, 8
 - Slurm >= 17.x
 
 ### Hub
