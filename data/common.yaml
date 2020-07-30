@@ -1,12 +1,11 @@
 # jupyterhub/data/common.yaml
 ---
 jupyterhub::jupyterhub::version: 1.1.0
-jupyterhub::batchspawner::url: https://github.com/jupyterhub/batchspawner/archive/v1.0.0-rc0.zip
-jupyterhub::slurmformspawner::version: 2.1.4
+jupyterhub::batchspawner::url: https://github.com/jupyterhub/batchspawner/archive/v1.0.0.zip
+jupyterhub::slurmformspawner::version: 2.2.0
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 
 jupyterhub::kernel::setup: module
-jupyterhub::kernel::module::list: ['ipython-kernel/3.7']
 
 jupyterhub::reverse_proxy::ssl_certificate_path: ''
 jupyterhub::reverse_proxy::ssl_certificate_key_path: ''
@@ -20,6 +19,36 @@ jupyterhub::reverse_proxy::letsencrypt::email: null
 jupyterhub::reverse_proxy::letsencrypt::certonly::plugin: standalone
 
 # Jupyter Notebook Server Proxy List
+jupyterhub::jupyterhub_config_hash:
+  SlurmFormSpawner:
+    ui_args:
+      notebook:
+        name: Jupyter Notebook
+        modules: ['ipython-kernel/3.7']
+      lab:
+        name: JupyterLab
+        args: ['--SingleUserNotebookApp.default_url=/lab']
+        modules: ['ipython-kernel/3.7']
+      terminal:
+        name: Terminal
+        args: ['--SingleUserNotebookApp.default_url=/terminals/1']
+      rstudio:
+        name: RStudio
+        args: ['--SingleUserNotebookApp.default_url=/rstudio']
+        modules: ['gcc', 'rstudio-server']
+      code-server:
+        name: VS Code
+        args: ['--SingleUserNotebookApp.default_url=/code-server']
+        modules: ['code-server']
+      desktop:
+        name: Desktop
+        args: ['--SingleUserNotebookApp.default_url=/Desktop']
+
+  SbatchForm:
+    ui:
+      choices: ['notebook', 'lab', 'terminal', 'code-server', 'rstudio', 'desktop']
+      def: 'lab'
+
 jupyterhub::jupyter_notebook_config_hash:
   ServerProxy:
     servers:
