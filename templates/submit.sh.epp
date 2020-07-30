@@ -20,9 +20,11 @@ export PIP_PREFIX=${SLURM_TMPDIR}
 export PATH="${PIP_PREFIX}/bin":${PATH}
 export PYTHONPATH=${PYTHONPATH}:"<%= $node_prefix %>/lib/usercustomize"
 
-<% if $kernel_setup == 'module' { %>
-module load <%= $module_list %>
-<% } elsif $kernel_setup == 'venv' { %>
+{% if modules %}
+module load {{modules|join(' ')}}
+{% endif %}
+
+<% if $kernel_setup == 'venv' { %>
 # Activate kernel virtual environment
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 source <%= $venv_prefix %>/bin/activate
