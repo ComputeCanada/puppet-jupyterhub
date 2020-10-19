@@ -23,8 +23,11 @@ class jupyterhub::node (
 }
 
 class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
+
+  $notebook_version = lookup('jupyterhub::notebook::version')
+
   exec { 'pip_notebook':
-    command => "${prefix}/bin/pip install --no-cache-dir notebook",
+    command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
     creates => "${prefix}/lib/python3.6/site-packages/notebook/",
     require => Exec['jupyterhub_venv']
   }
