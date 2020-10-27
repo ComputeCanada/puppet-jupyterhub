@@ -13,7 +13,7 @@ class jupyterhub::kernel::venv(
   }
 
   exec { 'upgrade_pip_setuptools':
-    command     => "${prefix}/bin/pip install --no-cache-dir --upgrade pip==${jupyterhub::pip::version} setuptools",
+    command     => "${prefix}/bin/pip install --no-cache-dir --upgrade pip==${pip_version} setuptools",
     subscribe   => Exec['kernel_venv'],
     refreshonly => true,
   }
