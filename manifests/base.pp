@@ -31,13 +31,21 @@ class jupyterhub::base::install::venv(
     creates => "${prefix}/bin/python",
   }
 
+  $pip_version = lookup('jupyterhub::pip::version')
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_url = lookup('jupyterhub::batchspawner::url')
+
+
+  exec { 'pip_upgrade_pip':
+    command => "${prefix}/bin/pip install --upgrade --no-cache-dir pip==${pip_version}",
+    creates => "${prefix}/lib/python3.6/site-packages/pip-${pip_version}.dist-info/",
+    require => Exec['jupyterhub_venv']
+  }
 
   exec { 'pip_jupyterhub':
     command => "${prefix}/bin/pip install --upgrade --no-cache-dir jupyterhub==${jupyterhub_version}",
     creates => "${prefix}/lib/python3.6/site-packages/jupyterhub-${jupyterhub_version}.dist-info/",
-    require => Exec['jupyterhub_venv']
+    require => Exec['pip_upgrade_pip']
   }
 
   exec { 'pip_batchspawner':
