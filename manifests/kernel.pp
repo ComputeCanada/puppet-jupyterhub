@@ -5,13 +5,15 @@ class jupyterhub::kernel::venv(
   Hash $pip_environment = {}
 ) {
 
+  $pip_version = lookup('jupyterhub::pip::version')
+
   exec { 'kernel_venv':
     command => "${python} -m venv --system-site-packages ${prefix}",
     creates => "${prefix}/bin/python",
   }
 
   exec { 'upgrade_pip_setuptools':
-    command     => "${prefix}/bin/pip install --no-cache-dir --upgrade pip setuptools",
+    command     => "${prefix}/bin/pip install --no-cache-dir --upgrade pip==${jupyterhub::pip::version} setuptools",
     subscribe   => Exec['kernel_venv'],
     refreshonly => true,
   }
