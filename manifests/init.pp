@@ -6,7 +6,7 @@ class jupyterhub (
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
   Optional[Array[String]] $admin_groups = [],
-  Optional[Array[String]] $user_blacklist = ['root', 'toor', 'admin', 'centos', 'slurm'],
+  Optional[Array[String]] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Optional[Hash] $jupyterhub_config_hash = {},
 ) {
 
@@ -40,9 +40,9 @@ class jupyterhub (
   file { '/etc/sudoers.d/99-jupyterhub-user':
     ensure  => 'present',
     content => epp('jupyterhub/99-jupyterhub-user', {
-      'user_blacklist' => $user_blacklist,
-      'hostname'       => $facts['hostname'],
-      'slurm_home'     => $slurm_home,
+      'blocked_users' => $blocked_users,
+      'hostname'      => $facts['hostname'],
+      'slurm_home'    => $slurm_home,
     })
   }
 
@@ -103,7 +103,7 @@ class jupyterhub (
       }
     },
     'Authenticator' => {
-      'blacklist' => $user_blacklist,
+      'blocked_users' => $blocked_users,
     },
     'PAMAuthenticator' => {
       'admin_groups' => $admin_groups,

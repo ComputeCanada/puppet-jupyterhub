@@ -1,4 +1,4 @@
-Runas_Alias BLACKLIST = <%= $user_blacklist.join(', ') %>
+Runas_Alias BLOCKED_USERS = <%= $blocked_users.join(', ') %>
 
-jupyterhub      <%= $hostname %>=(ALL,!BLACKLIST)       NOPASSWD:NOEXEC:SETENV:   <%= $slurm_home %>/bin/sbatch --parsable
-jupyterhub      <%= $hostname %>=(ALL,!BLACKLIST)       NOPASSWD:NOEXEC:NOSETENV: <%= $slurm_home %>/bin/scancel [0-9]*
+jupyterhub      <%= $hostname %>=(ALL,!BLOCKED_USERS)       NOPASSWD:NOEXEC:SETENV:   <%= $slurm_home %>/bin/sbatch --parsable
+jupyterhub      <%= $hostname %>=(ALL,!BLOCKED_USERS)       NOPASSWD:NOEXEC:NOSETENV: <%= $slurm_home %>/bin/scancel [0-9]*
