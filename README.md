@@ -86,6 +86,8 @@ nodejs::manage_package_repo: false
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::pip::version` | String | pip package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::notebook::version` | String | notebook package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
