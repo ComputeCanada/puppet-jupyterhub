@@ -1,6 +1,7 @@
 class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
+  String $bind_url = 'https://127.0.0.1:8000',
   Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
   Boolean $enable_otp_auth = true,
@@ -85,6 +86,7 @@ class jupyterhub (
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
   $jupyterhub_config_params = {
     'JupyterHub' => {
+      'bind_url'                    => $bind_url,
       'allow_named_servers'         => $allow_named_servers,
       'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $enable_otp_auth ? { true => 'pammfauthenticator', false => 'pam' },

@@ -97,6 +97,7 @@ nodejs::manage_package_repo: false
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | `/opt/jupyterhub` |
+| `jupyterhub::bind_url` | String | public facing URL of the whole JupyterHub application | `https://127.0.0.1:8000` |
 | `jupyterhub::slurm_home` | Stdlib::Absolutepath | Path to Slurm installation folder | `/opt/software/slurm` |
 | `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |

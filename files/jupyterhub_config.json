@@ -2,7 +2,6 @@
     "JupyterHub": {
         "spawner_class": "slurmformspawner.SlurmFormSpawner",
         "hub_ip": "0.0.0.0",
-        "ip": "127.0.0.1",
         "ssl_key": "/etc/jupyterhub/ssl/key.pem",
         "ssl_cert": "/etc/jupyterhub/ssl/cert.pem",
         "cleanup_servers": false,
