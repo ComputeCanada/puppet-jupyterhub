@@ -6,7 +6,8 @@
         "ssl_key": "/etc/jupyterhub/ssl/key.pem",
         "ssl_cert": "/etc/jupyterhub/ssl/cert.pem",
         "cleanup_servers": false,
-        "shutdown_on_logout": true
+        "shutdown_on_logout": true,
+        "template_paths": ["/etc/jupyterhub/templates"]
     },
     "SlurmFormSpawner": {
         "submit_template_path": "/etc/jupyterhub/submit.sh",

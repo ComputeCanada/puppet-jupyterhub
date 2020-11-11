@@ -61,7 +61,7 @@ class jupyterhub (
     require => File['jupyterhub-auth']
   }
 
-  file { ['/etc/jupyterhub', '/etc/jupyterhub/ssl']:
+  file { ['/etc/jupyterhub', '/etc/jupyterhub/ssl', '/etc/jupyterhub/templates']:
     ensure => directory
   }
 
