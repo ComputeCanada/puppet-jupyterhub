@@ -156,6 +156,29 @@ jupyterhub::jupyterhub_config_hash:
       lock: true
     ui:
       def: 'lab'
+  SlurmFormSpawner:
+    ui_args:
+      notebook:
+        name: Jupyter Notebook
+        modules: ['ipython-kernel/3.7']
+      lab:
+        name: JupyterLab
+        args: ['--SingleUserNotebookApp.default_url=/lab']
+        modules: ['ipython-kernel/3.7']
+      terminal:
+        name: Terminal
+        args: ['--SingleUserNotebookApp.default_url=/terminals/1']
+      rstudio:
+        name: RStudio
+        args: ['--SingleUserNotebookApp.default_url=/rstudio']
+        modules: ['gcc', 'rstudio-server']
+      code-server:
+        name: VS Code
+        args: ['--SingleUserNotebookApp.default_url=/code-server']
+        modules: ['code-server']
+      desktop:
+        name: Desktop
+        args: ['--SingleUserNotebookApp.default_url=/Desktop']
   SlurmAPI:
     info_cache_ttl: 3600 # refresh sinfo cache at most every hour
     acct_cache_ttl: 3600 # refresh account cache at most every hour

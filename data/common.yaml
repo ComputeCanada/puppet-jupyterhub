@@ -20,7 +20,6 @@ jupyterhub::reverse_proxy::letsencrypt::unsafe_registration: true
 jupyterhub::reverse_proxy::letsencrypt::email: null
 jupyterhub::reverse_proxy::letsencrypt::certonly::plugin: standalone
 
-# Jupyter Notebook Server Proxy List
 jupyterhub::jupyterhub_config_hash:
   SlurmFormSpawner:
     ui_args:
@@ -34,21 +33,9 @@ jupyterhub::jupyterhub_config_hash:
       terminal:
         name: Terminal
         args: ['--SingleUserNotebookApp.default_url=/terminals/1']
-      rstudio:
-        name: RStudio
-        args: ['--SingleUserNotebookApp.default_url=/rstudio']
-        modules: ['gcc', 'rstudio-server']
-      code-server:
-        name: VS Code
-        args: ['--SingleUserNotebookApp.default_url=/code-server']
-        modules: ['code-server']
-      desktop:
-        name: Desktop
-        args: ['--SingleUserNotebookApp.default_url=/Desktop']
-
   SbatchForm:
     ui:
-      choices: ['notebook', 'lab', 'terminal', 'code-server', 'rstudio', 'desktop']
+      choices: ['notebook', 'lab', 'terminal']
       def: 'lab'
 
 jupyterhub::jupyter_notebook_config_hash:
