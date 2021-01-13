@@ -1,7 +1,7 @@
 # jupyterhub/data/common.yaml
 ---
 jupyterhub::pip::version: 20.2.4
-jupyterhub::notebook::version: 6.0.3
+jupyterhub::notebook::version: 6.1.6
 jupyterhub::jupyterhub::version: 1.2.1
 jupyterhub::batchspawner::url: https://github.com/jupyterhub/batchspawner/archive/v1.0.0.zip
 jupyterhub::slurmformspawner::version: 2.2.0
