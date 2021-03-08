@@ -8,6 +8,9 @@
         "shutdown_on_logout": true,
         "template_paths": ["/etc/jupyterhub/templates"]
     },
+    "Spawner": {
+        "disable_user_config": true
+    },
     "SlurmFormSpawner": {
         "submit_template_path": "/etc/jupyterhub/submit.sh",
         "args": [
