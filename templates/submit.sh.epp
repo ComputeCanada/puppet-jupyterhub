@@ -10,6 +10,10 @@
 {% if oversubscribe %}#SBATCH --oversubscribe{% endif %}
 {% if reservation %}#SBATCH --reservation={{reservation}}{% endif %}
 {% if gpus != "gpu:0" %}#SBATCH --gres={{gpus}}{% endif %}
+<% if $slurm_partitions != '' { %>
+#SBATCH --partition=<%= $slurm_partitions %>
+<% } %>
+
 unset XDG_RUNTIME_DIR
 
 # Disable variable export with sbatch

@@ -9,6 +9,7 @@ class jupyterhub (
   Optional[Array[String]] $admin_groups = [],
   Optional[Array[String]] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Optional[Hash] $jupyterhub_config_hash = {},
+  Optional[Array[String]] $slurm_partitions = [],
 ) {
 
   class { 'jupyterhub::base':
@@ -131,10 +132,11 @@ class jupyterhub (
     ensure  => 'present',
     path    => '/etc/jupyterhub/submit.sh',
     content => epp('jupyterhub/submit.sh', {
-      'kernel_setup' => $kernel_setup,
-      'module_list'  => join($module_list, ' '),
-      'node_prefix'  => $node_prefix,
-      'venv_prefix'  => $venv_prefix,
+      'kernel_setup'     => $kernel_setup,
+      'module_list'      => join($module_list, ' '),
+      'node_prefix'      => $node_prefix,
+      'venv_prefix'      => $venv_prefix,
+      'slurm_partitions' => join($slurm_partitions, ','),
     }),
     mode    => '0644'
   }
