@@ -40,7 +40,7 @@ jupyterhub::jupyter_notebook_config_hash:
   ServerProxy:
     servers:
       rstudio:
-        command: ["rserver", "--www-address=127.0.0.1", "--www-port={port}", "--www-frame=same"]
+        command: ["rserver", "--www-address=127.0.0.1", "--www-port={port}", "--www-frame=same", "--auth-none=1", "--www-frame-origin=same", "--www-verify-user-agent=0"]
         timeout: 30
         launcher_entry:
           title: RStudio
