@@ -41,6 +41,7 @@ class jupyterhub (
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
     ensure  => 'present',
+    mode    => '0440',
     content => epp('jupyterhub/99-jupyterhub-user', {
       'blocked_users' => $blocked_users,
       'hostname'      => $facts['hostname'],
