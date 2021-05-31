@@ -35,7 +35,7 @@ class jupyterhub::kernel::venv(
       $list + ["${value[0]}=${value[1]}"]
     }
 
-    $pkg_string = join($packages, '\n')
+    $pkg_string = join($packages, "\n")
 
     file { "${prefix}/requirements.txt":
       ensure  => present,
