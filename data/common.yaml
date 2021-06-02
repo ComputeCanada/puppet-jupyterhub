@@ -4,7 +4,7 @@ jupyterhub::pip::version: 21.0.1
 jupyterhub::notebook::version: 6.3.0
 jupyterhub::jupyterhub::version: 1.4.1
 jupyterhub::batchspawner::url: https://github.com/jupyterhub/batchspawner/archive/v1.1.0.zip
-jupyterhub::slurmformspawner::version: 2.2.1
+jupyterhub::slurmformspawner::version: 2.2.3
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 
 jupyterhub::kernel::setup: module
