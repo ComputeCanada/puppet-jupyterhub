@@ -18,6 +18,9 @@ unset XDG_RUNTIME_DIR
 
 # Disable variable export with sbatch
 export SBATCH_EXPORT=NONE
+# Avoid steps inheriting environment export
+# settings from the sbatch command
+unset SLURM_EXPORT_ENV
 
 # Setup user pip install folder
 export PIP_PREFIX=${SLURM_TMPDIR}
