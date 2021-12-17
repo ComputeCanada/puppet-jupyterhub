@@ -39,12 +39,6 @@ jupyterhub::jupyterhub_config_hash:
 jupyterhub::jupyter_notebook_config_hash:
   ServerProxy:
     servers:
-      rstudio:
-        command: ["rserver", "--www-address=127.0.0.1", "--www-port={port}", "--www-frame=same"]
-        timeout: 30
-        launcher_entry:
-          title: RStudio
-          enabled: false
       code-server:
         command: ["code-server", "--auth=none", "--disable-telemetry",  "--host=127.0.0.1", "--port={port}"]
         timeout: 30

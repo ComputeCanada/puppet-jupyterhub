@@ -195,11 +195,6 @@ To control options and traitlets of Jupyter Notebook and its extensions, use `ju
 jupyterhub::jupyter_notebook_config_hash:
   ServerProxy:
     servers:
-      rstudio:
-        command: ["rserver", "--www-port={port}", "--www-frame=same", "--www-address=127.0.0.1"]
-        timeout: 30
-        launcher_entry:
-          title: RStudio
       code-server:
         command: ["code-server", "--auth=none", "--disable-telemetry", "--host=127.0.0.1", "--port={port}"]
         timeout: 30
