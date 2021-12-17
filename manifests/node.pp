@@ -69,6 +69,12 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_notebook']
   }
 
+  exec { 'pip_jupyter-rsession-proxy':
+    command => "${prefix}/bin/pip install --no-cache-dir git+https://github.com/ComputeCanada/jupyter-rsession-proxy@rstudio-server",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyter_rsession_proxy/",
+    require => Exec['pip_jupyterlab']
+  }
+
   exec { 'pip_jupyter-desktop-server':
     command => "${prefix}/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/jupyter-desktop-server/archive/cvmfs-mate.zip",
     creates => "${prefix}/lib/python3.6/site-packages/jupyter_desktop/",
