@@ -138,6 +138,8 @@ To control SlurmFormSpawner options, use `jupyterhub::jupyterhub_config_hash` li
 ```
 jupyterhub::jupyterhub_config_hash:
   SbatchForm:
+    account:
+      def: 'def-account'
     runtime:
       min: 1.0
       def: 2.0
