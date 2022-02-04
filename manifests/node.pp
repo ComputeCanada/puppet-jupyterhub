@@ -31,7 +31,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/notebook/",
+    creates => "${prefix}/lib/python3.6/site-packages/notebook-${notebook_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
@@ -56,7 +56,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_jupyterlab':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlab==${jupyterlab_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/jupyterlab/",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
@@ -68,7 +68,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_jupyter-server-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy==${jupyter_server_proxy_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/jupyter_server_proxy/",
+    creates => "${prefix}/lib/python3.6/site-packages/jupyter_server_proxy-${jupyter_server_proxy_version}.dist-info/",
     require => Exec['pip_notebook']
   }
 
