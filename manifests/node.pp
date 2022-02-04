@@ -27,7 +27,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $notebook_version = lookup('jupyterhub::notebook::version')
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
-  $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_server_desktop::url')
+  $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
 
   exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
