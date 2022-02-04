@@ -25,6 +25,9 @@ class jupyterhub::node (
 class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   $notebook_version = lookup('jupyterhub::notebook::version')
+  $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
+  $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
+  $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_server_desktop::url')
 
   exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
@@ -52,7 +55,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_jupyterlab':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab",
+    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab==${jupyterlab_version}",
     creates => "${prefix}/lib/python3.6/site-packages/jupyterlab/",
     require => Exec['jupyterhub_venv']
   }
@@ -64,13 +67,13 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_jupyter-server-proxy':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy",
+    command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy==${jupyter_server_proxy_version}",
     creates => "${prefix}/lib/python3.6/site-packages/jupyter_server_proxy/",
     require => Exec['pip_notebook']
   }
 
   exec { 'pip_jupyter-desktop-server':
-    command => "${prefix}/bin/pip install --no-cache-dir https://github.com/cmd-ntrf/jupyter-desktop-server/archive/cvmfs-mate.zip",
+    command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_desktop_server_url}",
     creates => "${prefix}/lib/python3.6/site-packages/jupyter_desktop/",
     require => Exec['pip_jupyter-server-proxy']
   }

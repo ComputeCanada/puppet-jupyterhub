@@ -33,8 +33,7 @@ class jupyterhub::base::install::venv(
 
   $pip_version = lookup('jupyterhub::pip::version')
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
-  $batchspawner_url = lookup('jupyterhub::batchspawner::url')
-
+  $batchspawner_version = lookup('jupyterhub::batchspawner::version')
 
   exec { 'pip_upgrade_pip':
     command => "${prefix}/bin/pip install --upgrade --no-cache-dir pip==${pip_version}",
@@ -49,7 +48,7 @@ class jupyterhub::base::install::venv(
   }
 
   exec { 'pip_batchspawner':
-    command => "${prefix}/bin/pip install --no-cache-dir ${batchspawner_url}",
+    command => "${prefix}/bin/pip install --no-cache-dir batchspawner==${batchspawner_version}",
     creates => "${prefix}/lib/python3.6/site-packages/batchspawner/",
     require => Exec['pip_jupyterhub']
   }
