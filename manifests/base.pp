@@ -12,8 +12,8 @@ class jupyterhub::base::install::packages {
   class { 'nodejs':
     repo_url_suffix => '12.x',
   }
-
-  ensure_packages(['python3'], {
+  $python3_pkg = lookup('jupyterhub::python3::package_name')
+  ensure_packages([$python3_pkg], {
     ensure => 'installed'
   })
 }
@@ -34,22 +34,23 @@ class jupyterhub::base::install::venv(
   $pip_version = lookup('jupyterhub::pip::version')
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
+  $python3_version = lookup('jupyterhub::python3::version')
 
   exec { 'pip_upgrade_pip':
     command => "${prefix}/bin/pip install --upgrade --no-cache-dir pip==${pip_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/pip-${pip_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/pip-${pip_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
   exec { 'pip_jupyterhub':
     command => "${prefix}/bin/pip install --upgrade --no-cache-dir jupyterhub==${jupyterhub_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/jupyterhub-${jupyterhub_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub-${jupyterhub_version}.dist-info/",
     require => Exec['pip_upgrade_pip']
   }
 
   exec { 'pip_batchspawner':
     command => "${prefix}/bin/pip install --no-cache-dir batchspawner==${batchspawner_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/batchspawner-${batchspawner_version}.dist-info/",
+    creates => "${prefix}/lib/python/site-packages/batchspawner-${batchspawner_version}.dist-info/",
     require => Exec['pip_jupyterhub']
   }
 }

@@ -142,22 +142,23 @@ class jupyterhub (
     mode    => '0644'
   }
 
+  $python3_version = lookup('jupyterhub::python3::version')
   # JupyterHub virtual environment
   exec { 'pip_slurmformspawner':
     command => "${prefix}/bin/pip install --no-cache-dir slurmformspawner==${slurmformspawner_version}",
-    creates => "${prefix}/lib/python3.6/site-packages/slurmformspawner-${slurmformspawner_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/slurmformspawner-${slurmformspawner_version}.dist-info/",
     require => Exec['pip_batchspawner']
   }
 
   exec { 'pip_pamela':
     command => "${prefix}/bin/pip install --no-cache-dir https://github.com/minrk/pamela/archive/master.zip",
-    creates => "${prefix}/lib/python3.6/site-packages/pamela-1.0.1.dev0-py3.6.egg-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/pamela-1.0.1.dev0-py${python3_version}.egg-info/",
     require => Exec['pip_jupyterhub']
   }
 
   exec { 'pip_pammfauthenticator':
     command => "${prefix}/bin/pip install --no-cache-dir ${pammfauthenticator_url}",
-    creates => "${prefix}/lib/python3.6/site-packages/pammfauthenticator/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/pammfauthenticator/",
     require => [Exec['pip_jupyterhub'], Exec['pip_pamela']]
   }
 
