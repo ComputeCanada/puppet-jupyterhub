@@ -8,7 +8,7 @@ jupyterhub::jupyterlab::version: 3.2.9
 jupyterhub::jupyter_server_proxy::version: 3.2.1
 
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
-jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/cvmfs-mate.zip
+jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/cvmfs-mate2.zip
 
 jupyterhub::kernel::setup: module
 
