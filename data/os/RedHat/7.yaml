@@ -1,2 +1,3 @@
 ---
+jupyterhub::pip::version: 21.3.1
 jupyterhub::pycurl::package_name: python36-pycurl

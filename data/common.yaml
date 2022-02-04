@@ -1,6 +1,5 @@
 # jupyterhub/data/common.yaml
 ---
-jupyterhub::pip::version: 22.0.3
 jupyterhub::notebook::version: 6.4.8
 jupyterhub::jupyterhub::version: 2.1.1
 jupyterhub::batchspawner::version: 1.1.0
