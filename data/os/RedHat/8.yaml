@@ -1,6 +1,5 @@
 ---
 jupyterhub::pip::version: 22.0.3
-jupyterhub::pycurl::package_name: python3-pycurl
 jupyterhub::python3::package_name: python39
 jupyterhub::python3::version: 3.9
 jupyterhub::base::install::venv::python: /usr/bin/python3.9

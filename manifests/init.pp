@@ -196,16 +196,23 @@ class jupyterhub (
     require => [Exec['create_self_signed_sslcert']]
   }
 
-  $pycurl_package_name = lookup('jupyterhub::pycurl::package_name')
-  ensure_packages ($pycurl_package_name)
+  if $facts['os']['release']['major'] == '7' {
+    $pycurl_package_name = lookup('jupyterhub::pycurl::package_name')
+    ensure_packages ($pycurl_package_name)
+    $jupyterhub_require = [
+      File['submit.sh'],
+      Package[$pycurl_package_name],
+    ]
+  } else  {
+    $jupyterhub_require = [
+      File['submit.sh'],
+    ]
+  }
 
   service { 'jupyterhub':
     ensure    => running,
     enable    => true,
-    require   => [
-      Package[$pycurl_package_name],
-      File['submit.sh'],
-    ],
+    require   => $jupyterhub_require,
     subscribe => [
       Service['sssd'],
       Exec['pip_jupyterhub'],
