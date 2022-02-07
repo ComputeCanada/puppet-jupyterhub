@@ -155,7 +155,7 @@ class jupyterhub (
   # JupyterHub virtual environment
   exec { 'pip_idle_culler':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterhub-idle-culler==${idle_culler_version}",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub-idle-culler-${idle_culler_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub_idle_culler-${idle_culler_version}.dist-info/",
     require => Exec['pip_jupyterhub']
   }
 
