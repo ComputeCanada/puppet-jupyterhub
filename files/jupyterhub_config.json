@@ -6,7 +6,19 @@
         "ssl_cert": "/etc/jupyterhub/ssl/cert.pem",
         "cleanup_servers": false,
         "shutdown_on_logout": true,
-        "template_paths": ["/etc/jupyterhub/templates"]
+        "template_paths": ["/etc/jupyterhub/templates"],
+        "load_roles": [
+            {
+                "name": "jupyterhub-idle-culler-role",
+                "scopes": [
+                    "list:users",
+                    "read:users:activity",
+                    "read:servers",
+                    "delete:servers"
+                ],
+                "services": ["jupyterhub-idle-culler-service"]
+            }
+        ]
     },
     "Spawner": {
         "disable_user_config": true

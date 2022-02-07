@@ -81,6 +81,7 @@ class jupyterhub (
     mode   => '0644',
   }
 
+  $idle_culler_version = lookup('jupyterhub::idle_culler::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
   $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
 
@@ -95,11 +96,11 @@ class jupyterhub (
       'admin_access'                => Boolean(size($admin_groups) > 0),
       'services'                    => Boolean($idle_timeout > 0) ? {
         true => [{
-          'name'    => 'cull-idle',
-          'admin'   => true,
+          'name'    => 'jupyterhub-idle-culler-service',
           'command' => [
             "${prefix}/bin/python3",
-            "${prefix}/bin/cull_idle_servers.py",
+            '-m',
+            'jupyterhub_idle_culler',
             "--timeout=${idle_timeout}"
           ],
         }],
@@ -144,6 +145,12 @@ class jupyterhub (
 
   $python3_version = lookup('jupyterhub::python3::version')
   # JupyterHub virtual environment
+  exec { 'pip_idle_culler':
+    command => "${prefix}/bin/pip install --no-cache-dir jupyterhub-idle-culler==${idle_culler_version}",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub-idle-culler-${idle_culler_version}.dist-info/",
+    require => Exec['pip_jupyterhub']
+  }
+
   exec { 'pip_slurmformspawner':
     command => "${prefix}/bin/pip install --no-cache-dir slurmformspawner==${slurmformspawner_version}",
     creates => "${prefix}/lib/python${python3_version}/site-packages/slurmformspawner-${slurmformspawner_version}.dist-info/",
@@ -184,12 +191,6 @@ class jupyterhub (
   $pycurl_package_name = lookup('jupyterhub::pycurl::package_name')
   ensure_packages ($pycurl_package_name)
 
-  file { "${prefix}/bin/cull_idle_servers.py":
-    source  => 'puppet:///modules/jupyterhub/cull_idle_servers.py',
-    mode    => '0755',
-    require => Exec['jupyterhub_venv']
-  }
-
   service { 'jupyterhub':
     ensure    => running,
     enable    => true,
@@ -200,6 +201,7 @@ class jupyterhub (
     subscribe => [
       Service['sssd'],
       Exec['pip_jupyterhub'],
+      Exec['pip_idle_culler'],
       Exec['pip_batchspawner'],
       Exec['pip_slurmformspawner'],
       Exec['pip_pammfauthenticator'],
@@ -208,7 +210,6 @@ class jupyterhub (
       File['jupyterhub_config.json'],
       File['/etc/jupyterhub/ssl/cert.pem'],
       File['/etc/jupyterhub/ssl/key.pem'],
-      File["${prefix}/bin/cull_idle_servers.py"],
     ],
   }
 }

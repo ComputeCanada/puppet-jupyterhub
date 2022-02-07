@@ -6,6 +6,7 @@ jupyterhub::batchspawner::version: 1.1.0
 jupyterhub::slurmformspawner::version: 2.2.3
 jupyterhub::jupyterlab::version: 3.2.9
 jupyterhub::jupyter_server_proxy::version: 3.2.1
+jupyterhub::idle_culler::version: 1.2.1
 
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/cvmfs-mate2.zip
