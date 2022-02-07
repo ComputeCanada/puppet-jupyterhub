@@ -50,7 +50,7 @@ class jupyterhub::base::install::venv(
 
   exec { 'pip_batchspawner':
     command => "${prefix}/bin/pip install --no-cache-dir batchspawner==${batchspawner_version}",
-    creates => "${prefix}/lib/python/site-packages/batchspawner-${batchspawner_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/batchspawner-${batchspawner_version}.dist-info/",
     require => Exec['pip_jupyterhub']
   }
 }
