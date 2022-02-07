@@ -105,6 +105,14 @@ class jupyterhub (
           ],
         }],
         false => [],
+      },
+      'load_roles'                  => Boolean($idle_timeout > 0) ? {
+        true  => [{
+          'name'    => 'jupyterhub-idle-culler-role',
+          'scopes'  => ['list:users', 'read:users:activity', 'read:servers', 'delete:servers'],
+          'services'=> ['jupyterhub-idle-culler-service'],
+        }],
+        false =>  [],
       }
     },
     'Authenticator' => {
