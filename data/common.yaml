@@ -6,6 +6,7 @@ jupyterhub::batchspawner::version: 1.1.0
 jupyterhub::slurmformspawner::version: 2.2.3
 jupyterhub::jupyterlab::version: 3.2.9
 jupyterhub::jupyter_server_proxy::version: 3.2.1
+jupyterhub::jupyter_rsession_proxy::version: 2.0.1
 jupyterhub::idle_culler::version: 1.2.1
 
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
@@ -43,12 +44,6 @@ jupyterhub::jupyterhub_config_hash:
 jupyterhub::jupyter_notebook_config_hash:
   ServerProxy:
     servers:
-      rstudio:
-        command: ["rserver", "--www-address=127.0.0.1", "--www-port={port}", "--www-frame=same"]
-        timeout: 30
-        launcher_entry:
-          title: RStudio
-          enabled: false
       code-server:
         command: ["code-server", "--auth=none", "--disable-telemetry",  "--host=127.0.0.1", "--port={port}"]
         timeout: 30
