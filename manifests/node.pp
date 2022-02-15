@@ -101,9 +101,16 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'jupyter-labextension-server-proxy':
-    command     => "${prefix}/bin/jupyter labextension disable @jupyterlab/server-proxy",
+    command     => "rm -rf ${prefix}/share/jupyter/labextensions/@jupyterlab/server-proxy",
     timeout     => 0,
     subscribe   => Exec['pip_jupyter-server-proxy'],
+    refreshonly => true,
+  }
+
+  exec { 'jupyter-lab_build':
+    command     => "${prefix}/bin/jupyter lab build",
+    timeout     => 0,
+    subscribe   => Exec['jupyter-labextension-server-proxy'],
     refreshonly => true,
   }
 
