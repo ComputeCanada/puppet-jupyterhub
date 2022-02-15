@@ -29,7 +29,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
-  $jupyter_rsession_proxy_url = lookup('jupyterhub::jupyter_rsession_proxy::version')
+  $jupyter_rsession_proxy_url = lookup('jupyterhub::jupyter_rsession_proxy::url')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
   $python3_version = lookup('jupyterhub::python3::version')
 
