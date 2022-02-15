@@ -29,6 +29,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
+  $jupyter_rsession_proxy_url = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
   $python3_version = lookup('jupyterhub::python3::version')
 
@@ -75,9 +76,15 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_notebook']
   }
 
+  # exec { 'pip_jupyter-rsession-proxy':
+  #   command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy==${jupyter_rsession_proxy_version}",
+  #   creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
+  #   require => Exec['pip_jupyter-server-proxy']
+  # }
+
   exec { 'pip_jupyter-rsession-proxy':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy==${jupyter_rsession_proxy_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
+    command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_rsession_proxy_url}",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy/",
     require => Exec['pip_jupyter-server-proxy']
   }
 
