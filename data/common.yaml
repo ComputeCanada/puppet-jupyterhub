@@ -44,6 +44,8 @@ jupyterhub::jupyterhub_config_hash:
       def: 'lab'
 
 jupyterhub::jupyter_notebook_config_hash:
+  Lmod:
+    launcher_pins: ['desktop']
   ServerProxy:
     servers:
       code-server:
