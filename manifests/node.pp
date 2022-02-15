@@ -76,7 +76,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_jupyter-rsession-proxy':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy'==${jupyter_rsession_proxy_version}",
+    command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy==${jupyter_rsession_proxy_version}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
     require => Exec['pip_jupyter-server-proxy']
   }
