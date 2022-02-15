@@ -27,6 +27,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $notebook_version = lookup('jupyterhub::notebook::version')
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
+  $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
   $python3_version = lookup('jupyterhub::python3::version')
@@ -63,8 +64,8 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_jupyterlmod':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyterlmod",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlmod/",
+    command => "${prefix}/bin/pip install --no-cache-dir jupyterlmod==${jupyterlmod_version}",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlmod-${jupyterlmod_version}.dist-info/",
     require => Exec['pip_notebook']
   }
 
@@ -100,10 +101,17 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'jupyter-labextension-server-proxy':
-    command => "${prefix}/bin/jupyter labextension install --minimize=False @jupyterlab/server-proxy",
-    creates => "${prefix}/share/jupyter/lab/staging/node_modules/@jupyterlab/server-proxy",
-    timeout => 0,
-    require => Exec['pip_jupyterlab'],
+    command     => "${prefix}/bin/jupyter labextension disable @jupyterlab/server-proxy",
+    timeout     => 0,
+    subscribe   => Exec['pip_jupyter-server-proxy'],
+    refreshonly => true,
+  }
+
+  exec { 'jupyter-nbextension-server-proxy':
+    command     => "${prefix}/bin/jupyter nbextension disable --py jupyter_server_proxy --sys-prefix",
+    timeout     => 0,
+    subscribe   => Exec['pip_jupyter-server-proxy'],
+    refreshonly => true,
   }
 
   $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
