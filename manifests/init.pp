@@ -38,6 +38,7 @@ class jupyterhub (
     path    => '/lib/systemd/system/jupyterhub.service',
     content => epp('jupyterhub/jupyterhub.service', {
       'prefix' => $prefix,
+      'slurm_home' => $slurm_home,
       'python3_version' => $python3_version
     })
   }

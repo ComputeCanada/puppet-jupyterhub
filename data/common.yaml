@@ -22,7 +22,6 @@ jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-des
 jupyterhub::jupyter_rsession_proxy::url: https://github.com/ComputeCanada/jupyter-rsession-proxy/archive/refs/tags/v2.1.0a.zip
 jupyterhub::jupyterlab_nvdashboard::url: https://github.com/cmd-ntrf/jupyterlab-nvdashboard/archive/refs/heads/libraryNotFound.zip
 
-jupyterhub::prefix: '/opt/jupyterhub'
 jupyterhub::kernel::setup: module
 
 jupyterhub::reverse_proxy::ssl_certificate_path: ''
