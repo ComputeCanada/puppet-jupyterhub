@@ -14,6 +14,7 @@ jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthentica
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip
 jupyterhub::jupyter_rsession_proxy::url: https://github.com/ComputeCanada/jupyter-rsession-proxy/archive/refs/tags/v2.1.0a.zip
 
+jupyterhub::prefix: '/opt/jupyterhub'
 jupyterhub::kernel::setup: module
 
 jupyterhub::reverse_proxy::ssl_certificate_path: ''

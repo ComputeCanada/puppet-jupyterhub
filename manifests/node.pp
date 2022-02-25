@@ -1,5 +1,5 @@
 class jupyterhub::node (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
+  Stdlib::Absolutepath $prefix = $jupyterhub::prefix,
   Optional[String] $http_proxy = undef,
   Optional[String] $https_proxy = undef,
 ) {
@@ -10,9 +10,8 @@ class jupyterhub::node (
     }
   }
 
-  class { 'jupyterhub::base':
-    prefix => $prefix
-  }
+  include jupyterhub::base
+
   class { 'jupyterhub::node::install':
     prefix => $prefix
   }
