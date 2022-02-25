@@ -13,9 +13,7 @@ class jupyterhub (
   Optional[Array[String]] $slurm_partitions = [],
 ) {
 
-  class { 'jupyterhub::base':
-    prefix => $prefix
-  }
+  include jupyterhub::base
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -39,6 +37,7 @@ class jupyterhub (
     ensure  => 'present',
     path    => '/lib/systemd/system/jupyterhub.service',
     content => epp('jupyterhub/jupyterhub.service', {
+      'prefix' => $prefix,
       'python3_version' => $python3_version
     })
   }
@@ -50,6 +49,7 @@ class jupyterhub (
       'blocked_users' => $blocked_users,
       'hostname'      => $facts['hostname'],
       'slurm_home'    => $slurm_home,
+      'prefix'        => $prefix,
     })
   }
 

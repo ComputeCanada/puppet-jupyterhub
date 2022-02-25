@@ -1,4 +1,4 @@
-class jupyterhub::base(Stdlib::Absolutepath $prefix) {
+class jupyterhub::base(Stdlib::Absolutepath $prefix = $jupyterhub::prefix) {
   class { 'jupyterhub::base::install::venv':
     prefix => $prefix
   }
