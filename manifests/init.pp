@@ -84,6 +84,7 @@ class jupyterhub (
 
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
+<<<<<<< HEAD
 
   if $authenticator == 'PAM' {
     $authenticator_config = {
@@ -92,6 +93,18 @@ class jupyterhub (
           'service'       => 'jupyterhub-login',
           'admin_groups'  => $admin_groups,
       }
+=======
+  if $enable_otp_auth {
+      $oauthenticator_url = lookup('jupyterhub::oauthenticator::url')
+      $oidc_client_id = lookup('jupyterhub::oauthenticator::client_id')
+      $oidc_client_secret = lookup('jupyterhub::oauthenticator::client_secret')
+      $oidc_authorize_url = lookup('jupyterhub::oauthenticator::authorize_url')
+      $oidc_token_url = lookup('jupyterhub::oauthenticator::token_url')
+      $oidc_userdata_url = lookup('jupyterhub::oauthenticator::userdata_url')
+      $oidc_oauth_callback_url = lookup('jupyterhub::oauthenticator::oauth_callback_url')
+      $oidc_username_key = lookup('jupyterhub::oauthenticator::username_key')
+      $oidc_scope = lookup('jupyterhub::oauthenticator::scope')
+>>>>>>> clean up code
     }
     if $enable_otp_auth {
       $authenticator_class = 'pammfauthenticator'
