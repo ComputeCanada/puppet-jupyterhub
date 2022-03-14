@@ -130,7 +130,22 @@ class jupyterhub (
         false =>  [],
       }
     },
+    'GenericOAuthenticator' => $enable_otp_auth ? {
+      true => {
+        'client_id'          => $oidc_client_id,
+        'client_secret'      => $oidc_client_secret,
+        'authorize_url'      => $oidc_authorize_url,
+        'token_url'          => $oidc_token_url,
+        'userdata_url'       => $oidc_userdata_url,
+        'userdata_params'    => { 'state' => "state" },
+        'oauth_callback_url' => $oidc_oauth_callback_url,
+        'username_key'       => $oidc_username_key,
+        'scope'              => $oidc_scope,
+      },
+      false => {},
+    },
     'Authenticator' => {
+      'auto_login' => $enable_otp_auth,
       'blocked_users' => $blocked_users,
     },
     'SlurmFormSpawner' => {

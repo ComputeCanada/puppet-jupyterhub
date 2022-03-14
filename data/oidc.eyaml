@@ -1,0 +1,16 @@
+---
+# MFA tested on CC Duo and PI
+
+jupyterhub::oauthenticator::url: https://github.com/jupyterhub/oauthenticator.git
+
+jupyterhub::oauthenticator::client_id: your-own-client-id-here
+jupyterhub::oauthenticator::client_secret: ENC[PKCS7,==Your own puppet secret here==]
+jupyterhub::oauthenticator::authorize_url: https://idp.computecanada.ca/idp/profile/oidc/authorize
+jupyterhub::oauthenticator::token_url: https://idp.computecanada.ca/idp/profile/oidc/token
+jupyterhub::oauthenticator::userdata_url: https://idp.computecanada.ca/idp/profile/oidc/userinfo
+jupyterhub::oauthenticator::oauth_callback_url: https://jupyterhub.cedar.computecanada.ca/hub/oauth_callback
+jupyterhub::oauthenticator::username_key: preferred_username
+jupyterhub::oauthenticator::scope:
+  - "openid"
+  - "profile"
+  - "ca.computecanada.userinfo"
