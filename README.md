@@ -163,10 +163,10 @@ jupyterhub::jupyterhub_config_hash:
     ui_args:
       notebook:
         name: Jupyter Notebook
+        args: ['--SingleUserNotebookApp.default_url=/tree']
         modules: ['ipython-kernel/3.7']
       lab:
         name: JupyterLab
-        args: ['--SingleUserNotebookApp.default_url=/lab']
         modules: ['ipython-kernel/3.7']
       terminal:
         name: Terminal
