@@ -240,7 +240,6 @@ class jupyterhub (
       Exec['pip_idle_culler'],
       Exec['pip_batchspawner'],
       Exec['pip_slurmformspawner'],
-      Exec['pip_authenticator'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],
