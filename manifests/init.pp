@@ -4,6 +4,7 @@ class jupyterhub (
   String $bind_url = 'https://127.0.0.1:8000',
   Boolean $allow_named_servers = true,
   Integer $named_server_limit_per_user = 0,
+  Enum['PAM'] $authenticator = 'PAM',
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
   Optional[Array[String]] $admin_groups = [],
@@ -83,7 +84,15 @@ class jupyterhub (
 
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
-  $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
+
+  if $authenticator == 'PAM' {
+    $authenticator_config = {}
+    if $enable_otp_auth {
+      $authenticator_class = 'pammfauthenticator'
+    } else {
+      $authenticator_class = 'pam'
+    }
+  }
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
@@ -92,7 +101,7 @@ class jupyterhub (
       'bind_url'                    => $bind_url,
       'allow_named_servers'         => $allow_named_servers,
       'named_server_limit_per_user' => $named_server_limit_per_user,
-      'authenticator_class'         => $enable_otp_auth ? { true => 'pammfauthenticator', false => 'pam' },
+      'authenticator_class'         => $authenticator_class,
       'admin_access'                => Boolean(size($admin_groups) > 0),
       'services'                    => Boolean($idle_timeout > 0) ? {
         true => [{
@@ -127,7 +136,14 @@ class jupyterhub (
       'slurm_bin_path'              => "${slurm_home}/bin",
     }
   }
-  $jupyterhub_config = deep_merge($jupyterhub_config_base, $jupyterhub_config_params, $jupyterhub_config_hash)
+
+  $jupyterhub_config = deep_merge(
+    $jupyterhub_config_base,
+    $jupyterhub_config_params,
+    $jupyterhub_config_hash,
+    $authenticator_config,
+  )
+
   file { 'jupyterhub_config.json':
     ensure  => 'present',
     path    => '/etc/jupyterhub/jupyterhub_config.json',
@@ -165,16 +181,21 @@ class jupyterhub (
     require => Exec['pip_batchspawner']
   }
 
-  exec { 'pip_pamela':
-    command => "${prefix}/bin/pip install --no-cache-dir https://github.com/minrk/pamela/archive/master.zip",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/pamela-1.0.1.dev0-py${python3_version}.egg-info/",
-    require => Exec['pip_jupyterhub']
-  }
-
-  exec { 'pip_pammfauthenticator':
-    command => "${prefix}/bin/pip install --no-cache-dir ${pammfauthenticator_url}",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/pammfauthenticator/",
-    require => [Exec['pip_jupyterhub'], Exec['pip_pamela']]
+  if $authenticator == 'PAM' {
+    exec { 'pip_pamela':
+      command => "${prefix}/bin/pip install --no-cache-dir https://github.com/minrk/pamela/archive/master.zip",
+      creates => "${prefix}/lib/python${python3_version}/site-packages/pamela-1.0.1.dev0-py${python3_version}.egg-info/",
+      require => Exec['pip_jupyterhub']
+    }
+    if $enable_otp_auth {
+      $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
+      exec { 'pip_pammfauthenticator':
+        command => "${prefix}/bin/pip install --no-cache-dir ${pammfauthenticator_url}",
+        creates => "${prefix}/lib/python${python3_version}/site-packages/pammfauthenticator/",
+        require => [Exec['pip_jupyterhub'], Exec['pip_pamela']],
+        notify  => Service['jupyterhub']
+      }
+    }
   }
 
   exec {'create_self_signed_sslcert':
@@ -219,7 +240,7 @@ class jupyterhub (
       Exec['pip_idle_culler'],
       Exec['pip_batchspawner'],
       Exec['pip_slurmformspawner'],
-      Exec['pip_pammfauthenticator'],
+      Exec['pip_authenticator'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],
