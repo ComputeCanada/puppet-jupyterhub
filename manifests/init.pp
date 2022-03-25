@@ -86,7 +86,13 @@ class jupyterhub (
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
 
   if $authenticator == 'PAM' {
-    $authenticator_config = {}
+    $authenticator_config = {
+      'PAMAuthenticator' => {
+          'open_sessions' => false,
+          'service'       => 'jupyterhub-login',
+          'admin_groups'  => $admin_groups,
+      }
+    }
     if $enable_otp_auth {
       $authenticator_class = 'pammfauthenticator'
     } else {
@@ -126,9 +132,6 @@ class jupyterhub (
     },
     'Authenticator' => {
       'blocked_users' => $blocked_users,
-    },
-    'PAMAuthenticator' => {
-      'admin_groups' => $admin_groups,
     },
     'SlurmFormSpawner' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
