@@ -103,6 +103,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `undef` |
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `0 (no timeout)` |
+| `jupyterhub::authenticator` | Enum['PAM'] | Type of authenticator JupyterHub will use | `PAM` |
 | `jupyterhub::enable_otp_auth` | Boolean | Enable one-time password field on the login page | `true` |
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 | `jupyterhub::slurm_partitions` | List[String] | Name of the partitions for the ressource allocation of JupyterHub jobs  | `[]` |

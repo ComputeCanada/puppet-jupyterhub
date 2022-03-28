@@ -16,9 +16,5 @@
         "args": [
             "--KernelSpecManager.ensure_native_kernel=False"
         ]
-    },
-    "PAMAuthenticator": {
-        "open_sessions": false,
-        "service": "jupyterhub-login"
     }
 }
