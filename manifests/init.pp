@@ -107,7 +107,7 @@ class jupyterhub (
         'authorize_url'      => lookup('jupyterhub::oauthenticator::authorize_url'),
         'token_url'          => lookup('jupyterhub::oauthenticator::token_url'),
         'userdata_url'       => lookup('jupyterhub::oauthenticator::userdata_url'),
-        'userdata_params'    => lookup('jupyterhub::oauthenticator::userdata_params'),
+        'userdata_params'    => lookup('jupyterhub::oauthenticator::userdata_params', Hash, undef, {'state' => 'state'}),
         'oauth_callback_url' => lookup('jupyterhub::oauthenticator::oauth_callback_url'),
         'username_key'       => lookup('jupyterhub::oauthenticator::username_key'),
         'scope'              => lookup('jupyterhub::oauthenticator::scope'),
@@ -219,11 +219,10 @@ class jupyterhub (
       }
     }
   } elsif $authenticator == 'OIDC' {
-    $oauthenticator_url = lookup('jupyterhub::oauthenticator::url')
-    $git_tag = lookup('jupyterhub::oauthenticator::version')
+    $oauthenticator_version = lookup('jupyterhub::oauthenticator::version')
     exec { 'pip_oauthenticator':
-      command => "${prefix}/bin/pip install --no-cache-dir git+${oauthenticator_url}@${git_tag}",
-      creates => "${prefix}/lib/python${python3_version}/site-packages/oauthenticator-${git_tag}.dist-info/",
+      command => "${prefix}/bin/pip install --no-cache-dir oauthenticator==${oauthenticator_version}",
+      creates => "${prefix}/lib/python${python3_version}/site-packages/oauthenticator-${oauthenticator_version}.dist-info/",
       require => Exec['pip_jupyterhub']
     }
   }

@@ -223,7 +223,7 @@ jupyterhub::jupyter_notebook_config_hash:
 | `jupyterhub::oauthenticator::authorize_url` | String | OIDC authorize URL | |
 | `jupyterhub::oauthenticator::token_url` | String | OIDC token URL | |
 | `jupyterhub::oauthenticator::userdata_url` | String | OIDC userdata URL | |
-| `jupyterhub::oauthenticator::userdata_params` | String | OIDC userdata params | |
+| `jupyterhub::oauthenticator::userdata_params` | Hash | OIDC userdata params | {'state' => 'state'} |
 | `jupyterhub::oauthenticator::oauth_callback_url` | String | OIDC oauth callback URL | |
 | `jupyterhub::oauthenticator::username_key` | String | OIDC username key | |
-| `jupyterhub::oauthenticator::scope` | String | OIDC scope | |
+| `jupyterhub::oauthenticator::scope` | Array[String] | OIDC scope | |
