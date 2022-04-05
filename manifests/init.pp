@@ -151,7 +151,10 @@ class jupyterhub (
     ensure  => 'present',
     path    => '/etc/jupyterhub/jupyterhub_config.json',
     content => to_json_pretty($jupyterhub_config, true),
-    mode    => '0644',
+    mode    => '0640',
+    owner   => 'root',
+    group   => 'jupyterhub',
+    require => User['jupyterhub'],
   }
 
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
