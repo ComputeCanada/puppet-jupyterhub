@@ -9,6 +9,7 @@ jupyterhub::jupyterlmod::version: 3.0.0
 jupyterhub::jupyter_server_proxy::version: 3.2.1
 jupyterhub::jupyter_rsession_proxy::version: 2.0.1
 jupyterhub::idle_culler::version: 1.2.1
+jupyterhub::oauthenticator::version: 14.2.0
 
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip
