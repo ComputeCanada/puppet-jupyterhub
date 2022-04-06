@@ -90,7 +90,6 @@ class jupyterhub (
       'PAMAuthenticator' => {
           'open_sessions' => false,
           'service'       => 'jupyterhub-login',
-          'admin_groups'  => $admin_groups,
       }
     }
     if $enable_otp_auth {
@@ -111,6 +110,8 @@ class jupyterhub (
         'oauth_callback_url' => lookup('jupyterhub::oauthenticator::oauth_callback_url'),
         'username_key'       => lookup('jupyterhub::oauthenticator::username_key'),
         'scope'              => lookup('jupyterhub::oauthenticator::scope'),
+        'allowed_groups'     => lookup('jupyterhub::oauthenticator::allowed_groups', Array[String], undef, []),
+        'claim_groups_key'   => lookup('jupyterhub::oauthenticator::claim_groups_key', String, undef, 'affiliation'),
       }
     }
   }
@@ -146,6 +147,7 @@ class jupyterhub (
       }
     },
     'Authenticator' => {
+      'admin_groups'  => $admin_groups,
       'blocked_users' => $blocked_users,
       'auto_login'    => $authenticator ? {
         'OIDC'  => true,
