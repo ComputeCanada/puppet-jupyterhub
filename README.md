@@ -227,3 +227,5 @@ jupyterhub::jupyter_notebook_config_hash:
 | `jupyterhub::oauthenticator::oauth_callback_url` | String | OIDC oauth callback URL | |
 | `jupyterhub::oauthenticator::username_key` | String | OIDC username key | |
 | `jupyterhub::oauthenticator::scope` | Array[String] | OIDC scope | |
+| `jupyterhub::oauthenticator::allowed_groups` | Array[String] | List of groups who should be allowed to connect. Empty list = any group | [] |
+| `jupyterhub::oauthenticator::claim_groups_key` | String | Userdata groups claim key from returned  OIDC json | 'affiliation' |
