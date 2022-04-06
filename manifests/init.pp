@@ -90,7 +90,6 @@ class jupyterhub (
       'PAMAuthenticator' => {
           'open_sessions' => false,
           'service'       => 'jupyterhub-login',
-          'admin_groups'  => $admin_groups,
       }
     }
     if $enable_otp_auth {
@@ -146,6 +145,7 @@ class jupyterhub (
       }
     },
     'Authenticator' => {
+      'admin_groups'  => $admin_groups,
       'blocked_users' => $blocked_users,
       'auto_login'    => $authenticator ? {
         'OIDC'  => true,
