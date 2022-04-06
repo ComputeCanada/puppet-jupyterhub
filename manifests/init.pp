@@ -110,8 +110,8 @@ class jupyterhub (
         'oauth_callback_url' => lookup('jupyterhub::oauthenticator::oauth_callback_url'),
         'username_key'       => lookup('jupyterhub::oauthenticator::username_key'),
         'scope'              => lookup('jupyterhub::oauthenticator::scope'),
-        'allowed_groups'     => lookup('jupyterhub::oauthenticator::allowed_groups'),
-        'claim_groups_key'   => lookup('jupyterhub::oauthenticator::claim_groups_key'),
+        'allowed_groups'     => lookup('jupyterhub::oauthenticator::allowed_groups', Array[String], undef, []),
+        'claim_groups_key'   => lookup('jupyterhub::oauthenticator::claim_groups_key', String, undef, 'affiliation'),
       }
     }
   }
