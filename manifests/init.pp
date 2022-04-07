@@ -135,7 +135,8 @@ class jupyterhub (
       "${prefix}/bin/python",
       '-m', 'jupyterhub_announcement',
       '--AnnouncementService.config_file=/etc/jupyterhub/announcement_config.json'
-    ]
+    ],
+    'oauth_no_confirm' => true,
   }
   if $idle_timeout > 0 {
     $idle_culler_services = [{
