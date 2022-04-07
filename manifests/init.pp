@@ -83,9 +83,11 @@ class jupyterhub (
   }
 
   file { '/etc/jupyterhub/templates/page.html':
-    ensure => 'present',
-    source => 'puppet:///modules/jupyterhub/page.html',
-    mode   => '0644',
+    ensure  => 'present',
+    source  => 'puppet:///modules/jupyterhub/page.html',
+    mode    => '0644',
+    require => File['/etc/jupyterhub/templates/'],
+    notify  => Service['jupyterhub']
   }
 
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
