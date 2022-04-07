@@ -83,6 +83,7 @@ class jupyterhub (
   }
 
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
+  $announcement_version = lookup('jupyterhub::announcement::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
 
   if $authenticator == 'PAM' {
@@ -116,6 +117,42 @@ class jupyterhub (
     }
   }
 
+  $announcement_port = lookup('jupyterhub::announcement::port')
+  $announcement_service = {
+    'name'    => 'announcement',
+    # TODO: activate SSL
+    # 'url'     => "https://127.0.0.1:${announcement_port}",
+    'url'     => "http://127.0.0.1:${announcement_port}",
+    'command' => [
+      "${prefix}/bin/python",
+      '-m', 'jupyterhub_announcement',
+      '--AnnouncementService.config_file=/etc/jupyterhub/announcement_config.json'
+    ]
+  }
+  if $idle_timeout > 0 {
+    $idle_culler_services = [{
+      'name'    => 'jupyterhub-idle-culler-service',
+      'command' => [
+        "${prefix}/bin/python3",
+        '-m',
+        'jupyterhub_idle_culler',
+        "--timeout=${idle_timeout}"
+      ],
+    }]
+
+    $idle_culler_roles = [{
+      'name'    => 'jupyterhub-idle-culler-role',
+      'scopes'  => ['list:users', 'read:users:activity', 'read:servers', 'delete:servers'],
+      'services'=> ['jupyterhub-idle-culler-service'],
+    }]
+  } else {
+    $idle_culler_services = []
+    $idle_culler_roles = []
+  }
+
+  $services = [$announcement_service] + $idle_culler_services
+  $roles = $idle_culler_roles
+
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
   $jupyterhub_config_params = {
@@ -125,26 +162,8 @@ class jupyterhub (
       'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $authenticator_class,
       'admin_access'                => Boolean(size($admin_groups) > 0),
-      'services'                    => Boolean($idle_timeout > 0) ? {
-        true => [{
-          'name'    => 'jupyterhub-idle-culler-service',
-          'command' => [
-            "${prefix}/bin/python3",
-            '-m',
-            'jupyterhub_idle_culler',
-            "--timeout=${idle_timeout}"
-          ],
-        }],
-        false => [],
-      },
-      'load_roles'                  => Boolean($idle_timeout > 0) ? {
-        true  => [{
-          'name'    => 'jupyterhub-idle-culler-role',
-          'scopes'  => ['list:users', 'read:users:activity', 'read:servers', 'delete:servers'],
-          'services'=> ['jupyterhub-idle-culler-service'],
-        }],
-        false =>  [],
-      }
+      'services'                    => $services,
+      'load_roles'                  => $roles,
     },
     'Authenticator' => {
       'admin_groups'  => $admin_groups,
@@ -168,10 +187,37 @@ class jupyterhub (
     $authenticator_config,
   )
 
+  $announcement_config = {
+    'AnnouncementService' => {
+      'fixed_message'      => lookup('jupyterhub::announcement::fixed_message'),
+      'cookie_secret_file' => '/var/run/jupyterhub/jupyterhub_cookie_secret',
+      'port'               => lookup('jupyterhub::announcement::port')
+    },
+    'AnnouncementQueue' => {
+      'lifetime_days' => lookup('jupyterhub::announcement::lifetime_days'),
+      'persist_path'  => lookup('jupyterhub::announcement::persist_path')
+    },
+    'SSLContext' => {
+      # TODO: add missing SSL CA
+      # 'certfile' => '/etc/jupyterhub/ssl/cert.pem',
+      # 'keyfile' => '/etc/jupyterhub/ssl/key.pem'
+    }
+  }
+
   file { 'jupyterhub_config.json':
     ensure  => 'present',
     path    => '/etc/jupyterhub/jupyterhub_config.json',
     content => to_json_pretty($jupyterhub_config, true),
+    mode    => '0640',
+    owner   => 'root',
+    group   => 'jupyterhub',
+    require => User['jupyterhub'],
+  }
+
+  file { 'announcement_config.json':
+    ensure  => 'present',
+    path    => '/etc/jupyterhub/announcement_config.json',
+    content => to_json_pretty($announcement_config, true),
     mode    => '0640',
     owner   => 'root',
     group   => 'jupyterhub',
@@ -199,6 +245,12 @@ class jupyterhub (
   exec { 'pip_idle_culler':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterhub-idle-culler==${idle_culler_version}",
     creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub_idle_culler-${idle_culler_version}.dist-info/",
+    require => Exec['pip_jupyterhub']
+  }
+
+  exec { 'pip_announcement':
+    command => "${prefix}/bin/pip install --no-cache-dir https://github.com/rcthomas/jupyterhub-announcement/archive/refs/tags/${announcement_version}.zip html_sanitizer",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub_announcement-${announcement_version}-py${python3_version}.egg-info/",
     require => Exec['pip_jupyterhub']
   }
 
@@ -277,6 +329,7 @@ class jupyterhub (
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],
+      File['announcement_config.json'],
       File['/etc/jupyterhub/ssl/cert.pem'],
       File['/etc/jupyterhub/ssl/key.pem'],
     ],
