@@ -138,6 +138,13 @@ class jupyterhub (
     ],
     'oauth_no_confirm' => true,
   }
+  $announcement_roles = [
+    {
+      'name'   => 'user',
+      'scopes' => ['access:services', 'self']
+    }
+  ]
+
   if $idle_timeout > 0 {
     $idle_culler_services = [{
       'name'    => 'jupyterhub-idle-culler-service',
@@ -160,7 +167,7 @@ class jupyterhub (
   }
 
   $services = [$announcement_service] + $idle_culler_services
-  $roles = $idle_culler_roles
+  $roles = $announcement_roles + $idle_culler_roles
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
