@@ -82,6 +82,12 @@ class jupyterhub (
     mode   => '0644',
   }
 
+  file { '/etc/jupyterhub/templates/page.html':
+    ensure => 'present',
+    source => 'puppet:///modules/jupyterhub/page.html',
+    mode   => '0644',
+  }
+
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
   $announcement_version = lookup('jupyterhub::announcement::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
