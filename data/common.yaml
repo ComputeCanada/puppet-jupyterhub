@@ -10,6 +10,12 @@ jupyterhub::jupyter_server_proxy::version: 3.2.1
 jupyterhub::jupyter_rsession_proxy::version: 2.0.1
 jupyterhub::idle_culler::version: 1.2.1
 jupyterhub::oauthenticator::version: 14.2.0
+jupyterhub::announcement::version: 0.7.0
+
+jupyterhub::announcement::port: 8888
+jupyterhub::announcement::fixed_message: ''
+jupyterhub::announcement::lifetime_days: 7
+jupyterhub::announcement::persist_path: /var/run/jupyterhub/announcements.json
 
 jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip

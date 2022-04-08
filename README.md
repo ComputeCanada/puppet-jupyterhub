@@ -108,6 +108,18 @@ nodejs::manage_package_repo: false
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 | `jupyterhub::slurm_partitions` | List[String] | Name of the partitions for the ressource allocation of JupyterHub jobs  | `[]` |
 
+### Announcement options
+
+puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.com/rcthomas/jupyterhub-announcement) to broadcast messages for the users once connected to the hub.
+
+| Variable | Type | Description | Default |
+| -------- | :----| :-----------| ------- |
+| `jupyterhub::announcement::port` | Integer | Localhost port the service will listen on | 8888 |
+| `jupyterhub::announcement::fixed_message` | String | Message that will always be displayed | '' |
+| `jupyterhub::announcement::lifetime_days `| Integer | Announcement duration in days | 7 |
+| `jupyterhub::announcement::persist_path` | String | File where current and past annoucements are stored | /var/run/jupyterhub/announcements.json |
+
+
 ### Compute node options
 
 | Variable | Type | Description | Default |
