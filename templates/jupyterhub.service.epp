@@ -6,7 +6,7 @@ After=network-online.target
 User=jupyterhub
 Group=jupyterhub
 Environment=PATH=/bin:/usr/bin:/opt/jupyterhub/bin:/opt/software/slurm/bin
-Environment=PYTHONPATH=/usr/lib64/python3.6/site-packages
+Environment=PYTHONPATH=/usr/lib64/python<%= $python3_version %>/site-packages
 ExecStart=/opt/jupyterhub/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.json
 WorkingDirectory=/run/jupyterhub
 
