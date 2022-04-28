@@ -106,6 +106,21 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     timeout => 0,
     require => Exec['pip_jupyterlab'],
   }
+ 
+  # installs jupyterlab_nvdashboard
+  exec { 'pip_jupyterlab-nvdashboard':
+    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab-nvdashboard",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard/",
+    timeout => 0,
+    require => Exec['pip_jupyterlab'],
+  }
+  exec { 'pip_jupyterlab-execute-time':
+    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab_execute_time",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_execute_time/",
+    timeout => 0,
+    require => Exec['pip_jupyterlab-nvdashboard'],
+  }
+  
 
   exec { 'jupyter-labextension-server-proxy':
     command     => "${prefix}/bin/jupyter labextension disable jupyterlab-server-proxy",
