@@ -114,12 +114,6 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     timeout => 0,
     require => Exec['pip_jupyterlab'],
   }
-  exec { 'pip_jupyterlab-execute-time':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab_execute_time",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_execute_time/",
-    timeout => 0,
-    require => Exec['pip_jupyterlab-nvdashboard'],
-  }
   
 
   exec { 'jupyter-labextension-server-proxy':
