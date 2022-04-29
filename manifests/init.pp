@@ -34,10 +34,13 @@ class jupyterhub (
     provider => 'npm'
   }
 
+  $python3_version = lookup('jupyterhub::python3::version')
   file { 'jupyterhub.service':
-    ensure => 'present',
-    path   => '/lib/systemd/system/jupyterhub.service',
-    source => 'puppet:///modules/jupyterhub/jupyterhub.service'
+    ensure  => 'present',
+    path    => '/lib/systemd/system/jupyterhub.service',
+    content => epp('jupyterhub/jupyterhub.service', {
+      'python3_version' => $python3_version
+    })
   }
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
@@ -89,6 +92,7 @@ class jupyterhub (
     require => File['/etc/jupyterhub/templates/'],
     notify  => Service['jupyterhub']
   }
+
 
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
   $announcement_version = lookup('jupyterhub::announcement::version')
@@ -256,7 +260,6 @@ class jupyterhub (
     mode    => '0644'
   }
 
-  $python3_version = lookup('jupyterhub::python3::version')
   # JupyterHub virtual environment
   exec { 'pip_idle_culler':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterhub-idle-culler==${idle_culler_version}",

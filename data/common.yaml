@@ -3,7 +3,7 @@
 jupyterhub::notebook::version: 6.4.8
 jupyterhub::jupyterhub::version: 2.2.2
 jupyterhub::batchspawner::version: 1.1.0
-jupyterhub::slurmformspawner::version: 2.2.3
+jupyterhub::slurmformspawner::version: 2.3.0
 jupyterhub::jupyterlab::version: 3.2.9
 jupyterhub::jupyterlmod::version: 3.0.0
 jupyterhub::jupyter_server_proxy::version: 3.2.1
