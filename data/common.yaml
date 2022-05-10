@@ -1,7 +1,7 @@
 # jupyterhub/data/common.yaml
 ---
 jupyterhub::notebook::version: 6.4.8
-jupyterhub::jupyterhub::version: 2.2.2
+jupyterhub::jupyterhub::version: 2.3.0
 jupyterhub::batchspawner::version: 1.1.0
 jupyterhub::slurmformspawner::version: 2.3.0
 jupyterhub::jupyterlab::version: 3.2.9
