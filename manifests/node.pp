@@ -28,10 +28,10 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
+  $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_rsession_proxy_url = lookup('jupyterhub::jupyter_rsession_proxy::url')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
-  $jupyterlab_nvdashboard_url = lookup('jupyterhub::jupyterlab_nvdashboard::url')
   $python3_version = lookup('jupyterhub::python3::version')
 
   exec { 'pip_notebook':
@@ -109,8 +109,8 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_jupyterlab-nvdashboard':
-    command => "${prefix}/bin/pip install --no-cache-dir ${jupyterlab_nvdashboard_url}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard/",
+    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab_nvdashboard==${jupyterlab_nvdashboard_version}",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard-${jupyterlab_nvdashboard_version}.dist-info/",
     timeout => 0,
     require => Exec['pip_jupyterlab'],
   }
