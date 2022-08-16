@@ -35,7 +35,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/notebook-${notebook_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/notebook-${notebook_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
@@ -44,7 +44,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # The kernel is provided by the local install in /opt/ipython-kernel.
   exec { 'pip_uninstall_ipykernel':
     command => "${prefix}/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso",
-    onlyif  => "/usr/bin/test -f ${prefix}/lib/python${$python3_version}/site-packages/ipykernel_launcher.py",
+    onlyif  => "/usr/bin/test -f ${prefix}/lib/python${python3_version}/site-packages/ipykernel_launcher.py",
     require => Exec['pip_notebook']
   }
 
@@ -53,50 +53,50 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # JupyterLab. The extension could not load unless the ipykernel requirement was removed
   # from notebook metadata.
   exec { 'sed_notebook_metadata':
-    command => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python${$python3_version}/site-packages/notebook-*.dist-info/METADATA",
-    onlyif  => "/usr/bin/grep -q '^Requires-Dist: ipykernel$' ${prefix}/lib/python${$python3_version}/site-packages/notebook-*.dist-info/METADATA",
+    command => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python${python3_version}/site-packages/notebook-*.dist-info/METADATA",
+    onlyif  => "/usr/bin/grep -q '^Requires-Dist: ipykernel$' ${prefix}/lib/python${python3_version}/site-packages/notebook-*.dist-info/METADATA",
     require => Exec['pip_notebook'],
   }
 
   exec { 'pip_jupyterlab':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlab==${jupyterlab_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
   exec { 'pip_jupyterlmod':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlmod==${jupyterlmod_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlmod-${jupyterlmod_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterlmod-${jupyterlmod_version}.dist-info/",
     require => Exec['pip_notebook']
   }
 
   exec { 'pip_jupyter-server-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy==${jupyter_server_proxy_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_server_proxy-${jupyter_server_proxy_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_server_proxy-${jupyter_server_proxy_version}.dist-info/",
     require => Exec['pip_notebook']
   }
 
   # exec { 'pip_jupyter-rsession-proxy':
   #   command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy==${jupyter_rsession_proxy_version}",
-  #   creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
+  #   creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
   #   require => Exec['pip_jupyter-server-proxy']
   # }
 
   exec { 'pip_jupyter-rsession-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_rsession_proxy_url}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_rsession_proxy/",
     require => Exec['pip_jupyter-server-proxy']
   }
 
   exec { 'pip_jupyter-desktop-server':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_desktop_server_url}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_desktop/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_desktop/",
     require => Exec['pip_jupyter-server-proxy']
   }
 
   exec { 'pip_nbzip':
     command => "${prefix}/bin/pip install --no-cache-dir --no-deps nbzip",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/nbzip",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/nbzip",
     require => Exec['pip_notebook']
   }
 
@@ -109,7 +109,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_jupyterlab-nvdashboard':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyterlab_nvdashboard_url}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterlab_nvdashboard/",
     timeout => 0,
     require => Exec['pip_jupyterlab'],
   }
