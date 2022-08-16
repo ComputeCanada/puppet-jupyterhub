@@ -34,7 +34,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/notebook-${notebook_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/notebook-${notebook_version}.dist-info/",
     require => Exec['jupyterhub_venv']
   }
 
@@ -43,55 +43,55 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # JupyterLab. The extension could not load unless the ipykernel requirement was removed
   # from notebook metadata.
   exec { 'sed_notebook_metadata':
-    command => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python${$python3_version}/site-packages/notebook-*.dist-info/METADATA",
-    onlyif  => "/usr/bin/grep -q '^Requires-Dist: ipykernel$' ${prefix}/lib/python${$python3_version}/site-packages/notebook-*.dist-info/METADATA",
+    command => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python${python3_version}/site-packages/notebook-*.dist-info/METADATA",
+    onlyif  => "/usr/bin/grep -q '^Requires-Dist: ipykernel$' ${prefix}/lib/python${python3_version}/site-packages/notebook-*.dist-info/METADATA",
     require => Exec['pip_notebook'],
   }
 
   exec { 'pip_jupyterlab':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlab==${jupyterlab_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
     require => Exec['jupyterhub_venv'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyterlmod':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlmod==${jupyterlmod_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlmod-${jupyterlmod_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterlmod-${jupyterlmod_version}.dist-info/",
     require => Exec['pip_notebook'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyter-server-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy==${jupyter_server_proxy_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_server_proxy-${jupyter_server_proxy_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_server_proxy-${jupyter_server_proxy_version}.dist-info/",
     require => Exec['pip_notebook'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 
   # exec { 'pip_jupyter-rsession-proxy':
   #   command => "${prefix}/bin/pip install --no-cache-dir jupyter-rsession-proxy==${jupyter_rsession_proxy_version}",
-  #   creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
+  #   creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_rsession_proxy-${jupyter_rsession_proxy_version}.dist-info/",
   #   require => Exec['pip_jupyter-server-proxy']
   # }
 
   exec { 'pip_jupyter-rsession-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_rsession_proxy_url}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_rsession_proxy/",
     require => Exec['pip_jupyter-server-proxy'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyter-desktop-server':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_desktop_server_url}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_desktop/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyter_desktop/",
     require => Exec['pip_jupyter-server-proxy'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_nbzip':
     command => "${prefix}/bin/pip install --no-cache-dir --no-deps nbzip",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/nbzip",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/nbzip",
     require => Exec['pip_notebook'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
@@ -106,7 +106,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_jupyterlab-nvdashboard':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlab_nvdashboard==${jupyterlab_nvdashboard_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard-${jupyterlab_nvdashboard_version}.dist-info/",
+    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterlab_nvdashboard-${jupyterlab_nvdashboard_version}.dist-info/",
     timeout => 0,
     require => Exec['pip_jupyterlab'],
     before  => Exec['pip_uninstall_ipykernel'],
