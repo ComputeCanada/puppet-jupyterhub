@@ -137,6 +137,13 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     mode    => '0644'
   }
 
+  file { 'jupyter_server_config.json' :
+    ensure  => present,
+    path    => "${prefix}/etc/jupyter/jupyter_server_config.json",
+    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    mode    => '0644'
+  }
+
   file { 'nbzip_enable_nbserver_extension' :
     ensure  => present,
     path    => "${prefix}/etc/jupyter/jupyter_notebook_config.d/nbzip.json",
