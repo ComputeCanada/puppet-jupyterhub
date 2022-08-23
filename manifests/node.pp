@@ -93,7 +93,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   exec { 'pip_nbzip':
     command => "${prefix}/bin/pip install --no-cache-dir --no-deps nbzip",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/nbzip",
-    require => Exec['pip_notebook']
+    require => Exec['pip_notebook'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 
