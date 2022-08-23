@@ -23,7 +23,6 @@ class jupyterhub::node (
 }
 
 class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
-
   $notebook_version = lookup('jupyterhub::notebook::version')
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
@@ -40,15 +39,6 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['jupyterhub_venv']
   }
 
-
-  # This makes sure the /opt/jupyterhub install does not provide the default kernel.
-  # The kernel is provided by the local install in /opt/ipython-kernel.
-  exec { 'pip_uninstall_ipykernel':
-    command => "${prefix}/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso",
-    onlyif  => "/usr/bin/test -f ${prefix}/lib/python${$python3_version}/site-packages/ipykernel_launcher.py",
-    require => Exec['pip_notebook']
-  }
-
   # This make sure that the removal of ipykernel does not cause exception when using
   # pkg_resources module. This was found out when trying to load jupyter-rsession-proxy
   # JupyterLab. The extension could not load unless the ipykernel requirement was removed
@@ -62,19 +52,22 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   exec { 'pip_jupyterlab':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlab==${jupyterlab_version}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
-    require => Exec['jupyterhub_venv']
+    require => Exec['jupyterhub_venv'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyterlmod':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlmod==${jupyterlmod_version}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlmod-${jupyterlmod_version}.dist-info/",
-    require => Exec['pip_notebook']
+    require => Exec['pip_notebook'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyter-server-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-server-proxy==${jupyter_server_proxy_version}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_server_proxy-${jupyter_server_proxy_version}.dist-info/",
-    require => Exec['pip_notebook']
+    require => Exec['pip_notebook'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   # exec { 'pip_jupyter-rsession-proxy':
@@ -86,19 +79,22 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   exec { 'pip_jupyter-rsession-proxy':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_rsession_proxy_url}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_rsession_proxy/",
-    require => Exec['pip_jupyter-server-proxy']
+    require => Exec['pip_jupyter-server-proxy'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyter-desktop-server':
     command => "${prefix}/bin/pip install --no-cache-dir ${jupyter_desktop_server_url}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_desktop/",
-    require => Exec['pip_jupyter-server-proxy']
+    require => Exec['pip_jupyter-server-proxy'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_nbzip':
     command => "${prefix}/bin/pip install --no-cache-dir --no-deps nbzip",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/nbzip",
     require => Exec['pip_notebook']
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'jupyter-labextension-lmod':
@@ -106,6 +102,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     creates => "${prefix}/share/jupyter/lab/staging/node_modules/jupyterlab-lmod",
     timeout => 0,
     require => Exec['pip_jupyterlab'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyterlab-nvdashboard':
@@ -113,6 +110,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard-${jupyterlab_nvdashboard_version}.dist-info/",
     timeout => 0,
     require => Exec['pip_jupyterlab'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'jupyter-labextension-server-proxy':
@@ -120,6 +118,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     timeout     => 0,
     subscribe   => Exec['pip_jupyter-server-proxy'],
     refreshonly => true,
+    before      => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'jupyter-nbextension-server-proxy':
@@ -127,6 +126,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     timeout     => 0,
     subscribe   => Exec['pip_jupyter-server-proxy'],
     refreshonly => true,
+    before      => Exec['pip_uninstall_ipykernel'],
   }
 
   $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
@@ -134,33 +134,43 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     ensure  => present,
     path    => "${prefix}/etc/jupyter/jupyter_notebook_config.json",
     content => to_json_pretty($jupyter_notebook_config_hash, true),
-    mode    => '0644'
+    mode    => '0644',
   }
 
   file { 'jupyter_server_config.json' :
     ensure  => present,
     path    => "${prefix}/etc/jupyter/jupyter_server_config.json",
     content => to_json_pretty($jupyter_notebook_config_hash, true),
-    mode    => '0644'
+    mode    => '0644',
   }
 
   file { 'nbzip_enable_nbserver_extension' :
     ensure  => present,
     path    => "${prefix}/etc/jupyter/jupyter_notebook_config.d/nbzip.json",
     content => '{ "NotebookApp": { "nbserver_extensions": { "nbzip": true } } }',
-    mode    => '0644'
+    mode    => '0644',
   }
 
   exec { 'install_nbzip_nb':
     command => "${prefix}/bin/jupyter nbextension install --py nbzip --sys-prefix",
     creates => "${prefix}/share/jupyter/nbextensions/nbzip",
-    require => Exec['pip_nbzip']
+    require => Exec['pip_nbzip'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'enable_nbzip_nb':
     command => "${prefix}/bin/jupyter nbextension enable --py nbzip --sys-prefix",
     unless  => "/usr/bin/grep -q nbzip/tree ${prefix}/etc/jupyter/nbconfig/tree.json",
-    require => Exec['pip_nbzip']
+    require => Exec['pip_nbzip'],
+    before  => Exec['pip_uninstall_ipykernel'],
+  }
+
+  # This makes sure the /opt/jupyterhub install does not provide the default kernel.
+  # The kernel is provided by the local install in /opt/ipython-kernel.
+  exec { 'pip_uninstall_ipykernel':
+    command => "${prefix}/bin/pip uninstall -y ipykernel ipython prompt-toolkit wcwidth pickleshare backcall pexpect jedi parso",
+    onlyif  => "/usr/bin/test -f ${prefix}/lib/python${$python3_version}/site-packages/ipykernel_launcher.py",
+    require => Exec['pip_notebook'],
   }
 
   file { "${prefix}/lib/usercustomize":
