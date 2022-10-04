@@ -25,6 +25,7 @@ class jupyterhub::node (
 class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $notebook_version = lookup('jupyterhub::notebook::version')
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
+  $jupyter_server_version = lookup('jupyterhub::jupyter_server::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
   $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
@@ -49,10 +50,17 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_notebook'],
   }
 
+  exec { 'pip_jupyter_server':
+    command => "${prefix}/bin/pip install --no-cache-dir jupyter-server==${jupyter_server_version}",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter-server-${jupyter_server_version}.dist-info/",
+    require => Exec['jupyterhub_venv'],
+    before  => Exec['pip_uninstall_ipykernel'],
+  }
+
   exec { 'pip_jupyterlab':
     command => "${prefix}/bin/pip install --no-cache-dir jupyterlab==${jupyterlab_version}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab-${jupyterlab_version}.dist-info/",
-    require => Exec['jupyterhub_venv'],
+    require => Exec['pip_jupyter_server'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
 

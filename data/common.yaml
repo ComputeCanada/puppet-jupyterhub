@@ -5,6 +5,7 @@ jupyterhub::jupyterhub::version: 2.3.1
 jupyterhub::batchspawner::version: 1.1.0
 jupyterhub::slurmformspawner::version: 2.3.0
 jupyterhub::jupyterlab::version: 3.4.5
+jupyterhub::jupyter_server::version: 1.18.1
 jupyterhub::jupyterlmod::version: 3.0.0
 jupyterhub::jupyterlab_nvdashboard::version: 0.7.0
 jupyterhub::jupyter_server_proxy::version: 3.2.1
