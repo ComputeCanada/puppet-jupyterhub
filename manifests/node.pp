@@ -47,7 +47,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # were removed from notebook metadata.
   $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${$python3_version}/site-packages/*.dist-info/METADATA"
   exec { 'sed_out_ipy_metadata':
-    command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipykernel/d'",
+    command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipython/d'",
     onlyif  => "${ipy_grep} -q",
     path    => ['/usr/bin'],
     require => Exec['pip_uninstall_ipykernel'],
