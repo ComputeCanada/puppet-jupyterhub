@@ -55,7 +55,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
 
   exec { 'pip_jupyter_server':
     command => "${prefix}/bin/pip install --no-cache-dir jupyter-server==${jupyter_server_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter-server-${jupyter_server_version}.dist-info/",
+    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyter_server-${jupyter_server_version}.dist-info/",
     require => Exec['jupyterhub_venv'],
     before  => Exec['pip_uninstall_ipykernel'],
   }
