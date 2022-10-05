@@ -37,17 +37,20 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   exec { 'pip_notebook':
     command => "${prefix}/bin/pip install --no-cache-dir notebook==${notebook_version}",
     creates => "${prefix}/lib/python${$python3_version}/site-packages/notebook-${notebook_version}.dist-info/",
-    require => Exec['jupyterhub_venv']
+    require => Exec['jupyterhub_venv'],
+    before  => Exec['pip_uninstall_ipykernel'],
   }
 
   # This make sure that the removal of ipykernel does not cause exception when using
   # pkg_resources module. This was found out when trying to load jupyter-rsession-proxy
-  # JupyterLab. The extension could not load unless the ipykernel requirement was removed
-  # from notebook metadata.
-  exec { 'sed_notebook_metadata':
-    command => "/usr/bin/sed -i '/^Requires-Dist: ipykernel$/d' ${prefix}/lib/python${$python3_version}/site-packages/notebook-*.dist-info/METADATA",
-    onlyif  => "/usr/bin/grep -q '^Requires-Dist: ipykernel$' ${prefix}/lib/python${$python3_version}/site-packages/notebook-*.dist-info/METADATA",
-    require => Exec['pip_notebook'],
+  # JupyterLab. The extension could not load unless the ipython and ipykernel requirement
+  # were removed from notebook metadata.
+  $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${$python3_version}/site-packages/*.dist-info/METADATA"
+  exec { 'sed_out_ipy_metadata':
+    command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipykernel/d'",
+    onlyif  => "${ipy_grep} -q",
+    path    => ['/usr/bin'],
+    after   => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyter_server':
