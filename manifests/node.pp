@@ -50,7 +50,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipykernel/d'",
     onlyif  => "${ipy_grep} -q",
     path    => ['/usr/bin'],
-    after   => Exec['pip_uninstall_ipykernel'],
+    require => Exec['pip_uninstall_ipykernel'],
   }
 
   exec { 'pip_jupyter_server':
