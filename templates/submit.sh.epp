@@ -27,6 +27,12 @@ export PIP_PREFIX=${SLURM_TMPDIR}
 export PATH="${PIP_PREFIX}/bin":${PATH}
 export PYTHONPATH=${PYTHONPATH}:"<%= $node_prefix %>/lib/usercustomize"
 
+# Make sure the environment-level directories does not
+# have priority over user-level directories for config and data.
+# Jupyter core is trying to be smart with virtual environments
+# and it is not doing the right thing in our case.
+export JUPYTER_PREFER_ENV_PATH=0
+
 {% if modules %}
 module load {{modules|join(' ')}}
 {% endif %}
