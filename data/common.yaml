@@ -8,6 +8,7 @@ jupyterhub::jupyterlab::version: 3.4.8
 jupyterhub::jupyter_server::version: 1.19.1
 jupyterhub::jupyterlmod::version: 3.0.0
 jupyterhub::jupyterlab_nvdashboard::version: 0.7.0
+jupyterhub::bokeh::version: 2.4.3
 jupyterhub::jupyter_server_proxy::version: 3.2.2
 jupyterhub::jupyter_rsession_proxy::version: 2.1.0
 jupyterhub::idle_culler::version: 1.2.1

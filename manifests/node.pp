@@ -28,6 +28,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $jupyter_server_version = lookup('jupyterhub::jupyter_server::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
+  $bokeh_version = lookup('jupyterhub::bokeh::version')
   $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
@@ -110,8 +111,11 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_jupyterlab-nvdashboard':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyterlab_nvdashboard==${jupyterlab_nvdashboard_version}",
-    creates => "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard-${jupyterlab_nvdashboard_version}.dist-info/",
+    command => "${prefix}/bin/pip install --no-cache-dir bokeh==${bokeh_version} jupyterlab_nvdashboard==${jupyterlab_nvdashboard_version}",
+    creates => [
+      "${prefix}/lib/python${$python3_version}/site-packages/jupyterlab_nvdashboard-${jupyterlab_nvdashboard_version}.dist-info/",
+      "${prefix}/lib/python${$python3_version}/site-packages/bokeh-${bokeh_version}.dist-info/",
+    ],
     timeout => 0,
     require => Exec['pip_jupyterlab'],
     before  => Exec['pip_uninstall_ipykernel'],
