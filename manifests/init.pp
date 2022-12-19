@@ -8,6 +8,7 @@
 # @param enable_otp_auth Enable one-time password field on the login page
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param admin_groups List of user groups that can act as JupyterHub admin
+# @param admin_users List of users that are JupyterHub admin
 # @param blocked_users List of users that cannot login
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
@@ -21,6 +22,7 @@ class jupyterhub (
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
   Array[String] $admin_groups = [],
+  Array[String] $admin_users = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
   Optional[String] $prometheus_token = undef,
@@ -205,12 +207,13 @@ class jupyterhub (
       'allow_named_servers'         => $allow_named_servers,
       'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $authenticator_class,
-      'admin_access'                => Boolean(size($admin_groups) > 0),
+      'admin_access'                => Boolean(size($admin_groups) > 0 or size($admin_users) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
     },
     'Authenticator' => {
       'admin_groups'  => $admin_groups,
+      'admin_users'   => $admin_users,
       'blocked_users' => $blocked_users,
       'auto_login'    => $authenticator ? {
         'OIDC'  => true,
