@@ -8,6 +8,7 @@ class jupyterhub (
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
   Optional[Array[String]] $admin_groups = [],
+  Optional[Array[String]] $admin_users = [],
   Optional[Array[String]] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Optional[Hash] $jupyterhub_config_hash = {},
   Optional[Array[String]] $slurm_partitions = [],
@@ -182,12 +183,13 @@ class jupyterhub (
       'allow_named_servers'         => $allow_named_servers,
       'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $authenticator_class,
-      'admin_access'                => Boolean(size($admin_groups) > 0),
+      'admin_access'                => Boolean(size($admin_groups) > 0 or size($admin_users) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
     },
     'Authenticator' => {
       'admin_groups'  => $admin_groups,
+      'admin_users'   => $admin_users,
       'blocked_users' => $blocked_users,
       'auto_login'    => $authenticator ? {
         'OIDC'  => true,
