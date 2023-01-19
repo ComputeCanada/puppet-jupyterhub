@@ -108,6 +108,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 | `jupyterhub::slurm_partitions` | List[String] | Name of the partitions for the ressource allocation of JupyterHub jobs  | `[]` |
 | `jupyterhub::blocked_users` | List[String] | List of users that cannot login | `['root', 'toor', 'admin', 'centos', 'slurm']` |
+| `jupyterhub::prometheus_token` | String | Token that Prometheus can use to scrape JupyterHub's metrics | `undef` |
 
 ### Announcement options
 

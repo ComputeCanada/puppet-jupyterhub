@@ -11,6 +11,7 @@
 # @param blocked_users List of users that cannot login
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
 # @param slurm_partitions Name of the partitions for the ressource allocation of JupyterHub jobs
+# @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
@@ -24,6 +25,7 @@ class jupyterhub (
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
   Array[String] $slurm_partitions = [],
+  Optional[String] $prometheus_token = undef,
 ) {
   class { 'jupyterhub::base':
     prefix => $prefix,
@@ -175,8 +177,23 @@ class jupyterhub (
     $idle_culler_roles = []
   }
 
-  $services = [$announcement_service] + $idle_culler_services
-  $roles = $announcement_roles + $idle_culler_roles
+  if $prometheus_token != undef {
+    $prometheus_services = [{
+        'name'      => 'prometheus',
+        'api_token' => $prometheus_token,
+    }]
+    $prometheus_roles = [{
+        'name'     => 'metrics',
+        'scopes'   => ['read:metrics'],
+        'services' => ['prometheus'],
+    }]
+  } else {
+    $prometheus_services = []
+    $prometheus_roles = []
+  }
+
+  $services = [$announcement_service] + $idle_culler_services + $prometheus_services
+  $roles = $announcement_roles + $idle_culler_roles + $prometheus_roles
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
