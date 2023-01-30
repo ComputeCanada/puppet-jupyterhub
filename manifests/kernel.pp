@@ -27,7 +27,7 @@ class jupyterhub::kernel::venv(
   exec { 'install_kernel':
     command => "${prefix}/bin/python -m ipykernel install --name python3 --prefix ${::jupyterhub::node::prefix}",
     creates => "${::jupyterhub::node::prefix}/share/jupyter/kernels/python3/kernel.json",
-    require => [Exec['pip_ipykernel'], Exec['pip_uninstall_ipykernel']]
+    require => [Exec['pip_ipykernel']]
   }
 
   if (!$packages.empty) {
