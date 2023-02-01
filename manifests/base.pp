@@ -13,9 +13,11 @@ class jupyterhub::base::install::packages {
     repo_url_suffix => '12.x',
   }
   $python3_pkg = lookup('jupyterhub::python3::package_name')
-  ensure_packages([$python3_pkg], {
-    ensure => 'installed'
-  })
+  ensure_packages([$python3_pkg],
+    {
+      ensure => 'installed',
+    }
+  )
 }
 
 class jupyterhub::base::install::venv(
@@ -23,7 +25,7 @@ class jupyterhub::base::install::venv(
   Stdlib::Absolutepath $python = '/usr/bin/python3',
 ) {
   file { [$prefix, "${prefix}/bin"]:
-    ensure => directory
+    ensure => directory,
   }
 
   exec { 'jupyterhub_venv':

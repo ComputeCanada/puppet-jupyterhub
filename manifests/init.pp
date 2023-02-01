@@ -52,7 +52,8 @@ class jupyterhub (
   file { 'jupyterhub.service':
     path    => '/lib/systemd/system/jupyterhub.service',
     content => epp('jupyterhub/jupyterhub.service', {
-        'python3_version' => $python3_version
+        'python3_version' => $python3_version,
+        'prefix'          => $prefix,
     }),
   }
 
@@ -283,7 +284,7 @@ class jupyterhub (
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
 
-  file { '/opt/jupyterhub/requirements.txt':
+  file { "${prefix}/requirements.txt":
     content => epp('jupyterhub/hub-requirements.txt', {
         'jupyterhub_version'       => $jupyterhub_version,
         'batchspawner_version'     => $batchspawner_version,
@@ -295,10 +296,10 @@ class jupyterhub (
   }
 
   exec { 'pip_install_venv':
-    command     => 'pip install -r /opt/jupyterhub/requirements.txt',
-    path        => ['/opt/jupyterhub/bin', '/usr/bin', '/bin'],
+    command     => "pip install -r ${prefix}/requirements.txt",
+    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     require     => Exec['jupyterhub_venv'],
-    subscribe   => File['/opt/jupyterhub/requirements.txt'],
+    subscribe   => File["${prefix}/requirements.txt"],
     refreshonly => true,
   }
 

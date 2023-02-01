@@ -3,7 +3,7 @@ class jupyterhub::node (
   Optional[String] $http_proxy = undef,
   Optional[String] $https_proxy = undef,
 ) {
-  if ($http_proxy != undef and $https_proxy != undef){
+  if ($http_proxy != undef and $https_proxy != undef) {
     # Lets use a proxy for all the pip install
     Exec {
       environment => ["http_proxy=${http_proxy}", "https_proxy=${https_proxy}"],
@@ -11,10 +11,10 @@ class jupyterhub::node (
   }
 
   class { 'jupyterhub::base':
-    prefix => $prefix
+    prefix => $prefix,
   }
   class { 'jupyterhub::node::install':
-    prefix => $prefix
+    prefix => $prefix,
   }
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   if $kernel_setup == 'venv' {
@@ -35,7 +35,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
   $python3_version = lookup('jupyterhub::python3::version')
 
-  file { '/opt/jupyterhub/requirements.txt':
+  file { "${prefix}/requirements.txt":
     content => epp('jupyterhub/node-requirements.txt', {
         'jupyterhub_version'             => $jupyterhub_version,
         'batchspawner_version'           => $batchspawner_version,
@@ -52,10 +52,10 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_install_venv':
-    command     => 'pip install --no-deps -r /opt/jupyterhub/requirements.txt',
-    path        => ['/opt/jupyterhub/bin', '/usr/bin', '/bin'],
+    command     => "pip install --no-deps -r ${prefix}/requirements.txt",
+    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     require     => Exec['jupyterhub_venv'],
-    subscribe   => File['/opt/jupyterhub/requirements.txt'],
+    subscribe   => File["${prefix}/requirements.txt"],
     refreshonly => true,
   }
 
@@ -72,21 +72,24 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'jupyter-labextension-lmod':
-    command => "${prefix}/bin/jupyter labextension install --minimize=False jupyterlab-lmod",
+    command => 'jupyter labextension install --minimize=False jupyterlab-lmod',
+    path    => ["${prefix}/bin", '/usr/bin', '/bin'],
     creates => "${prefix}/share/jupyter/lab/staging/node_modules/jupyterlab-lmod",
     timeout => 0,
     require => Exec['pip_install_venv'],
   }
 
   exec { 'jupyter-labextension-server-proxy':
-    command     => "${prefix}/bin/jupyter labextension disable jupyterlab-server-proxy",
+    command     => 'jupyter labextension disable jupyterlab-server-proxy',
+    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     timeout     => 0,
     subscribe   => Exec['pip_install_venv'],
     refreshonly => true,
   }
 
   exec { 'jupyter-nbextension-server-proxy':
-    command     => "${prefix}/bin/jupyter nbextension disable --py jupyter_server_proxy --sys-prefix",
+    command     => 'jupyter nbextension disable --py jupyter_server_proxy --sys-prefix',
+    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     timeout     => 0,
     subscribe   => Exec['pip_install_venv'],
     refreshonly => true,
