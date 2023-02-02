@@ -52,7 +52,8 @@ class jupyterhub (
   file { 'jupyterhub.service':
     path    => '/lib/systemd/system/jupyterhub.service',
     content => epp('jupyterhub/jupyterhub.service', {
-        'python3_version' => $python3_version
+        'python3_version' => $python3_version,
+        'prefix'          => $prefix,
     }),
   }
 
@@ -280,36 +281,40 @@ class jupyterhub (
   }
 
   # JupyterHub virtual environment
-  exec { 'pip_idle_culler':
-    command => "${prefix}/bin/pip install --no-cache-dir jupyterhub-idle-culler==${idle_culler_version}",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub_idle_culler-${idle_culler_version}.dist-info/",
-    require => Exec['pip_jupyterhub'],
+  $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
+  $batchspawner_version = lookup('jupyterhub::batchspawner::version')
+
+  file { "${prefix}/requirements.txt":
+    content => epp('jupyterhub/hub-requirements.txt', {
+        'jupyterhub_version'       => $jupyterhub_version,
+        'batchspawner_version'     => $batchspawner_version,
+        'slurmformspawner_version' => $slurmformspawner_version,
+        'idle_culler_version'      => $idle_culler_version,
+        'announcement_version'     => $announcement_version,
+    }),
+    mode    => '0644',
   }
 
-  exec { 'pip_announcement':
-    command => "${prefix}/bin/pip install --no-cache-dir https://github.com/rcthomas/jupyterhub-announcement/archive/refs/tags/${announcement_version}.zip html_sanitizer",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/jupyterhub_announcement-${announcement_version}-py${python3_version}.egg-info/",
-    require => Exec['pip_jupyterhub'],
-  }
-
-  exec { 'pip_slurmformspawner':
-    command => "${prefix}/bin/pip install --no-cache-dir slurmformspawner==${slurmformspawner_version}",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/slurmformspawner-${slurmformspawner_version}.dist-info/",
-    require => Exec['pip_batchspawner'],
+  exec { 'pip_install_venv':
+    command     => "pip install -r ${prefix}/requirements.txt",
+    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
+    require     => Exec['jupyterhub_venv'],
+    subscribe   => File["${prefix}/requirements.txt"],
+    refreshonly => true,
   }
 
   if $authenticator == 'PAM' {
     exec { 'pip_pamela':
       command => "${prefix}/bin/pip install --no-cache-dir https://github.com/minrk/pamela/archive/master.zip",
       creates => "${prefix}/lib/python${python3_version}/site-packages/pamela-1.0.1.dev0-py${python3_version}.egg-info/",
-      require => Exec['pip_jupyterhub'],
+      require => Exec['pip_install_venv'],
     }
     if $enable_otp_auth {
       $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
       exec { 'pip_pammfauthenticator':
         command => "${prefix}/bin/pip install --no-cache-dir ${pammfauthenticator_url}",
         creates => "${prefix}/lib/python${python3_version}/site-packages/pammfauthenticator/",
-        require => [Exec['pip_jupyterhub'], Exec['pip_pamela']],
+        require => [Exec['pip_install_venv'], Exec['pip_pamela']],
         notify  => Service['jupyterhub'],
       }
     }
@@ -318,7 +323,7 @@ class jupyterhub (
     exec { 'pip_oauthenticator':
       command => "${prefix}/bin/pip install --no-cache-dir oauthenticator==${oauthenticator_version}",
       creates => "${prefix}/lib/python${python3_version}/site-packages/oauthenticator-${oauthenticator_version}.dist-info/",
-      require => Exec['pip_jupyterhub'],
+      require => Exec['pip_install_venv'],
     }
   }
 
@@ -360,10 +365,7 @@ class jupyterhub (
     require   => $jupyterhub_require,
     subscribe => [
       Service['sssd'],
-      Exec['pip_jupyterhub'],
-      Exec['pip_idle_culler'],
-      Exec['pip_batchspawner'],
-      Exec['pip_slurmformspawner'],
+      Exec['pip_install_venv'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],
