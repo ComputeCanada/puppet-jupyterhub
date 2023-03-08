@@ -174,6 +174,7 @@ jupyterhub::jupyterhub_config_hash:
       lock: true
     ui:
       def: 'lab'
+      choices: ['lab', 'notebook', 'terminal', 'rstudio', 'code-server', 'desktop']
   SlurmFormSpawner:
     ui_args:
       notebook:
