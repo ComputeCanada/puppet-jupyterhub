@@ -10,7 +10,10 @@ class jupyterhub::base(Stdlib::Absolutepath $prefix) {
 
 class jupyterhub::base::install::packages {
   class { 'nodejs':
-    repo_url_suffix => '18.x',
+    repo_url_suffix  => '18.x',
+    # for 18.x, package npm is an alias for package nodejs
+    # it should therefore not be absent nor removed
+    npm_package_name => false,
   }
   $python3_pkg = lookup('jupyterhub::python3::package_name')
   ensure_packages([$python3_pkg],
