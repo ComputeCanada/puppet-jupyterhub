@@ -73,14 +73,6 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['pip_install_venv'],
   }
 
-  exec { 'jupyter-labextension-lmod':
-    command => 'jupyter labextension install --minimize=False jupyterlab-lmod',
-    path    => ["${prefix}/bin", '/usr/bin', '/bin'],
-    creates => "${prefix}/share/jupyter/lab/staging/node_modules/jupyterlab-lmod",
-    timeout => 0,
-    require => Exec['pip_install_venv'],
-  }
-
   exec { 'jupyter-labextension-server-proxy':
     command     => 'jupyter labextension disable jupyterlab-server-proxy',
     path        => ["${prefix}/bin", '/usr/bin', '/bin'],
