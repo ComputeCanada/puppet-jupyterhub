@@ -5,7 +5,7 @@ jupyter-rsession-proxy==<%= $jupyter_rsession_proxy_version %>
 jupyter-server-proxy==<%= $jupyter_server_proxy_version %>
 jupyterhub==<%= $jupyterhub_version %>
 jupyterlab==<%= $jupyterlab_version %>
-jupyterlab-nvdashboard @ <%= $jupyterlab_nvdashboard_url %>
+jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %>
 jupyterlmod==<%= $jupyterlmod_version %>
 notebook==<%= $notebook_version %>
 

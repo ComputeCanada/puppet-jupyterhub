@@ -6,8 +6,7 @@ jupyterhub::batchspawner::version: 1.2.0
 jupyterhub::slurmformspawner::version: 2.3.0
 jupyterhub::jupyterlab::version: 3.4.8
 jupyterhub::jupyterlmod::version: 4.0.1
-jupyterhub::jupyterlab_nvdashboard::version: 0.7.0
-jupyterhub::jupyterlab_nvdashboard::url: https://github.com/cmd-ntrf/jupyterlab-nvdashboard/archive/refs/heads/serverapp_setup.zip
+jupyterhub::jupyterlab_nvdashboard::version: 0.8.0
 jupyterhub::bokeh::version: 2.4.3
 jupyterhub::jupyter_server_proxy::version: 3.2.2
 jupyterhub::jupyter_rsession_proxy::version: 2.1.0
