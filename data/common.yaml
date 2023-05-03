@@ -68,3 +68,23 @@ jupyterhub::jupyter_notebook_config_hash:
         launcher_entry:
           title: OpenRefine
           enabled: true
+
+jupyterhub::submit::additions: |
+  unset XDG_RUNTIME_DIR
+
+  # Disable variable export with sbatch
+  export SBATCH_EXPORT=NONE
+  # Avoid steps inheriting environment export
+  # settings from the sbatch command
+  unset SLURM_EXPORT_ENV
+
+  # Setup user pip install folder
+  export PIP_PREFIX=${SLURM_TMPDIR}
+  export PATH="${PIP_PREFIX}/bin":${PATH}
+  export PYTHONPATH=${PYTHONPATH}:"/opt/jupyterhub/lib/usercustomize"
+
+  # Make sure the environment-level directories does not
+  # have priority over user-level directories for config and data.
+  # Jupyter core is trying to be smart with virtual environments
+  # and it is not doing the right thing in our case.
+  export JUPYTER_PREFER_ENV_PATH=0
