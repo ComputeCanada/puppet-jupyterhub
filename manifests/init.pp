@@ -268,6 +268,7 @@ class jupyterhub (
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   $module_list = lookup('jupyterhub::kernel::module::list', Array[String], undef, [])
   $venv_prefix = lookup('jupyterhub::kernel::venv::prefix', String, undef, '/opt/ipython-kernel')
+  $submit_export = lookup('jupyterhub::submit::export', Hash[String, Any], undef, {})
   file { 'submit.sh':
     path    => '/etc/jupyterhub/submit.sh',
     content => epp('jupyterhub/submit.sh', {
@@ -276,6 +277,7 @@ class jupyterhub (
         'node_prefix'      => $node_prefix,
         'venv_prefix'      => $venv_prefix,
         'slurm_partitions' => join($slurm_partitions, ','),
+        'export_vals'      => $submit_export,
     }),
     mode    => '0644',
   }

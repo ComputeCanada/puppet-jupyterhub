@@ -14,6 +14,7 @@
 #SBATCH --partition=<%= $slurm_partitions %>
 <% } %>
 
+<% if $export_vals == {} { %>
 unset XDG_RUNTIME_DIR
 
 # Disable variable export with sbatch
@@ -32,6 +33,11 @@ export PYTHONPATH=${PYTHONPATH}:"<%= $node_prefix %>/lib/usercustomize"
 # Jupyter core is trying to be smart with virtual environments
 # and it is not doing the right thing in our case.
 export JUPYTER_PREFER_ENV_PATH=0
+<% } %>
+
+<% $export_vals.each |$key, $value| { %>
+export <%= $key -%>=<%=$value -%>
+<% } %>
 
 {% if modules %}
 module load {{modules|join(' ')}}
