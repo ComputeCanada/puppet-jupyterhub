@@ -25,9 +25,7 @@ class jupyterhub (
   Hash $jupyterhub_config_hash = {},
   Optional[String] $prometheus_token = undef,
 ) {
-  class { 'jupyterhub::base':
-    prefix => $prefix,
-  }
+  ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -57,11 +55,13 @@ class jupyterhub (
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
     mode    => '0440',
-    content => epp('jupyterhub/99-jupyterhub-user', {
+    content => epp('jupyterhub/99-jupyterhub-user',
+      {
         'blocked_users' => $blocked_users,
         'hostname'      => $facts['hostname'],
         'slurm_home'    => $slurm_home,
-    }),
+      }
+    ),
   }
 
   file { 'jupyterhub-auth':
@@ -283,7 +283,7 @@ class jupyterhub (
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
 
-  file { "${prefix}/requirements.txt":
+  file { "${prefix}/hub-requirements.txt":
     content => epp('jupyterhub/hub-requirements.txt', {
         'jupyterhub_version'       => $jupyterhub_version,
         'batchspawner_version'     => $batchspawner_version,
@@ -295,10 +295,10 @@ class jupyterhub (
   }
 
   exec { 'pip_install_venv':
-    command     => "pip install -r ${prefix}/requirements.txt",
+    command     => "pip install -r ${prefix}/hub-requirements.txt",
     path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     require     => Exec['jupyterhub_venv'],
-    subscribe   => File["${prefix}/requirements.txt"],
+    subscribe   => File["${prefix}/hub-requirements.txt"],
     refreshonly => true,
   }
 

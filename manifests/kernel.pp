@@ -37,21 +37,21 @@ class jupyterhub::kernel::venv(
 
     $pkg_string = join($packages, "\n")
 
-    file { "${prefix}/requirements.txt":
+    file { "${prefix}/kernel-requirements.txt":
       ensure  => present,
       content => $pkg_string,
     }
 
     exec { 'install_kernel_requirements_nodeps':
-      command     => "${prefix}/bin/pip install --no-deps --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/requirements.txt",
-      subscribe   => File["${prefix}/requirements.txt"],
+      command     => "${prefix}/bin/pip install --no-deps --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
+      subscribe   => File["${prefix}/hub-requirements.txt"],
       refreshonly => true,
       environment => $pip_env_list,
       timeout     => 0,
     }
 
     exec { 'install_kernel_requirements_deps':
-      command     => "${prefix}/bin/pip install --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/requirements.txt",
+      command     => "${prefix}/bin/pip install --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
       subscribe   => Exec['install_kernel_requirements_nodeps'],
       refreshonly => true,
       environment => $pip_env_list,
