@@ -61,7 +61,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # pkg_resources module. This was found out when trying to load jupyter-rsession-proxy
   # JupyterLab. The extension could not load unless the ipython and ipykernel requirement
   # were removed from notebook metadata.
-  $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${$python3_version}/site-packages/*.dist-info/METADATA"
+  $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${python3_version}/site-packages/*.dist-info/METADATA"
   exec { 'sed_out_ipy_metadata':
     command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipython/d'",
     onlyif  => "${ipy_grep} -q",
