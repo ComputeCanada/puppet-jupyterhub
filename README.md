@@ -244,3 +244,30 @@ jupyterhub::jupyter_notebook_config_hash:
 | `jupyterhub::oauthenticator::scope` | Array[String] | OIDC scope | |
 | `jupyterhub::oauthenticator::allowed_groups` | Array[String] | List of groups who should be allowed to connect. Empty list = any group | [] |
 | `jupyterhub::oauthenticator::claim_groups_key` | String | Userdata groups claim key from returned  OIDC json | 'affiliation' |
+
+### Submit addition option
+| Variable | Type | Description |
+| -------- | :----| :-----------|
+| `jupyterhub::submit::additions` | String | bash command(s) that should be added to submit.sh |
+
+Adds the following by default:
+```sh
+unset XDG_RUNTIME_DIR
+
+# Disable variable export with sbatch
+export SBATCH_EXPORT=NONE
+# Avoid steps inheriting environment export
+# settings from the sbatch command
+unset SLURM_EXPORT_ENV
+
+# Setup user pip install folder
+export PIP_PREFIX=${SLURM_TMPDIR}
+export PATH="${PIP_PREFIX}/bin":${PATH}
+export PYTHONPATH=${PYTHONPATH}:"/opt/jupyterhub/lib/usercustomize"
+
+# Make sure the environment-level directories does not
+# have priority over user-level directories for config and data.
+# Jupyter core is trying to be smart with virtual environments
+# and it is not doing the right thing in our case.
+export JUPYTER_PREFER_ENV_PATH=0
+```
