@@ -1,11 +1,8 @@
 class jupyterhub::base(Stdlib::Absolutepath $prefix) {
-  class { 'jupyterhub::base::install::venv':
+  class { 'jupyterhub::base::install::packages': }
+  -> class { 'jupyterhub::base::install::venv':
     prefix => $prefix
   }
-
-  contain jupyterhub::base::install::packages
-  contain jupyterhub::base::install::venv
-  Class['jupyterhub::base::install::packages'] -> Class['jupyterhub::base::install::venv']
 }
 
 class jupyterhub::base::install::packages {
