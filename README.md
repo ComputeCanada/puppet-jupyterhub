@@ -175,6 +175,9 @@ jupyterhub::jupyterhub_config_hash:
     ui:
       def: 'lab'
       choices: ['lab', 'notebook', 'terminal', 'rstudio', 'code-server', 'desktop']
+    partition:
+      def: 'partition1'
+      choices: ['partition1', 'partition2', 'partition3']
   SlurmFormSpawner:
     ui_args:
       notebook:
