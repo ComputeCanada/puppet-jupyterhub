@@ -40,7 +40,7 @@ class jupyterhub::kernel::venv (
   }
 
   file { "${prefix}/etc/ipython/ipython_config.py":
-    content => 'puppet:///modules/jupyterhub/ipython_config.py',
+    source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
   exec { 'install_kernel':
