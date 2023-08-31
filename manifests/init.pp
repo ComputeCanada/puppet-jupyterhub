@@ -47,10 +47,13 @@ class jupyterhub (
   $python3_version = lookup('jupyterhub::python3::version')
   file { 'jupyterhub.service':
     path    => '/lib/systemd/system/jupyterhub.service',
-    content => epp('jupyterhub/jupyterhub.service', {
+    content => epp('jupyterhub/jupyterhub.service',
+      {
         'python3_version' => $python3_version,
         'prefix'          => $prefix,
-    }),
+        'slurm_home'      => $slurm_home,
+      }
+    ),
   }
 
   file { '/etc/sudoers.d/99-jupyterhub-user':
