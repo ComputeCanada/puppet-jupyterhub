@@ -106,7 +106,6 @@ nodejs::manage_package_repo: false
 | `jupyterhub::authenticator` | Enum['PAM', 'OIDC'] | Type of authenticator JupyterHub will use | `PAM` |
 | `jupyterhub::enable_otp_auth` | Boolean | Enable one-time password field on the login page | `true` |
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
-| `jupyterhub::slurm_partitions` | List[String] | Name of the partitions for the ressource allocation of JupyterHub jobs  | `[]` |
 | `jupyterhub::blocked_users` | List[String] | List of users that cannot login | `['root', 'toor', 'admin', 'centos', 'slurm']` |
 | `jupyterhub::prometheus_token` | String | Token that Prometheus can use to scrape JupyterHub's metrics | `undef` |
 
@@ -175,6 +174,9 @@ jupyterhub::jupyterhub_config_hash:
     ui:
       def: 'lab'
       choices: ['lab', 'notebook', 'terminal', 'rstudio', 'code-server', 'desktop']
+    partition:
+      def: 'partition1'
+      choices: ['partition1', 'partition2', 'partition3']
   SlurmFormSpawner:
     ui_args:
       notebook:

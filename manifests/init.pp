@@ -10,7 +10,6 @@
 # @param admin_groups List of user groups that can act as JupyterHub admin
 # @param blocked_users List of users that cannot login
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
-# @param slurm_partitions Name of the partitions for the ressource allocation of JupyterHub jobs
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
@@ -24,7 +23,6 @@ class jupyterhub (
   Array[String] $admin_groups = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
-  Array[String] $slurm_partitions = [],
   Optional[String] $prometheus_token = undef,
 ) {
   class { 'jupyterhub::base':
@@ -272,12 +270,11 @@ class jupyterhub (
   file { 'submit.sh':
     path    => '/etc/jupyterhub/submit.sh',
     content => epp('jupyterhub/submit.sh', {
-        'kernel_setup'     => $kernel_setup,
-        'module_list'      => join($module_list, ' '),
-        'node_prefix'      => $node_prefix,
-        'venv_prefix'      => $venv_prefix,
-        'slurm_partitions' => join($slurm_partitions, ','),
-        'additions'        => $submit_additions,
+        'kernel_setup' => $kernel_setup,
+        'module_list'  => join($module_list, ' '),
+        'node_prefix'  => $node_prefix,
+        'venv_prefix'  => $venv_prefix,
+        'additions'    => $submit_additions,
     }),
     mode    => '0644',
   }
