@@ -1,5 +1,5 @@
 class jupyterhub::node (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
+  Stdlib::Absolutepath $prefix = $jupyterhub::prefix,
   Optional[String] $http_proxy = undef,
   Optional[String] $https_proxy = undef,
 ) {
@@ -10,9 +10,7 @@ class jupyterhub::node (
     }
   }
 
-  class { 'jupyterhub::base':
-    prefix => $prefix,
-  }
+  include jupyterhub::base
   class { 'jupyterhub::node::install':
     prefix => $prefix,
   }
@@ -35,7 +33,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
   $python3_version = lookup('jupyterhub::python3::version')
 
-  file { "${prefix}/requirements.txt":
+  file { "${prefix}/node-requirements.txt":
     content => epp('jupyterhub/node-requirements.txt', {
         'jupyterhub_version'             => $jupyterhub_version,
         'batchspawner_version'           => $batchspawner_version,
@@ -52,10 +50,10 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_install_venv':
-    command     => "pip install --no-deps -r ${prefix}/requirements.txt",
+    command     => "pip install --no-deps -r ${prefix}/node-requirements.txt",
     path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     require     => Exec['jupyterhub_venv'],
-    subscribe   => File["${prefix}/requirements.txt"],
+    subscribe   => File["${prefix}/node-requirements.txt"],
     refreshonly => true,
   }
 
@@ -63,7 +61,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   # pkg_resources module. This was found out when trying to load jupyter-rsession-proxy
   # JupyterLab. The extension could not load unless the ipython and ipykernel requirement
   # were removed from notebook metadata.
-  $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${$python3_version}/site-packages/*.dist-info/METADATA"
+  $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${python3_version}/site-packages/*.dist-info/METADATA"
   exec { 'sed_out_ipy_metadata':
     command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipython/d'",
     onlyif  => "${ipy_grep} -q",

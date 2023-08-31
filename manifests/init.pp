@@ -21,13 +21,12 @@ class jupyterhub (
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
   Array[String] $admin_groups = [],
+  Array[String] $admin_users = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
   Optional[String] $prometheus_token = undef,
 ) {
-  class { 'jupyterhub::base':
-    prefix => $prefix,
-  }
+  include jupyterhub::base
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -52,6 +51,7 @@ class jupyterhub (
     content => epp('jupyterhub/jupyterhub.service', {
         'python3_version' => $python3_version,
         'prefix'          => $prefix,
+        'slurm_home'      => $slurm_home,
     }),
   }
 
@@ -61,6 +61,7 @@ class jupyterhub (
         'blocked_users' => $blocked_users,
         'hostname'      => $facts['hostname'],
         'slurm_home'    => $slurm_home,
+        'prefix'        => $prefix,
     }),
   }
 
@@ -202,12 +203,13 @@ class jupyterhub (
       'allow_named_servers'         => $allow_named_servers,
       'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $authenticator_class,
-      'admin_access'                => Boolean(size($admin_groups) > 0),
+      'admin_access'                => Boolean(size($admin_groups) > 0 or size($admin_users) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
     },
     'Authenticator' => {
       'admin_groups'  => $admin_groups,
+      'admin_users'   => $admin_users,
       'blocked_users' => $blocked_users,
       'auto_login'    => $authenticator ? {
         'OIDC'  => true,
