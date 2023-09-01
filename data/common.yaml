@@ -61,6 +61,8 @@ jupyterhub::jupyterhub_config_hash:
 jupyterhub::jupyter_notebook_config_hash:
   NotebookNotary:
     db_file: ':memory:'
+  FileManagerMixin:
+    use_atomic_writing: false
   Lmod:
     launcher_pins: ['desktop']
   ServerProxy:
