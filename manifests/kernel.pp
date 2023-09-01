@@ -29,6 +29,20 @@ class jupyterhub::kernel::venv (
     path    => ["${prefix}/bin"],
   }
 
+  file { "${prefix}/etc":
+    ensure  => directory,
+    require => Exec['kernel_venv'],
+  }
+
+  file { "${prefix}/etc/ipython":
+    ensure  => directory,
+    require => File["${prefix}/etc"],
+  }
+
+  file { "${prefix}/etc/ipython/ipython_config.py":
+    source => 'puppet:///modules/jupyterhub/ipython_config.py',
+  }
+
   exec { 'install_kernel':
     command => "python -m ipykernel install --name python3 --prefix ${::jupyterhub::node::prefix}",
     creates => "${::jupyterhub::node::prefix}/share/jupyter/kernels/python3/kernel.json",
