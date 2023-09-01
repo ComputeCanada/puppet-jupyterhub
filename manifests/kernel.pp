@@ -1,33 +1,39 @@
-class jupyterhub::kernel::venv(
-  Stdlib::Absolutepath $python = '/usr/bin/python3',
+# 
+class jupyterhub::kernel::venv (
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
   Array[String] $packages = [],
   Hash $pip_environment = {}
 ) {
+  $python3_bin  = lookup('jupyterhub::python3::bin')
+  $python3_path = lookup('jupyterhub::python3::path')
 
   $pip_version = lookup('jupyterhub::pip::version')
 
   exec { 'kernel_venv':
-    command => "${python} -m venv --system-site-packages ${prefix}",
+    command => "${python3_bin} -m venv --system-site-packages ${prefix}",
     creates => "${prefix}/bin/python",
+    path    => [$python3_path],
   }
 
   exec { 'upgrade_pip_setuptools':
-    command     => "${prefix}/bin/pip install --no-cache-dir --upgrade pip==${pip_version} setuptools",
+    command     => "pip install --prefix ${prefix} --no-cache-dir --upgrade pip==${pip_version} setuptools",
     subscribe   => Exec['kernel_venv'],
     refreshonly => true,
+    path        => ["${prefix}/bin"],
   }
 
   exec { 'pip_ipykernel':
-    command => "${prefix}/bin/pip install --no-cache-dir ipykernel",
+    command => 'pip install --no-cache-dir ipykernel',
     creates => "${prefix}/bin/ipython",
-    require => Exec['kernel_venv']
+    require => Exec['kernel_venv'],
+    path    => ["${prefix}/bin"],
   }
 
   exec { 'install_kernel':
-    command => "${prefix}/bin/python -m ipykernel install --name python3 --prefix ${::jupyterhub::node::prefix}",
+    command => "python -m ipykernel install --name python3 --prefix ${::jupyterhub::node::prefix}",
     creates => "${::jupyterhub::node::prefix}/share/jupyter/kernels/python3/kernel.json",
-    require => [Exec['pip_ipykernel']]
+    require => [Exec['pip_ipykernel']],
+    path    => ["${prefix}/bin"],
   }
 
   if (!$packages.empty) {
@@ -38,24 +44,25 @@ class jupyterhub::kernel::venv(
     $pkg_string = join($packages, "\n")
 
     file { "${prefix}/kernel-requirements.txt":
-      ensure  => present,
       content => $pkg_string,
     }
 
     exec { 'install_kernel_requirements_nodeps':
-      command     => "${prefix}/bin/pip install --no-deps --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
+      command     => "pip install --no-deps --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
       subscribe   => File["${prefix}/hub-requirements.txt"],
       refreshonly => true,
       environment => $pip_env_list,
       timeout     => 0,
+      path        => ["${prefix}/bin"],
     }
 
     exec { 'install_kernel_requirements_deps':
-      command     => "${prefix}/bin/pip install --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
+      command     => "pip install --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
       subscribe   => Exec['install_kernel_requirements_nodeps'],
       refreshonly => true,
       environment => $pip_env_list,
       timeout     => 0,
+      path        => ["${prefix}/bin"],
     }
   }
 }
