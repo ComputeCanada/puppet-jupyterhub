@@ -103,7 +103,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'jupyter-labextension-lmod':
-    command => "${prefix}/bin/jupyter labextension install --minimize=False jupyterlab-lmod",
+    command => "${prefix}/bin/jupyter labextension install --minimize=False jupyterlab-lmod@1.0.3",
     creates => "${prefix}/share/jupyter/lab/staging/node_modules/jupyterlab-lmod",
     timeout => 0,
     require => Exec['pip_jupyterlab'],
