@@ -10,7 +10,7 @@ jupyterhub::notebook::version: 6.4.12
 jupyterhub::jupyterhub::version: 2.3.1
 jupyterhub::pamela::version: 1.1.0
 jupyterhub::batchspawner::version: 1.2.0
-jupyterhub::slurmformspawner::version: 2.4.2
+jupyterhub::slurmformspawner::version: 2.5.0
 jupyterhub::jupyterlab::version: 3.4.8
 jupyterhub::jupyterlmod::version: 4.0.1
 jupyterhub::jupyterlab_nvdashboard::version: 0.8.0
