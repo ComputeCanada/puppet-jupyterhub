@@ -254,7 +254,8 @@ jupyterhub::jupyter_notebook_config_hash:
 
 Adds the following by default:
 ```sh
-unset XDG_RUNTIME_DIR
+# Make sure Jupyter does not store its runtime in the home directory
+export JUPYTER_RUNTIME_DIR=${SLURM_TMPDIR}/jupyter
 
 # Disable variable export with sbatch
 export SBATCH_EXPORT=NONE
