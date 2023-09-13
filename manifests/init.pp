@@ -7,6 +7,7 @@
 # @param authenticator Type of authenticator JupyterHub will use
 # @param enable_otp_auth Enable one-time password field on the login page
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
+# @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
 # @param blocked_users List of users that cannot login
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
@@ -20,6 +21,7 @@ class jupyterhub (
   Enum['PAM', 'OIDC'] $authenticator = 'PAM',
   Boolean $enable_otp_auth = true,
   Integer $idle_timeout = 0,
+  String $traefik_version = '2.10.4',
   Array[String] $admin_groups = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
@@ -37,6 +39,19 @@ class jupyterhub (
   }
   group { 'jupyterhub':
     ensure => 'present',
+  }
+
+  $traefik_arch = $::facts['architecture'] ? {
+    'x86_64' => 'amd64',
+    'aarch64' => 'arm64',
+  }
+  archive { 'traefik':
+    path            => "/opt/puppetlabs/puppet/cache/puppet-archive/traefik_v${traefik_version}_linux_${traefik_arch}.tar.gz",
+    source          => "https://github.com/traefik/traefik/releases/download/v${traefik_version}/traefik_v${traefik_version}_linux_${traefik_arch}.tar.gz",
+    extract         => true,
+    extract_path    => '/usr/bin',
+    creates         => '/usr/bin/traefik',
+    extract_command => 'tar -xf %s traefik',
   }
 
   $python3_version = lookup('jupyterhub::python3::version')
@@ -280,14 +295,16 @@ class jupyterhub (
   # JupyterHub virtual environment
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
+  $jupyterhub_traefik_proxy_version = lookup('jupyterhub::jupyterhub_traefik_proxy::version')
 
   file { "${prefix}/hub-requirements.txt":
     content => epp('jupyterhub/hub-requirements.txt', {
-        'jupyterhub_version'       => $jupyterhub_version,
-        'batchspawner_version'     => $batchspawner_version,
-        'slurmformspawner_version' => $slurmformspawner_version,
-        'idle_culler_version'      => $idle_culler_version,
-        'announcement_version'     => $announcement_version,
+        'jupyterhub_version'               => $jupyterhub_version,
+        'batchspawner_version'             => $batchspawner_version,
+        'slurmformspawner_version'         => $slurmformspawner_version,
+        'idle_culler_version'              => $idle_culler_version,
+        'announcement_version'             => $announcement_version,
+        'jupyterhub_traefik_proxy_version' => $jupyterhub_traefik_proxy_version,
     }),
     mode    => '0644',
   }
@@ -362,6 +379,7 @@ class jupyterhub (
     enable    => true,
     require   => $jupyterhub_require,
     subscribe => [
+      Archive['traefik'],
       Service['sssd'],
       Exec['pip_install_venv'],
       File['jupyterhub-login'],

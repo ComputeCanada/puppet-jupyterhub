@@ -3,6 +3,7 @@ jupyterhub==<%= $jupyterhub_version %>
 jupyterhub-idle-culler==<%= $idle_culler_version %>
 jupyterhub-announcement @ https://github.com/rcthomas/jupyterhub-announcement/archive/refs/tags/<%= $announcement_version %>.zip
 slurmformspawner==<%= $slurmformspawner_version %>
+jupyterhub-traefik-proxy==<%= $jupyterhub_traefik_proxy_version %>
 pamela @ https://github.com/minrk/pamela/archive/master.zip
 alembic==1.9.2
 async-generator==1.10
