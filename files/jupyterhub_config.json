@@ -6,7 +6,8 @@
         "ssl_cert": "/etc/jupyterhub/ssl/cert.pem",
         "cleanup_servers": false,
         "shutdown_on_logout": true,
-        "template_paths": ["/etc/jupyterhub/templates"]
+        "template_paths": ["/etc/jupyterhub/templates"],
+        "proxy_class": "traefik_file"
     },
     "Spawner": {
         "disable_user_config": true

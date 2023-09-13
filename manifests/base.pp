@@ -1,8 +1,6 @@
 class jupyterhub::base (
   Stdlib::Absolutepath $prefix,
 ) {
-  include nodejs
-
   $pip_version = lookup('jupyterhub::pip::version')
   $python3_version = lookup('jupyterhub::python3::version')
   $python3_bin     = lookup('jupyterhub::python3::bin')

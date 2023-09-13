@@ -69,16 +69,6 @@ jupyterhub::node::http_proxy: 'http://squid.yourdomain.tld:3128'
 jupyterhub::node::https_proxy: 'http://squid.yourdomain.tld:3128'
 ```
 
-### yumrepo management
-
-The hub and node class installs and configure nodejs with [puppet/nodejs](https://forge.puppet.com/puppet/nodejs).
-If you want to deactivate the management of node yum repo by the nodejs module, add the following line to your
-hieradata:
-
-```
-nodejs::manage_package_repo: false
-```
-
 ## Hieradata Configuration
 
 ### General options
@@ -91,6 +81,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::jupyterhub_traefik_proxy::version` | String |  jupyterhub-traefik-proxy package version to install | refer to [data/common.yaml](data/common.yaml) |
 
 ### Hub options
 
@@ -103,6 +94,7 @@ nodejs::manage_package_repo: false
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `[]` |
 | `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `0 (no timeout)` |
+| `jupyterhub::traefik_version` | String | Version of traefik to install on the hub instance | '2.10.4' |
 | `jupyterhub::authenticator` | Enum['PAM', 'OIDC'] | Type of authenticator JupyterHub will use | `PAM` |
 | `jupyterhub::enable_otp_auth` | Boolean | Enable one-time password field on the login page | `true` |
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
