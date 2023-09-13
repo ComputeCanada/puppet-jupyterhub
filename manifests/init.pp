@@ -39,11 +39,6 @@ class jupyterhub (
     ensure => 'present',
   }
 
-  package { 'configurable-http-proxy':
-    ensure   => 'installed',
-    provider => 'npm',
-  }
-
   $python3_version = lookup('jupyterhub::python3::version')
   file { 'jupyterhub.service':
     path    => '/lib/systemd/system/jupyterhub.service',

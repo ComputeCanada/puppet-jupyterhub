@@ -69,16 +69,6 @@ jupyterhub::node::http_proxy: 'http://squid.yourdomain.tld:3128'
 jupyterhub::node::https_proxy: 'http://squid.yourdomain.tld:3128'
 ```
 
-### yumrepo management
-
-The hub and node class installs and configure nodejs with [puppet/nodejs](https://forge.puppet.com/puppet/nodejs).
-If you want to deactivate the management of node yum repo by the nodejs module, add the following line to your
-hieradata:
-
-```
-nodejs::manage_package_repo: false
-```
-
 ## Hieradata Configuration
 
 ### General options

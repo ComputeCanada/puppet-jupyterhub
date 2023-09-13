@@ -8,7 +8,6 @@
     "project_page": "https://github.com/ComputeCanada/puppet-jupyterhub",
     "issues_url": "https://github.com/ComputeCanada/puppet-jupyterhub/issues",
     "dependencies": [ 
-        { "name":"puppet/nodejs", "version_requirement": ">= 7.0.0" },
         { "name":"puppet/selinux", "version_requirement": ">= 1.6.1"  },
         { "name":"puppetlabs/stdlib", "version_requirement": ">= 5.2.0"  },
         { "name":"puppet/letsencrypt", "version_requirement": ">= 5.0.0" }
