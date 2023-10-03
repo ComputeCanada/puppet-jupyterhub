@@ -30,6 +30,7 @@ jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthentica
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip
 
 jupyterhub::kernel::setup: module
+jupyterhub::kernel::venv::python3: "%{lookup('jupyterhub::python3::path')}/%{lookup('jupyterhub::python3:bin')}"
 
 jupyterhub::reverse_proxy::ssl_certificate_path: ''
 jupyterhub::reverse_proxy::ssl_certificate_key_path: ''

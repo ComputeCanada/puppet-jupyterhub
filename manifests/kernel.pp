@@ -1,18 +1,16 @@
 # 
 class jupyterhub::kernel::venv (
+  Stdlib::Absolutepath $python3,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
   Array[String] $packages = [],
   Hash $pip_environment = {}
 ) {
-  $python3_bin  = lookup('jupyterhub::python3::bin')
-  $python3_path = lookup('jupyterhub::python3::path')
 
   $pip_version = lookup('jupyterhub::pip::version')
 
   exec { 'kernel_venv':
-    command => "${python3_bin} -m venv --system-site-packages ${prefix}",
+    command => "${python3} -m venv --system-site-packages ${prefix}",
     creates => "${prefix}/bin/python",
-    path    => [$python3_path],
   }
 
   exec { 'upgrade_pip_setuptools':
