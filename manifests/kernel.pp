@@ -5,7 +5,6 @@ class jupyterhub::kernel::venv (
   Array[String] $packages = [],
   Hash $pip_environment = {}
 ) {
-
   $pip_version = lookup('jupyterhub::pip::version')
 
   exec { 'kernel_venv':

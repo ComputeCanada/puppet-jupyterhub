@@ -41,7 +41,7 @@ class jupyterhub (
     ensure => 'present',
   }
 
-  $traefik_arch = $::facts['architecture'] ? {
+  $traefik_arch = $::facts['os']['architecture'] ? {
     'x86_64' => 'amd64',
     'aarch64' => 'arm64',
   }
@@ -71,7 +71,7 @@ class jupyterhub (
     content => epp('jupyterhub/99-jupyterhub-user',
       {
         'blocked_users' => $blocked_users,
-        'hostname'      => $facts['hostname'],
+        'hostname'      => $facts['networking']['hostname'],
         'slurm_home'    => $slurm_home,
       }
     ),
@@ -343,7 +343,7 @@ class jupyterhub (
   }
 
   exec { 'create_self_signed_sslcert':
-    command => "openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem -subj '/CN=${::fqdn}'",
+    command => "openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem -subj '/CN=${facts['networking']['fqdn']}'",
     cwd     => '/etc/jupyterhub/ssl',
     creates => ['/etc/jupyterhub/ssl/key.pem', '/etc/jupyterhub/ssl/cert.pem'],
     path    => ['/usr/bin', '/usr/sbin'],
