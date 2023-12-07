@@ -38,6 +38,36 @@ jupyterhub::reverse_proxy::letsencrypt::unsafe_registration: true
 jupyterhub::reverse_proxy::letsencrypt::email: null
 jupyterhub::reverse_proxy::letsencrypt::certonly::plugin: standalone
 
+jupyterhub::config_base:
+  JupyterHub:
+    bind_url: "%{alias('jupyterhub::bind_url')}"
+    allow_named_servers: "%{alias('jupyterhub::allow_named_servers')}"
+    named_server_limit_per_user: "%{alias('jupyterhub::named_server_limit_per_user')}"
+    authenticator_class: "%{alias('jupyterhub::authenticator_class')}"
+    spawner_class: "slurmformspawner.SlurmFormSpawner"
+    hub_ip: "0.0.0.0"
+    ssl_key: "/etc/jupyterhub/ssl/key.pem"
+    ssl_cert": "/etc/jupyterhub/ssl/cert.pem"
+    cleanup_servers": false
+    shutdown_on_logout": true
+    template_paths": ["/etc/jupyterhub/templates"]
+    proxy_class": "traefik_file"
+  Authenticator:
+    admin_groups: "%{alias('jupyterhub::admin_groups')}"
+    blocked_users: "%{alias('jupyterhub::blocked_users')}"
+  Spawner:
+    disable_user_config: true
+  SlurmFormSpawner:
+    batchspawner_singleuser_cmd: #"${node_prefix}/bin/batchspawner-singleuser"
+    cmd: "${lookup('jupyterhub::node_prefix')}" #"${node_prefix}/bin/jupyterhub-singleuser"
+    slurm_bin_path: "${lookup('jupyterhub::slurm_home')}/bin"
+    submit_template_path: "/etc/jupyterhub/submit.sh"
+    args:
+      - "--KernelSpecManager.ensure_native_kernel=False"
+    'SlurmFormSpawner' => {
+
+
+
 jupyterhub::jupyterhub_config_hash:
   SlurmFormSpawner:
     ui_args:

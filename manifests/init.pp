@@ -208,20 +208,15 @@ class jupyterhub (
   $roles = $announcement_roles + $idle_culler_roles + $prometheus_roles
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
-  $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
+  $jupyterhub_config_base = lookup('jupyterhub::config_base')
   $jupyterhub_config_params = {
     'JupyterHub' => {
-      'bind_url'                    => $bind_url,
-      'allow_named_servers'         => $allow_named_servers,
-      'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $authenticator_class,
       'admin_access'                => Boolean(size($admin_groups) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
     },
     'Authenticator' => {
-      'admin_groups'  => $admin_groups,
-      'blocked_users' => $blocked_users,
       'auto_login'    => $authenticator ? {
         'OIDC'  => true,
         default => false,
@@ -230,7 +225,6 @@ class jupyterhub (
     'SlurmFormSpawner' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
       'cmd'                         => "${node_prefix}/bin/jupyterhub-singleuser",
-      'slurm_bin_path'              => "${slurm_home}/bin",
     },
   }
 
