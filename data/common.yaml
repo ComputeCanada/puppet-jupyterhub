@@ -58,14 +58,10 @@ jupyterhub::config_base:
   Spawner:
     disable_user_config: true
   SlurmFormSpawner:
-    batchspawner_singleuser_cmd: #"${node_prefix}/bin/batchspawner-singleuser"
-    cmd: "${lookup('jupyterhub::node_prefix')}" #"${node_prefix}/bin/jupyterhub-singleuser"
     slurm_bin_path: "${lookup('jupyterhub::slurm_home')}/bin"
     submit_template_path: "/etc/jupyterhub/submit.sh"
     args:
       - "--KernelSpecManager.ensure_native_kernel=False"
-    'SlurmFormSpawner' => {
-
 
 
 jupyterhub::jupyterhub_config_hash:
