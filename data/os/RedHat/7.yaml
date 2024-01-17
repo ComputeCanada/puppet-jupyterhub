@@ -5,3 +5,4 @@ jupyterhub::python3::pkg: python3
 jupyterhub::python3::bin: python3
 jupyterhub::python3::path: /usr/bin
 jupyterhub::python3::version: 3.6
+jupyterhub::kernel::venv::python: /usr/bin/python3.6
