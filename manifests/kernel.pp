@@ -60,7 +60,7 @@ class jupyterhub::kernel::venv (
 
     exec { 'install_kernel_requirements_nodeps':
       command     => "pip install --no-deps --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
-      subscribe   => File["${prefix}/hub-requirements.txt"],
+      subscribe   => File["${prefix}/kernel-requirements.txt"],
       refreshonly => true,
       environment => $pip_env_list,
       timeout     => 0,
