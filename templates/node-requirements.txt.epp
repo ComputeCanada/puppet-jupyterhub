@@ -7,9 +7,7 @@ jupyterlab==<%= $jupyterlab_version %>
 jupyterlmod==<%= $jupyterlmod_version %>
 notebook==<%= $notebook_version %>
 
-# batchspawner has no releases that support jupyterlab 4.x
-# batchspawner==<%= $batchspawner_version %>
-batchspawner @ git+https://github.com/jupyterhub/batchspawner.git@e2f3440bc1478f47fe4592d67f4bf364265cec1c
+batchspawner==<%= $batchspawner_version %>
 
 # jupyterlab-nvdashboard does not currently support jupyterlab 4.x
 # jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %>
