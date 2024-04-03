@@ -1,5 +1,5 @@
 ---
-jupyterhub::pip::version: 22.2.2
+jupyterhub::pip::version: 24.0
 jupyterhub::python3::pkg: python39
 jupyterhub::python3::bin: python3.9
 jupyterhub::python3::path: /usr/bin
