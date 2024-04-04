@@ -78,13 +78,13 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     refreshonly => true,
   }
 
-  exec { 'jupyter-nbextension-server-proxy':
-    command     => 'jupyter nbextension disable --py jupyter_server_proxy --sys-prefix',
-    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
-    timeout     => 0,
-    subscribe   => Exec['pip_install_venv'],
-    refreshonly => true,
-  }
+  # exec { 'jupyter-nbextension-server-proxy':
+  #   command     => 'jupyter nbextension disable --py jupyter_server_proxy --sys-prefix',
+  #   path        => ["${prefix}/bin", '/usr/bin', '/bin'],
+  #   timeout     => 0,
+  #   subscribe   => Exec['pip_install_venv'],
+  #   refreshonly => true,
+  # }
 
   $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
   file { 'jupyter_notebook_config.json' :
