@@ -51,7 +51,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
   }
 
   exec { 'pip_install_venv':
-    command     => "pip install --no-deps -r ${prefix}/node-requirements.txt",
+    command     => "pip install -r ${prefix}/node-requirements.txt",
     path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     require     => Exec['jupyterhub_venv'],
     subscribe   => File["${prefix}/node-requirements.txt"],
