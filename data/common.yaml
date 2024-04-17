@@ -3,14 +3,16 @@
 jupyterhub::notebook::version: 6.4.12
 jupyterhub::jupyterhub::version: 4.0.2
 jupyterhub::pamela::version: 1.1.0
+
 jupyterhub::batchspawner::version: 1.3.0 # version >=1.3.0 is needed
-jupyterhub::slurmformspawner::version: 2.5.0
+jupyterhub::slurmformspawner::version: 2.5.1
+
 jupyterhub::jupyterhub_traefik_proxy::version: 1.1.0
 jupyterhub::jupyterlab::version: 4.1.0
 jupyterhub::jupyterlmod::version: 4.0.1
 jupyterhub::jupyterlab_nvdashboard::version: 0.10.0 # version >= 0.10.0 is needed
 jupyterhub::bokeh::version: 2.4.3
-jupyterhub::jupyter_server_proxy::version: 3.2.2
+jupyterhub::jupyter_server_proxy::version: 3.2.3
 jupyterhub::jupyter_rsession_proxy::version: 2.1.0
 jupyterhub::idle_culler::version: 1.2.1
 jupyterhub::oauthenticator::version: 14.2.0
