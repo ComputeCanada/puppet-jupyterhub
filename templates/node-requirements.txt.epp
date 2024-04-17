@@ -8,10 +8,7 @@ jupyterlmod==<%= $jupyterlmod_version %>
 notebook==<%= $notebook_version %>
 
 batchspawner==<%= $batchspawner_version %>
-
-# jupyterlab-nvdashboard does not currently support jupyterlab 4.x
-# jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %>
-jupyterlab-nvdashboard @ git+https://github.com/rapidsai/jupyterlab-nvdashboard.git@748ef9049ebbfe6e55eea1759f45ad2faa498d2e
+jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %>
 
 aiohttp==3.8.3
 aiosignal==1.3.1

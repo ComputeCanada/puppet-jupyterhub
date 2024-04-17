@@ -8,7 +8,7 @@ jupyterhub::slurmformspawner::version: 2.5.0
 jupyterhub::jupyterhub_traefik_proxy::version: 1.1.0
 jupyterhub::jupyterlab::version: 4.1.0
 jupyterhub::jupyterlmod::version: 4.0.1
-jupyterhub::jupyterlab_nvdashboard::version: 0.8.0 # this is currently ignored
+jupyterhub::jupyterlab_nvdashboard::version: 0.10.0 # version >= 0.10.0 is needed
 jupyterhub::bokeh::version: 2.4.3
 jupyterhub::jupyter_server_proxy::version: 3.2.2
 jupyterhub::jupyter_rsession_proxy::version: 2.1.0
