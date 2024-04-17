@@ -294,14 +294,12 @@ class jupyterhub (
 
   # JupyterHub virtual environment
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
-  $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $jupyterhub_traefik_proxy_version = lookup('jupyterhub::jupyterhub_traefik_proxy::version')
 
   file { "${prefix}/hub-requirements.txt":
     content => epp('jupyterhub/hub-requirements.txt', {
         'jupyterhub_version'               => $jupyterhub_version,
-        'jupyterlab_version'               => $jupyterlab_version,
         'batchspawner_version'             => $batchspawner_version,
         'slurmformspawner_version'         => $slurmformspawner_version,
         'idle_culler_version'              => $idle_culler_version,
