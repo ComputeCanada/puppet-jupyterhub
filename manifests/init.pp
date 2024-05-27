@@ -380,7 +380,6 @@ class jupyterhub (
     require   => $jupyterhub_require,
     subscribe => [
       Archive['traefik'],
-      Service['sssd'],
       Exec['pip_install_venv'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
