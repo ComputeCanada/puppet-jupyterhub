@@ -12,8 +12,7 @@ spawner and in conjunction with the job scheduler [Slurm](https://slurm.schedmd.
 ### Hub
 
 - The hub ports 80 and 443 need to be opened to the users incoming network (i.e: Internet).
-- The hub needs to allow authentication of users through pam and sssd.
-- The hub needs `Service['sssd']` to be defined by an external authentication module.
+- The hub needs to allow authentication of users through pam.
 - The hub must be able to talk to `slurmctld` to submit jobs on the users' behalf.
 - The hub port `8081` needs to be accessible from the compute node network.
 - The slurm binaries needs to be installed and accessible from `PATH` for the user `jupyterhub`,
