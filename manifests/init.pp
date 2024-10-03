@@ -138,17 +138,18 @@ class jupyterhub (
     }
     $authenticator_config = {
       'GenericOAuthenticator' => {
-        'client_id'          => lookup('jupyterhub::oauthenticator::client_id'),
-        'client_secret'      => lookup('jupyterhub::oauthenticator::client_secret'),
-        'authorize_url'      => lookup('jupyterhub::oauthenticator::authorize_url'),
-        'token_url'          => lookup('jupyterhub::oauthenticator::token_url'),
-        'userdata_url'       => lookup('jupyterhub::oauthenticator::userdata_url'),
-        'userdata_params'    => lookup('jupyterhub::oauthenticator::userdata_params', Hash, undef, { 'state' => 'state' }),
-        'oauth_callback_url' => lookup('jupyterhub::oauthenticator::oauth_callback_url'),
-        'username_key'       => lookup('jupyterhub::oauthenticator::username_key'),
-        'scope'              => lookup('jupyterhub::oauthenticator::scope'),
-        'allowed_groups'     => lookup('jupyterhub::oauthenticator::allowed_groups', Array[String], undef, []),
-        'claim_groups_key'   => lookup('jupyterhub::oauthenticator::claim_groups_key', String, undef, 'affiliation'),
+        'client_id'           => lookup('jupyterhub::oauthenticator::client_id'),
+        'client_secret'       => lookup('jupyterhub::oauthenticator::client_secret'),
+        'authorize_url'       => lookup('jupyterhub::oauthenticator::authorize_url'),
+        'token_url'           => lookup('jupyterhub::oauthenticator::token_url'),
+        'userdata_url'        => lookup('jupyterhub::oauthenticator::userdata_url'),
+        'userdata_params'     => lookup('jupyterhub::oauthenticator::userdata_params', Hash, undef, { 'state' => 'state' }),
+        'oauth_callback_url'  => lookup('jupyterhub::oauthenticator::oauth_callback_url'),
+        'logout_redirect_url' => lookup('jupyterhub::oauthenticator::logout_redirect_url', String, undef, ''),
+        'username_key'        => lookup('jupyterhub::oauthenticator::username_key'),
+        'scope'               => lookup('jupyterhub::oauthenticator::scope'),
+        'allowed_groups'      => lookup('jupyterhub::oauthenticator::allowed_groups', Array[String], undef, []),
+        'claim_groups_key'    => lookup('jupyterhub::oauthenticator::claim_groups_key', String, undef, 'affiliation'),
       },
     }
   }
