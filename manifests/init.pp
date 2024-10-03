@@ -20,6 +20,7 @@ class jupyterhub (
   Integer $named_server_limit_per_user = 0,
   Enum['PAM', 'OIDC'] $authenticator = 'PAM',
   Boolean $enable_otp_auth = true,
+  Boolean $create_user = false,
   Integer $idle_timeout = 0,
   String $traefik_version = '2.10.4',
   Array[String] $admin_groups = [],
@@ -130,7 +131,11 @@ class jupyterhub (
       $authenticator_class = 'pam'
     }
   } elsif $authenticator == 'OIDC' {
-    $authenticator_class = 'oauthenticator.generic.GenericOAuthenticator'
+    if $create_user {
+      $authenticator_class = 'oauth2freeipa.LocalFreeIPAGitHubOAuthenticator'
+    } else {
+      $authenticator_class = 'oauthenticator.generic.GenericOAuthenticator'
+    }
     $authenticator_config = {
       'GenericOAuthenticator' => {
         'client_id'          => lookup('jupyterhub::oauthenticator::client_id'),
@@ -226,6 +231,9 @@ class jupyterhub (
         'OIDC'  => true,
         default => false,
       },
+    },
+    'LocalAuthenticator' => {
+      'create_system_users' => $create_user,
     },
     'SlurmFormSpawner' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
@@ -339,6 +347,13 @@ class jupyterhub (
       command => "${prefix}/bin/pip install --no-cache-dir oauthenticator==${oauthenticator_version}",
       creates => "${prefix}/lib/python${python3_version}/site-packages/oauthenticator-${oauthenticator_version}.dist-info/",
       require => Exec['pip_install_venv'],
+    }
+    if $create_user {
+      exec { 'pip_oauth2freeipa':
+        command => "${prefix}/bin/pip install https://github.com/MagicCastle/oauth2freeipa/archive/refs/heads/main.zip",
+        creates => "${prefix}/lib/python${python3_version}/site-packages/oauth2freeipa/",
+        require => Exec['pip_install_venv'],
+      }
     }
   }
 
