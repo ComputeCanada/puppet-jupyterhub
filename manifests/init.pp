@@ -132,7 +132,7 @@ class jupyterhub (
     }
   } elsif $authenticator == 'OIDC' {
     if $create_user {
-      $authenticator_class = 'oauth2freeipa.LocalFreeIPAGitHubOAuthenticator'
+      $authenticator_class = 'oauth2freeipa.LocalFreeIPAGenericOAuthenticator'
     } else {
       $authenticator_class = 'oauthenticator.generic.GenericOAuthenticator'
     }
