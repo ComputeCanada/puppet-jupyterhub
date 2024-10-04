@@ -351,7 +351,7 @@ class jupyterhub (
     }
     if $create_user {
       exec { 'pip_oauth2freeipa':
-        command => "${prefix}/bin/pip install https://github.com/MagicCastle/oauth2freeipa/archive/refs/heads/main.zip",
+        command => "${prefix}/bin/pip install https://github.com/MagicCastle/oauth2freeipa/archive/refs/heads/v1.0.0.zip",
         creates => "${prefix}/lib/python${python3_version}/site-packages/oauth2freeipa/",
         require => Exec['pip_install_venv'],
       }
