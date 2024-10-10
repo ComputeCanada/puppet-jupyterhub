@@ -22,7 +22,7 @@ jupyterhub::announcement::fixed_message: ''
 jupyterhub::announcement::lifetime_days: 7
 jupyterhub::announcement::persist_path: /var/run/jupyterhub/announcements.json
 
-jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/master.zip
+jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/main.zip
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip
 
 jupyterhub::kernel::setup: module
