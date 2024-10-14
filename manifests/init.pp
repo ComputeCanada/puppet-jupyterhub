@@ -2,10 +2,7 @@
 # @param prefix Absolute path where JupyterHub will be installed
 # @param slurm_home Path to Slurm installation folder
 # @param bind_url Public facing URL of the whole JupyterHub application
-# @param allow_named_servers Allow user to launch multiple notebook servers
-# @param named_server_limit_per_user Number of notebooks servers per user
-# @param authenticator Type of authenticator JupyterHub will use
-# @param enable_otp_auth Enable one-time password field on the login page
+# @param authenticator_class Entry point name of the JupyterHub authenticator class
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
@@ -16,11 +13,7 @@ class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
   String $bind_url = 'https://127.0.0.1:8000',
-  Boolean $allow_named_servers = true,
-  Integer $named_server_limit_per_user = 0,
-  Enum['PAM', 'OIDC'] $authenticator = 'PAM',
-  Boolean $enable_otp_auth = true,
-  Boolean $create_user = false,
+  String $authenticator_class = 'pam',
   Integer $idle_timeout = 0,
   String $traefik_version = '2.10.4',
   Array[String] $admin_groups = [],
@@ -118,42 +111,6 @@ class jupyterhub (
   $announcement_version = lookup('jupyterhub::announcement::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
 
-  if $authenticator == 'PAM' {
-    $authenticator_config = {
-      'PAMAuthenticator' => {
-        'open_sessions' => false,
-        'service'       => 'jupyterhub-login',
-      },
-    }
-    if $enable_otp_auth {
-      $authenticator_class = 'pammfauthenticator'
-    } else {
-      $authenticator_class = 'pam'
-    }
-  } elsif $authenticator == 'OIDC' {
-    if $create_user {
-      $authenticator_class = 'oauth2freeipa.LocalFreeIPAGenericOAuthenticator'
-    } else {
-      $authenticator_class = 'oauthenticator.generic.GenericOAuthenticator'
-    }
-    $authenticator_config = {
-      'GenericOAuthenticator' => {
-        'client_id'           => lookup('jupyterhub::oauthenticator::client_id'),
-        'client_secret'       => lookup('jupyterhub::oauthenticator::client_secret'),
-        'authorize_url'       => lookup('jupyterhub::oauthenticator::authorize_url'),
-        'token_url'           => lookup('jupyterhub::oauthenticator::token_url'),
-        'userdata_url'        => lookup('jupyterhub::oauthenticator::userdata_url'),
-        'userdata_params'     => lookup('jupyterhub::oauthenticator::userdata_params', Hash, undef, { 'state' => 'state' }),
-        'oauth_callback_url'  => lookup('jupyterhub::oauthenticator::oauth_callback_url'),
-        'logout_redirect_url' => lookup('jupyterhub::oauthenticator::logout_redirect_url', String, undef, ''),
-        'username_key'        => lookup('jupyterhub::oauthenticator::username_key'),
-        'scope'               => lookup('jupyterhub::oauthenticator::scope'),
-        'allowed_groups'      => lookup('jupyterhub::oauthenticator::allowed_groups', Array[String], undef, []),
-        'claim_groups_key'    => lookup('jupyterhub::oauthenticator::claim_groups_key', String, undef, 'affiliation'),
-      },
-    }
-  }
-
   $announcement_port = lookup('jupyterhub::announcement::port')
   $announcement_service = {
     'name'    => 'announcement',
@@ -218,8 +175,6 @@ class jupyterhub (
   $jupyterhub_config_params = {
     'JupyterHub' => {
       'bind_url'                    => $bind_url,
-      'allow_named_servers'         => $allow_named_servers,
-      'named_server_limit_per_user' => $named_server_limit_per_user,
       'authenticator_class'         => $authenticator_class,
       'admin_access'                => Boolean(size($admin_groups) > 0),
       'services'                    => $services,
@@ -228,13 +183,6 @@ class jupyterhub (
     'Authenticator' => {
       'admin_groups'  => $admin_groups,
       'blocked_users' => $blocked_users,
-      'auto_login'    => $authenticator ? {
-        'OIDC'  => true,
-        default => false,
-      },
-    },
-    'LocalAuthenticator' => {
-      'create_system_users' => $create_user,
     },
     'SlurmFormSpawner' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
@@ -247,7 +195,6 @@ class jupyterhub (
     $jupyterhub_config_base,
     $jupyterhub_config_params,
     $jupyterhub_config_hash,
-    $authenticator_config,
   )
 
   $announcement_config = {
@@ -326,38 +273,6 @@ class jupyterhub (
     refreshonly => true,
   }
 
-  if $authenticator == 'PAM' {
-    $pamela_version = lookup('jupyterhub::pamela::version')
-    exec { 'pip_pamela':
-      command => "${prefix}/bin/pip install --no-cache-dir pamela==${pamela_version}",
-      creates => "${prefix}/lib/python${python3_version}/site-packages/pamela-${pamela_version}.dist-info/",
-      require => Exec['pip_install_venv'],
-    }
-    if $enable_otp_auth {
-      $pammfauthenticator_url = lookup('jupyterhub::pammfauthenticator::url')
-      exec { 'pip_pammfauthenticator':
-        command => "${prefix}/bin/pip install --no-cache-dir ${pammfauthenticator_url}",
-        creates => "${prefix}/lib/python${python3_version}/site-packages/pammfauthenticator/",
-        require => [Exec['pip_install_venv'], Exec['pip_pamela']],
-        notify  => Service['jupyterhub'],
-      }
-    }
-  } elsif $authenticator == 'OIDC' {
-    $oauthenticator_version = lookup('jupyterhub::oauthenticator::version')
-    exec { 'pip_oauthenticator':
-      command => "${prefix}/bin/pip install --no-cache-dir oauthenticator==${oauthenticator_version}",
-      creates => "${prefix}/lib/python${python3_version}/site-packages/oauthenticator-${oauthenticator_version}.dist-info/",
-      require => Exec['pip_install_venv'],
-    }
-    if $create_user {
-      exec { 'pip_oauth2freeipa':
-        command => "${prefix}/bin/pip install https://github.com/MagicCastle/oauth2freeipa/archive/refs/tags/v1.0.0.zip",
-        creates => "${prefix}/lib/python${python3_version}/site-packages/oauth2freeipa/",
-        require => Exec['pip_install_venv'],
-      }
-    }
-  }
-
   exec { 'create_self_signed_sslcert':
     command => "openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 3650 -out cert.pem -subj '/CN=${facts['networking']['fqdn']}'",
     cwd     => '/etc/jupyterhub/ssl',
@@ -377,23 +292,10 @@ class jupyterhub (
     require => [Exec['create_self_signed_sslcert']],
   }
 
-  if $facts['os']['release']['major'] == '7' {
-    $pycurl_package_name = lookup('jupyterhub::pycurl::package_name')
-    ensure_packages ($pycurl_package_name)
-    $jupyterhub_require = [
-      File['submit.sh'],
-      Package[$pycurl_package_name],
-    ]
-  } else {
-    $jupyterhub_require = [
-      File['submit.sh'],
-    ]
-  }
-
   service { 'jupyterhub':
     ensure    => running,
     enable    => true,
-    require   => $jupyterhub_require,
+    require   => File['submit.sh'],
     subscribe => [
       Archive['traefik'],
       Exec['pip_install_venv'],
