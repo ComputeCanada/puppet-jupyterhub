@@ -35,15 +35,6 @@ To install JuptyerHub with the default options:
 include jupyterhub
 ```
 
-If you want to use NGINX as a reverse proxy for the hub and configure Let's Encrypt SSL certificate:
-```
-include jupyterhub::reverse_proxy
-````
-and in your hieradata, define the domain name:
-```
-jupyterhub::reverse_proxy::domain_name: 'jupyter.mydomain.tld'
-```
-
 ### compute
 
 To install the Jupyter notebook component on the compute node:
@@ -89,13 +80,10 @@ jupyterhub::node::https_proxy: 'http://squid.yourdomain.tld:3128'
 | `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | `/opt/jupyterhub` |
 | `jupyterhub::bind_url` | String | Public facing URL of the whole JupyterHub application | `https://127.0.0.1:8000` |
 | `jupyterhub::slurm_home` | Stdlib::Absolutepath | Path to Slurm installation folder | `/opt/software/slurm` |
-| `jupyterhub::allow_named_servers` | Boolean | Allow user to launch multiple notebook servers | `true` |
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `[]` |
-| `jupyterhub::named_server_limit_per_user` | Integer | Number of notebooks servers per user | `0` (unlimited) |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `0 (no timeout)` |
 | `jupyterhub::traefik_version` | String | Version of traefik to install on the hub instance | '2.10.4' |
-| `jupyterhub::authenticator` | Enum['PAM', 'OIDC'] | Type of authenticator JupyterHub will use | `PAM` |
-| `jupyterhub::enable_otp_auth` | Boolean | Enable one-time password field on the login page | `true` |
+| `jupyterhub::authenticator_class` | String | Type of authenticator JupyterHub will use | `PAM` |
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 | `jupyterhub::blocked_users` | List[String] | List of users that cannot login | `['root', 'toor', 'admin', 'centos', 'slurm']` |
 | `jupyterhub::prometheus_token` | String | Token that Prometheus can use to scrape JupyterHub's metrics | `undef` |
@@ -122,19 +110,6 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | `/usr/bin/python3` |
 | `jupyterhub::kernel::venv::pip_environment`| Hash[String, String] | Hash of environment variables configured before calling installing `venv::packages` | `{}` |
 | `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
-
-### Reverse proxy options
-
-| Variable | Type | Description | Default |
-| -------- | :----| :-----------| ------- |
-| `jupyterhub::reverse_proxy::domain_name` | Variant[String, Array[String]] | Domain name(s) that will be used to access JupyterHub. | |
-| `jupyterhub::reverse_proxy::ssl_certificate_path` | Stdlib::Absolutepath | Path to SSL certificate fullchain PEM file when letsencrypt::enable is false. | `''` |
-| `jupyterhub::reverse_proxy::ssl_certificate_key_path` | Stdlib::Absolutepath | Path to SSL certificate key PEM file when letsencrypt::enable is false. | `''` |
-| `jupyterhub::reverse_proxy::letsencrypt::enable` | Boolean | Use Let's Encrypt to issue and renew SSL certificate for JupyterHub | `true` |
-| `jupyterhub::reverse_proxy::letsencrypt::renew_cron_ensure` | Enum['present', 'absent'] | Enable cron to renew SSL certificate | `present` |
-| `jupyterhub::reverse_proxy::letsencrypt::unsafe_registration` | Boolean | Disable registration of SSL certificate with email | `true` |
-| `jupyterhub::reverse_proxy::letsencrypt::email` | String | Registration email if `unsafe_registration` is false | `null` |
-| `jupyterhub::reverse_proxy::letsencrypt::certonly::plugin` | String | Letsencrypt plugin that should be used when issuing and renewing the certicifate | `standalone` |
 
 ### SlurmFormSpawner's options
 
