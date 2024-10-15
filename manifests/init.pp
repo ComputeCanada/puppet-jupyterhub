@@ -253,6 +253,7 @@ class jupyterhub (
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $jupyterhub_traefik_proxy_version = lookup('jupyterhub::jupyterhub_traefik_proxy::version')
   $oauthenticator_version = lookup('jupyterhub::oauthenticator::version')
+  $pamela_version = lookup('jupyterhub::pamela_version::version')
   $pammfauthenticator_version = lookup('jupyterhub::pammfauthenticator::version')
   $oauth2freeipa_version = lookup('jupyterhub::oauth2freeipa::version')
 
@@ -263,6 +264,7 @@ class jupyterhub (
         'slurmformspawner_version'         => $slurmformspawner_version,
         'oauthenticator_version'           => $oauthenticator_version,
         'oauth2freeipa_version'            => $oauth2freeipa_version,
+        'pamela_version'                   => $pamela_version,
         'pammfauthenticator_version'       => $pammfauthenticator_version,
         'idle_culler_version'              => $idle_culler_version,
         'announcement_version'             => $announcement_version,
