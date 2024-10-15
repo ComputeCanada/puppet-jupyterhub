@@ -83,7 +83,7 @@ jupyterhub::node::https_proxy: 'http://squid.yourdomain.tld:3128'
 | `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `[]` |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `0 (no timeout)` |
 | `jupyterhub::traefik_version` | String | Version of traefik to install on the hub instance | '2.10.4' |
-| `jupyterhub::authenticator_class` | String | Type of authenticator JupyterHub will use | `PAM` |
+| `jupyterhub::authenticator_class` | String | Class name of the authenticator JupyterHub will use | `pam` |
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 | `jupyterhub::blocked_users` | List[String] | List of users that cannot login | `['root', 'toor', 'admin', 'centos', 'slurm']` |
 | `jupyterhub::prometheus_token` | String | Token that Prometheus can use to scrape JupyterHub's metrics | `undef` |
