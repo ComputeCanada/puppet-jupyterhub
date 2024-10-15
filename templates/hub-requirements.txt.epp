@@ -5,9 +5,9 @@ jupyterhub-announcement @ https://github.com/rcthomas/jupyterhub-announcement/ar
 slurmformspawner==<%= $slurmformspawner_version %>
 jupyterhub-traefik-proxy==<%= $jupyterhub_traefik_proxy_version %>
 pamela==<%= $pamela_version %>
-pammfauthenticator @ <%= $pammfauthenticator_url %>
+pammfauthenticator @ https://github.com/cmd-ntrf/pammfauthenticator/archive/refs/tags/v<%= $pammfauthenticator_version %>.zip
 oauthenticator==<%= $oauthenticator_version %>
-oauth2freeipa @ https://github.com/MagicCastle/oauth2freeipa/archive/refs/tags/v1.0.0.zip
+oauth2freeipa @ https://github.com/MagicCastle/oauth2freeipa/archive/refs/tags/v<%= $oauth2freeipa_version %>.zip
 
 aiohttp==3.8.5
 aiosignal==1.3.1

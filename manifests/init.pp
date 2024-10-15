@@ -252,12 +252,18 @@ class jupyterhub (
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $jupyterhub_traefik_proxy_version = lookup('jupyterhub::jupyterhub_traefik_proxy::version')
+  $oauthenticator_version = lookup('jupyterhub::oauthenticator::version')
+  $pammfauthenticator_version = lookup('jupyterhub::pammfauthenticator::version')
+  $oauth2freeipa_version = lookup('jupyterhub::oauth2freeipa::version')
 
   file { "${prefix}/hub-requirements.txt":
     content => epp('jupyterhub/hub-requirements.txt', {
         'jupyterhub_version'               => $jupyterhub_version,
         'batchspawner_version'             => $batchspawner_version,
         'slurmformspawner_version'         => $slurmformspawner_version,
+        'oauthenticator_version'           => $oauthenticator_version,
+        'oauth2freeipa_version'            => $oauth2freeipa_version,
+        'pammfauthenticator_version'       => $pammfauthenticator_version,
         'idle_culler_version'              => $idle_culler_version,
         'announcement_version'             => $announcement_version,
         'jupyterhub_traefik_proxy_version' => $jupyterhub_traefik_proxy_version,
