@@ -1,7 +1,3 @@
 ---
-jupyterhub::pip::version: 22.2.2
-jupyterhub::python3::pkg: python39
-jupyterhub::python3::bin: python3.9
-jupyterhub::python3::path: /usr/bin
-jupyterhub::python3::version: 3.9
-jupyterhub::kernel::venv::python: /usr/bin/python3.9
+jupyterhub::python3::version: 3.12
+jupyterhub::kernel::venv::python3_version: 3.12
