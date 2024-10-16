@@ -2,6 +2,8 @@
 class jupyterhub::kernel::venv (
   Stdlib::Absolutepath $python,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
+  String $kernel_name = 'python3',
+  String $display_name = 'Python 3',
   Array[String] $packages = [],
   Hash $pip_environment = {}
 ) {
@@ -41,8 +43,8 @@ class jupyterhub::kernel::venv (
   }
 
   exec { 'install_kernel':
-    command => "python -m ipykernel install --name python3 --prefix ${::jupyterhub::node::prefix}",
-    creates => "${::jupyterhub::node::prefix}/share/jupyter/kernels/python3/kernel.json",
+    command => "python -m ipykernel install --name ${kernel_name} --display-name \"${display_name}\" --prefix ${::jupyterhub::node::prefix}",
+    creates => "${::jupyterhub::node::prefix}/share/jupyter/kernels/${kernel_name}/kernel.json",
     require => [Exec['pip_ipykernel']],
     path    => ["${prefix}/bin"],
   }

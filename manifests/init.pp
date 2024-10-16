@@ -6,7 +6,7 @@
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
-# @param blocked_users List of users that cannot login
+# @param blocked_users List of users that cannot login and that jupyterhub can't sudo as
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
@@ -273,12 +273,13 @@ class jupyterhub (
     mode    => '0644',
   }
 
-  exec { 'pip_install_venv':
-    command     => "pip install -r ${prefix}/hub-requirements.txt",
-    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
+  exec { 'hub_pip_install':
+    command     => "uv pip install -r ${prefix}/hub-requirements.txt",
+    path        => ['/opt/uv/bin'],
     require     => Exec['jupyterhub_venv'],
     subscribe   => File["${prefix}/hub-requirements.txt"],
     refreshonly => true,
+    environment => ["VIRTUAL_ENV=${prefix}"],
   }
 
   exec { 'create_self_signed_sslcert':
@@ -306,7 +307,7 @@ class jupyterhub (
     require   => File['submit.sh'],
     subscribe => [
       Archive['traefik'],
-      Exec['pip_install_venv'],
+      Exec['hub_pip_install'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],

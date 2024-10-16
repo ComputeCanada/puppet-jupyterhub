@@ -50,9 +50,10 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     mode    => '0644',
   }
 
-  exec { 'pip_install_venv':
-    command     => "pip install --no-deps -r ${prefix}/node-requirements.txt",
-    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
+  exec { 'node_pip_install':
+    command     => "uv pip install --no-deps -r ${prefix}/node-requirements.txt",
+    path        => ['/opt/uv/bin'],
+    environment => ["VIRTUAL_ENV=${prefix}"],
     require     => Exec['jupyterhub_venv'],
     subscribe   => File["${prefix}/node-requirements.txt"],
     refreshonly => true,
@@ -67,14 +68,14 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipython/d'",
     onlyif  => "${ipy_grep} -q",
     path    => ['/usr/bin'],
-    require => Exec['pip_install_venv'],
+    require => Exec['node_pip_install'],
   }
 
   exec { 'jupyter-labextension-server-proxy':
     command     => 'jupyter labextension disable jupyterlab-server-proxy',
     path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     timeout     => 0,
-    subscribe   => Exec['pip_install_venv'],
+    subscribe   => Exec['node_pip_install'],
     refreshonly => true,
   }
 
@@ -82,7 +83,7 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     command     => 'jupyter nbextension disable --py jupyter_server_proxy --sys-prefix',
     path        => ["${prefix}/bin", '/usr/bin', '/bin'],
     timeout     => 0,
-    subscribe   => Exec['pip_install_venv'],
+    subscribe   => Exec['node_pip_install'],
     refreshonly => true,
   }
 
