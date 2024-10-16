@@ -20,7 +20,7 @@ class jupyterhub::kernel::venv (
     creates     => "${prefix}/bin/ipython",
     require     => Exec['kernel_venv'],
     environment => ["VIRTUAL_ENV=${prefix}"],
-    path        => ['/opt/ub/bin'],
+    path        => ['/opt/uv/bin'],
   }
 
   file { "${prefix}/etc":
