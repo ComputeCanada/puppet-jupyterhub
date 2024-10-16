@@ -279,7 +279,9 @@ class jupyterhub (
     require     => Exec['jupyterhub_venv'],
     subscribe   => File["${prefix}/hub-requirements.txt"],
     refreshonly => true,
-    environment => ["VIRTUAL_ENV=${prefix}"],
+    environment => [
+      "VIRTUAL_ENV=${prefix}",
+    ],
   }
 
   exec { 'create_self_signed_sslcert':
