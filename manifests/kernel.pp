@@ -37,7 +37,7 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  $node_prefix = lookup('jupyterhub::node::prefix')
+  $node_prefix = $::jupyterhub::node::prefix
   exec { 'install_kernel':
     command => "python -m ipykernel install --name ${kernel_name} --display-name \"${display_name}\" --prefix ${node_prefix}",
     creates => "${node_prefix}/share/jupyter/kernels/${kernel_name}/kernel.json",
