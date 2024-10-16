@@ -65,7 +65,7 @@ numpy==1.26.4
 oauthlib==3.2.2
 packaging==23.0
 pamela==1.0.0
-pandas==1.5.3
+pandas==2.2.3
 pandocfilters==1.5.0
 Pillow==11.0.0
 platformdirs==2.6.2
