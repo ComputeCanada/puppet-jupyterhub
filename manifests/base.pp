@@ -18,9 +18,6 @@ class jupyterhub::base (
 
   $python3_version = lookup('jupyterhub::python3::version')
 
-  ensure_resource('file', $prefix, { 'ensure' => 'directory' })
-  ensure_resource('file', "${prefix}/bin", { 'ensure' => 'directory', require => File[$prefix] })
-
   exec { 'jupyterhub_venv':
     command => "uv venv -p ${python3_version} ${prefix}",
     creates => "${prefix}/bin/python",
