@@ -92,21 +92,25 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     path    => "${prefix}/etc/jupyter/jupyter_notebook_config.json",
     content => to_json_pretty($jupyter_notebook_config_hash, true),
     mode    => '0644',
+    require => Exec['node_pip_install'],
   }
 
   file { 'jupyter_server_config.json' :
     path    => "${prefix}/etc/jupyter/jupyter_server_config.json",
     content => to_json_pretty($jupyter_notebook_config_hash, true),
     mode    => '0644',
+    require => Exec['node_pip_install'],
   }
 
   file { "${prefix}/lib/usercustomize":
-    ensure => 'directory',
-    mode   => '0755',
+    ensure  => 'directory',
+    mode    => '0755',
+    require => Exec['jupyterhub_venv'],
   }
 
   file { "${prefix}/lib/usercustomize/usercustomize.py":
-    source => 'puppet:///modules/jupyterhub/usercustomize.py',
-    mode   => '0655',
+    source  => 'puppet:///modules/jupyterhub/usercustomize.py',
+    mode    => '0655',
+    require => Exec['jupyterhub_venv'],
   }
 }
