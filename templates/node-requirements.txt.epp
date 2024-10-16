@@ -54,7 +54,7 @@ Mako==1.2.4
 MarkupSafe==2.1.2
 matplotlib-inline==0.1.6
 mistune==2.0.4
-multidict==6.0.4
+multidict==6.1.0
 nbclassic==0.5.1
 nbclient==0.7.2
 nbconvert==7.2.9
