@@ -88,20 +88,16 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require => Exec['node_pip_install'],
   }
 
-  exec { 'jupyter-labextension-server-proxy':
-    command     => 'jupyter labextension disable jupyterlab-server-proxy',
-    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
-    timeout     => 0,
-    subscribe   => Exec['node_pip_install'],
-    refreshonly => true,
+  # disable jupyterlab-server-proxy extension
+  file { "${prefix}/etc/jupyter/labconfig/page_config.json":
+    content   => '{"disabledExtensions": {"jupyterlab-server-proxy": true}}',
+    subscribe => Exec['node_pip_install'],
   }
 
-  exec { 'jupyter-nbextension-server-proxy':
-    command     => 'jupyter nbextension disable --py jupyter_server_proxy --sys-prefix',
-    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
-    timeout     => 0,
-    subscribe   => Exec['node_pip_install'],
-    refreshonly => true,
+  # disable jupyter-server-proxy nbextension
+  file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy-nbextension.json":
+    content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
+    subscribe => Exec['node_pip_install'],
   }
 
   $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
