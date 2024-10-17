@@ -189,7 +189,7 @@ class jupyterhub (
     'Spawner' => {
       'cmd' => "${node_prefix}/bin/jupyterhub-singleuser",
     },
-    'BatchSpawner' => {
+    'BatchSpawnerBase' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
     },
     'SlurmFormSpawner' => {
