@@ -13,6 +13,7 @@ class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
   String $bind_url = 'https://127.0.0.1:8000',
+  String $spawner_class = 'slurmformspawner.SlurmFormSpawner',
   String $authenticator_class = 'pam',
   Integer $idle_timeout = 0,
   String $traefik_version = '2.10.4',
@@ -176,6 +177,7 @@ class jupyterhub (
     'JupyterHub' => {
       'bind_url'                    => $bind_url,
       'authenticator_class'         => $authenticator_class,
+      'spawner_class'               => $spawner_class,
       'admin_access'                => Boolean(size($admin_groups) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
