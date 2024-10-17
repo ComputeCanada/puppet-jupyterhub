@@ -173,6 +173,10 @@ class jupyterhub (
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
+  $prologue = $kernel_setup ? {
+    'venv'   => 'export VIRTUAL_ENV_DISABLE_PROMPT=1; source /opt/ipython-kernel-computecanada/bin/activate',
+    'module' => '',
+  }
   $jupyterhub_config_params = {
     'JupyterHub' => {
       'bind_url'                    => $bind_url,
@@ -193,10 +197,11 @@ class jupyterhub (
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
     },
     'SlurmSpawner' => {
-      'exec_prefix' => '',
-      'env_keep'    => [],
+      'exec_prefix'      => '',
+      'env_keep'         => [],
       'batch_submit_cmd' => "sudo --preserve-env={keepvars} -u {username} ${slurm_home}/bin/sbatch --parsable",
       'batch_cancel_cmd' => "sudo -u {username} ${slurm_home}/bin/scancel {job_id}",
+      'req_prologue'     => $prologue,
     },
     'SlurmFormSpawner' => {
       'slurm_bin_path' => "${slurm_home}/bin",
@@ -246,16 +251,12 @@ class jupyterhub (
 
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   $module_list = lookup('jupyterhub::kernel::module::list', Array[String], undef, [])
-  $venv_prefix = lookup('jupyterhub::kernel::venv::prefix', String, undef, '/opt/ipython-kernel')
   $submit_additions = lookup('jupyterhub::submit::additions', String, undef, '')
   file { 'submit.sh':
     path    => '/etc/jupyterhub/submit.sh',
     content => epp('jupyterhub/submit.sh', {
-        'kernel_setup' => $kernel_setup,
-        'module_list'  => join($module_list, ' '),
-        'node_prefix'  => $node_prefix,
-        'venv_prefix'  => $venv_prefix,
-        'additions'    => $submit_additions,
+        'prologue'  => $prologue,
+        'additions' => $submit_additions,
     }),
     mode    => '0644',
   }
