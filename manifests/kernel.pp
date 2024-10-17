@@ -1,29 +1,38 @@
 # 
 class jupyterhub::kernel::venv (
-  Stdlib::Absolutepath $python,
+  Variant[Stdlib::Absolutepath, String] $python,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
+  String $kernel_name = 'python3',
+  String $display_name = 'Python 3',
   Array[String] $packages = [],
   Hash $pip_environment = {}
 ) {
-  $pip_version = lookup('jupyterhub::pip::version')
-
-  exec { 'kernel_venv':
-    command => "${python} -m venv --system-site-packages ${prefix}",
-    creates => "${prefix}/bin/python",
-  }
-
-  exec { 'upgrade_pip_setuptools':
-    command     => "pip install --prefix ${prefix} --no-cache-dir --upgrade pip==${pip_version} setuptools",
-    subscribe   => Exec['kernel_venv'],
-    refreshonly => true,
-    path        => ["${prefix}/bin"],
+  if $python =~ Stdlib::Absolutepath {
+    exec { 'kernel_venv':
+      command => "uv venv --seed --python-preference system ${prefix}",
+      creates => "${prefix}/bin/python",
+      require => Archive['jh_install_uv'],
+      path    => [
+        '/opt/uv/bin',
+        dirname($python),
+      ],
+    }
+  } else {
+    exec { 'kernel_venv':
+      command     => "uv venv --seed -p ${python} ${prefix}",
+      creates     => "${prefix}/bin/python",
+      require     => Archive['jh_install_uv'],
+      path        => ['/opt/uv/bin'],
+      environment => ['XDG_DATA_HOME=/opt/uv/share'],
+    }
   }
 
   exec { 'pip_ipykernel':
-    command => 'pip install --no-cache-dir ipykernel',
-    creates => "${prefix}/bin/ipython",
-    require => Exec['kernel_venv'],
-    path    => ["${prefix}/bin"],
+    command     => 'uv pip install ipykernel',
+    creates     => "${prefix}/bin/ipython",
+    require     => Exec['kernel_venv'],
+    environment => ["VIRTUAL_ENV=${prefix}"],
+    path        => ['/opt/uv/bin'],
   }
 
   file { "${prefix}/etc":
@@ -40,9 +49,10 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
+  $node_prefix = $::jupyterhub::node::prefix
   exec { 'install_kernel':
-    command => "python -m ipykernel install --name python3 --prefix ${::jupyterhub::node::prefix}",
-    creates => "${::jupyterhub::node::prefix}/share/jupyter/kernels/python3/kernel.json",
+    command => "python -m ipykernel install --name ${kernel_name} --display-name \"${display_name}\" --prefix ${node_prefix}",
+    creates => "${node_prefix}/share/jupyter/kernels/${kernel_name}/kernel.json",
     require => [Exec['pip_ipykernel']],
     path    => ["${prefix}/bin"],
   }
@@ -58,22 +68,24 @@ class jupyterhub::kernel::venv (
       content => $pkg_string,
     }
 
-    exec { 'install_kernel_requirements_nodeps':
-      command     => "pip install --no-deps --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
-      subscribe   => File["${prefix}/kernel-requirements.txt"],
-      refreshonly => true,
-      environment => $pip_env_list,
-      timeout     => 0,
-      path        => ["${prefix}/bin"],
-    }
-
-    exec { 'install_kernel_requirements_deps':
-      command     => "pip install --no-cache-dir --prefix ${prefix} --upgrade -r ${prefix}/kernel-requirements.txt",
-      subscribe   => Exec['install_kernel_requirements_nodeps'],
-      refreshonly => true,
-      environment => $pip_env_list,
-      timeout     => 0,
-      path        => ["${prefix}/bin"],
+    if 'PIP_CONFIG_FILE' in $pip_environment {
+      exec { 'install_kernel_requirements_nodeps':
+        command     => "pip --no-cache-dir install -r ${prefix}/kernel-requirements.txt",
+        subscribe   => File["${prefix}/kernel-requirements.txt"],
+        refreshonly => true,
+        environment => $pip_env_list,
+        timeout     => 0,
+        path        => ["${prefix}/bin"],
+      }
+    } else {
+      exec { 'install_kernel_requirements_nodeps':
+        command     => "uv --no-cache pip install -r ${prefix}/kernel-requirements.txt",
+        subscribe   => File["${prefix}/kernel-requirements.txt"],
+        refreshonly => true,
+        environment => $pip_env_list + ["VIRTUAL_ENV=${prefix}"],
+        timeout     => 0,
+        path        => ['/opt/uv/bin'],
+      }
     }
   }
 }

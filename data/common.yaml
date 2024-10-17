@@ -37,10 +37,10 @@ jupyterhub::jupyterhub_config_hash:
         name: JupyterLab
       notebook:
         name: Jupyter Notebook
-        args: ['--SingleUserNotebookApp.default_url=/tree']
+        url: '/tree'
       terminal:
         name: Terminal
-        args: ['--SingleUserNotebookApp.default_url=/terminals/1']
+        url: '/terminals/1'
   SbatchForm:
     ui:
       choices: ['notebook', 'lab', 'terminal']
