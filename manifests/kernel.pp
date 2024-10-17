@@ -9,7 +9,7 @@ class jupyterhub::kernel::venv (
 ) {
   if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
-      command => "uv venv --python-preference system ${prefix}",
+      command => "uv venv --seed --python-preference system ${prefix}",
       creates => "${prefix}/bin/python",
       require => Archive['jh_install_uv'],
       path    => [
@@ -19,7 +19,7 @@ class jupyterhub::kernel::venv (
     }
   } else {
     exec { 'kernel_venv':
-      command     => "uv venv -p ${python} ${prefix}",
+      command     => "uv venv --seed -p ${python} ${prefix}",
       creates     => "${prefix}/bin/python",
       require     => Archive['jh_install_uv'],
       path        => ['/opt/uv/bin'],
@@ -68,13 +68,24 @@ class jupyterhub::kernel::venv (
       content => $pkg_string,
     }
 
-    exec { 'install_kernel_requirements_nodeps':
-      command     => "uv pip install -r ${prefix}/kernel-requirements.txt",
-      subscribe   => File["${prefix}/kernel-requirements.txt"],
-      refreshonly => true,
-      environment => $pip_env_list + ["VIRTUAL_ENV=${prefix}"],
-      timeout     => 0,
-      path        => ['/opt/uv/bin'],
+    if 'PIP_CONFIG_FILE' in $pip_environment {
+      exec { 'install_kernel_requirements_nodeps':
+        command     => "pip --no-cache-dir install -r ${prefix}/kernel-requirements.txt",
+        subscribe   => File["${prefix}/kernel-requirements.txt"],
+        refreshonly => true,
+        environment => $pip_env_list,
+        timeout     => 0,
+        path        => ["${prefix}/bin"],
+      }
+    } else {
+      exec { 'install_kernel_requirements_nodeps':
+        command     => "uv --no-cache pip install -r ${prefix}/kernel-requirements.txt",
+        subscribe   => File["${prefix}/kernel-requirements.txt"],
+        refreshonly => true,
+        environment => $pip_env_list + ["VIRTUAL_ENV=${prefix}"],
+        timeout     => 0,
+        path        => ['/opt/uv/bin'],
+      }
     }
   }
 }
