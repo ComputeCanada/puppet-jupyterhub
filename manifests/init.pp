@@ -173,6 +173,7 @@ class jupyterhub (
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
+  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   $prologue = $kernel_setup ? {
     'venv'   => 'export VIRTUAL_ENV_DISABLE_PROMPT=1; source /opt/ipython-kernel-computecanada/bin/activate',
     'module' => '',
@@ -249,8 +250,6 @@ class jupyterhub (
     require => User['jupyterhub'],
   }
 
-  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
-  $module_list = lookup('jupyterhub::kernel::module::list', Array[String], undef, [])
   $submit_additions = lookup('jupyterhub::submit::additions', String, undef, '')
   file { 'submit.sh':
     path    => '/etc/jupyterhub/submit.sh',
