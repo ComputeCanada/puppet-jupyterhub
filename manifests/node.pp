@@ -24,7 +24,7 @@ class jupyterhub::node (
 }
 
 class jupyterhub::node::install (
-  Stdlib::Absolutepath $prefix
+  Stdlib::Absolutepath $prefix,
   Array[String] $packages = [],
 ) {
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
