@@ -192,6 +192,12 @@ class jupyterhub (
     'BatchSpawnerBase' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
     },
+    'SlurmSpawner' => {
+      'exec_prefix' => '',
+      'env_keep'    => [],
+      'batch_submit_cmd' => "sudo --preserve-env={keepvars} -u {username} ${slurm_home}/bin/sbatch --parsable",
+      'batch_cancel_cmd' => "sudo -u {username} ${slurm_home}/bin/scancel {job_id}",
+    },
     'SlurmFormSpawner' => {
       'slurm_bin_path' => "${slurm_home}/bin",
     },
