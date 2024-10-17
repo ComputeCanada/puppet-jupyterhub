@@ -1,14 +1,13 @@
 # 
 class jupyterhub::kernel::venv (
-  String $python3_version = '',
-  Stdlib::Absolutepath $python = '',
+  Variant[Stdlib::Absolutepath, SemVer] $python,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
   String $kernel_name = 'python3',
   String $display_name = 'Python 3',
   Array[String] $packages = [],
   Hash $pip_environment = {}
 ) {
-  if $python != '' {
+  if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
       command => "uv venv --python-preference system ${prefix}",
       creates => "${prefix}/bin/python",
@@ -18,16 +17,14 @@ class jupyterhub::kernel::venv (
         dirname($python),
       ],
     }
-  } elsif $python3_version != '' {
+  } else {
     exec { 'kernel_venv':
-      command     => "uv venv -p ${python3_version} ${prefix}",
+      command     => "uv venv -p ${python} ${prefix}",
       creates     => "${prefix}/bin/python",
       require     => Archive['jh_install_uv'],
       path        => ['/opt/uv/bin'],
       environment => ['XDG_DATA_HOME=/opt/uv/share'],
     }
-  } else {
-    fail('jupyterhub::kernel::venv needs at least a path to Python or a Python version')
   }
 
   exec { 'pip_ipykernel':
