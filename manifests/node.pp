@@ -92,9 +92,11 @@ class jupyterhub::node::install (
   }
 
   # disable jupyterlab-server-proxy extension
+  ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory' })
   file { "${prefix}/etc/jupyter/labconfig/page_config.json":
     content   => '{"disabledExtensions": {"jupyterlab-server-proxy": true}}',
     subscribe => Exec['node_pip_install'],
+    require   => File["${prefix}/etc/jupyter/labconfig/"],
   }
 
   # disable jupyter-server-proxy nbextension
