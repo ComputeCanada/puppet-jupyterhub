@@ -23,7 +23,10 @@ class jupyterhub::node (
   }
 }
 
-class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
+class jupyterhub::node::install (
+  Stdlib::Absolutepath $prefix
+  Array[String] $packages = [],
+) {
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $notebook_version = lookup('jupyterhub::notebook::version')
