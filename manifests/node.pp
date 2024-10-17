@@ -1,5 +1,6 @@
 class jupyterhub::node (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
+  Array[String] $packages = [],
   Optional[String] $http_proxy = undef,
   Optional[String] $https_proxy = undef,
 ) {
@@ -13,7 +14,8 @@ class jupyterhub::node (
   ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
 
   class { 'jupyterhub::node::install':
-    prefix => $prefix,
+    prefix   => $prefix,
+    packages => $packages,
   }
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   if $kernel_setup == 'venv' {
@@ -57,6 +59,21 @@ class jupyterhub::node::install (Stdlib::Absolutepath $prefix) {
     require     => Exec['jupyterhub_venv'],
     subscribe   => File["${prefix}/node-requirements.txt"],
     refreshonly => true,
+  }
+
+  if length($packages) > 0 {
+    file { "${prefix}/node-extra-requirements.txt":
+      content => join($packages, '\n'),
+    }
+
+    exec { 'node_pip_install_extra':
+      command     => "uv pip install -r ${prefix}/node-extra-requirements.txt",
+      path        => ['/opt/uv/bin'],
+      environment => ["VIRTUAL_ENV=${prefix}"],
+      require     => Exec['node_pip_install'],
+      subscribe   => File["${prefix}/node-extra-requirements.txt"],
+      refreshonly => true,
+    }
   }
 
   # This make sure that the removal of ipykernel does not cause exception when using
