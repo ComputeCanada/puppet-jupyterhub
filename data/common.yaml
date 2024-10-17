@@ -2,7 +2,7 @@
 ---
 jupyterhub::notebook::version: 6.4.12
 jupyterhub::jupyterhub::version: 4.1.6
-jupyterhub::pamela::version: 1.1.0
+jupyterhub::pamela::version: 1.2.0
 
 jupyterhub::batchspawner::version: 1.3.0
 jupyterhub::slurmformspawner::version: 2.6.0
@@ -16,28 +16,19 @@ jupyterhub::jupyter_rsession_proxy::version: 2.1.0
 jupyterhub::idle_culler::version: 1.2.1
 jupyterhub::oauthenticator::version: 14.2.0
 jupyterhub::announcement::version: 0.7.0
+jupyterhub::pammfauthenticator::version: 1.3.1
+jupyterhub::oauth2freeipa::version: 1.0.0
 
 jupyterhub::announcement::port: 8888
 jupyterhub::announcement::fixed_message: ''
 jupyterhub::announcement::lifetime_days: 7
 jupyterhub::announcement::persist_path: /var/run/jupyterhub/announcements.json
 
-jupyterhub::pammfauthenticator::url: https://github.com/cmd-ntrf/pammfauthenticator/archive/main.zip
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip
 
 jupyterhub::kernel::setup: module
 jupyterhub::kernel::venv::python3: "%{lookup('jupyterhub::python3::path')}/%{lookup('jupyterhub::python3::bin')}"
 
-jupyterhub::reverse_proxy::ssl_certificate_path: ''
-jupyterhub::reverse_proxy::ssl_certificate_key_path: ''
-
-# letsencrypt options
-jupyterhub::reverse_proxy::letsencrypt::enable: true
-jupyterhub::reverse_proxy::letsencrypt::configure_epel: false
-jupyterhub::reverse_proxy::letsencrypt::renew_cron_ensure: present
-jupyterhub::reverse_proxy::letsencrypt::unsafe_registration: true
-jupyterhub::reverse_proxy::letsencrypt::email: null
-jupyterhub::reverse_proxy::letsencrypt::certonly::plugin: standalone
 
 jupyterhub::jupyterhub_config_hash:
   SlurmFormSpawner:

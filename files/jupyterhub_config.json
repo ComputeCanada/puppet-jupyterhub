@@ -9,6 +9,10 @@
         "template_paths": ["/etc/jupyterhub/templates"],
         "proxy_class": "traefik_file"
     },
+    "PAMAuthenticator": {
+        "open_sessions": false,
+        "service"      : "jupyterhub-login"
+    },
     "Spawner": {
         "disable_user_config": true
     },
