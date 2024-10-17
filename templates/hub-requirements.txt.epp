@@ -9,7 +9,9 @@ pammfauthenticator @ https://github.com/cmd-ntrf/pammfauthenticator/archive/refs
 oauthenticator==<%= $oauthenticator_version %>
 oauth2freeipa @ https://github.com/MagicCastle/oauth2freeipa/archive/refs/tags/v<%= $oauth2freeipa_version %>.zip
 
-aiohttp==3.8.5
+aiodns==3.2.0
+aiohttp==3.10.10
+aiohappyeyeballs==2.3.4
 aiosignal==1.3.1
 alembic==1.9.2
 async-generator==1.10
@@ -19,13 +21,13 @@ beautifulsoup4==4.11.1
 cachetools==5.3.0
 certifi==2022.12.7
 certipy==0.1.3
-cffi==1.15.1
+cffi==1.17.1
 charset-normalizer==3.0.1
 cryptography==39.0.0
 entrypoints==0.4
 escapism==1.0.1
-frozenlist==1.4.0
-greenlet==2.0.2
+frozenlist==1.4.1
+greenlet==3.1.1
 html-sanitizer==1.9.3
 idna==3.4
 Jinja2==3.1.2
@@ -34,7 +36,7 @@ jupyter-telemetry==0.1.0
 lxml==4.9.2
 Mako==1.2.4
 MarkupSafe==2.1.2
-multidict==6.0.4
+multidict==6.1.0
 oauthlib==3.2.2
 packaging==23.0
 passlib==1.7.4
@@ -45,8 +47,8 @@ pyrsistent==0.19.3
 python-dateutil==2.8.2
 python-json-logger==2.0.4
 requests==2.28.2
-ruamel.yaml==0.17.21
-ruamel.yaml.clib==0.2.7
+ruamel.yaml==0.18.6
+ruamel.yaml.clib==0.2.8
 six==1.16.0
 soupsieve==2.3.2.post1
 SQLAlchemy==1.4.46
