@@ -1,6 +1,6 @@
 # 
 class jupyterhub::kernel::venv (
-  Variant[Stdlib::Absolutepath, SemVer] $python,
+  Variant[Stdlib::Absolutepath, String] $python,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
   String $kernel_name = 'python3',
   String $display_name = 'Python 3',
