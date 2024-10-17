@@ -13,12 +13,12 @@
         "service"      : "jupyterhub-login"
     },
     "Spawner": {
-        "disable_user_config": true
-    },
-    "SlurmFormSpawner": {
-        "submit_template_path": "/etc/jupyterhub/submit.sh",
+        "disable_user_config": true,
         "args": [
             "--KernelSpecManager.ensure_native_kernel=False"
         ]
+    },
+    "SlurmFormSpawner": {
+        "submit_template_path": "/etc/jupyterhub/submit.sh"
     }
 }

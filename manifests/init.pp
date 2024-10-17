@@ -186,10 +186,14 @@ class jupyterhub (
       'admin_groups'  => $admin_groups,
       'blocked_users' => $blocked_users,
     },
-    'SlurmFormSpawner' => {
+    'Spawner' => {
+      'cmd' => "${node_prefix}/bin/jupyterhub-singleuser",
+    },
+    'BatchSpawner' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
-      'cmd'                         => "${node_prefix}/bin/jupyterhub-singleuser",
-      'slurm_bin_path'              => "${slurm_home}/bin",
+    },
+    'SlurmFormSpawner' => {
+      'slurm_bin_path' => "${slurm_home}/bin",
     },
   }
 
