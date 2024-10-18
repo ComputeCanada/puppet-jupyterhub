@@ -2,7 +2,8 @@
 # @param prefix Absolute path where JupyterHub will be installed
 # @param slurm_home Path to Slurm installation folder
 # @param bind_url Public facing URL of the whole JupyterHub application
-# @param authenticator_class Entry point name of the JupyterHub authenticator class
+# @param spawner_class Class name for authenticating users.
+# @param authenticator_class Class name to use for spawning single-user servers
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin

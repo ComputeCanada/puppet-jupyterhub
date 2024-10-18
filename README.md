@@ -6,7 +6,7 @@ spawner and in conjunction with the job scheduler [Slurm](https://slurm.schedmd.
 
 ## Requirements
 
-- CentOS 7, 8
+- Linux
 - Slurm >= 17.x
 
 ### Hub
@@ -68,7 +68,7 @@ jupyterhub::node::https_proxy: 'http://squid.yourdomain.tld:3128'
 | `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pip::version` | String | pip package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::notebook::version` | String | notebook package version to install | refer to [data/common.yaml](data/common.yaml) |
-| `jupyterhub::batchspawner::url` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::batchspawner::version` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::jupyterhub_traefik_proxy::version` | String |  jupyterhub-traefik-proxy package version to install | refer to [data/common.yaml](data/common.yaml) |
@@ -147,25 +147,25 @@ jupyterhub::jupyterhub_config_hash:
     ui_args:
       notebook:
         name: Jupyter Notebook
-        args: ['--SingleUserNotebookApp.default_url=/tree']
+        args: '/tree'
         modules: ['ipython-kernel/3.7']
       lab:
         name: JupyterLab
         modules: ['ipython-kernel/3.7']
       terminal:
         name: Terminal
-        args: ['--SingleUserNotebookApp.default_url=/terminals/1']
+        args: '/terminals/1'
       rstudio:
         name: RStudio
-        args: ['--SingleUserNotebookApp.default_url=/rstudio']
+        args: '/rstudio'
         modules: ['gcc', 'rstudio-server']
       code-server:
         name: VS Code
-        args: ['--SingleUserNotebookApp.default_url=/code-server']
+        args: '/code-server'
         modules: ['code-server']
       desktop:
         name: Desktop
-        args: ['--SingleUserNotebookApp.default_url=/Desktop']
+        url: '/Desktop'
   SlurmAPI:
     info_cache_ttl: 3600 # refresh sinfo cache at most every hour
     acct_cache_ttl: 3600 # refresh account cache at most every hour
@@ -197,21 +197,6 @@ jupyterhub::jupyter_notebook_config_hash:
         launcher_entry:
           title: OpenRefine
 ```
-### OIDC authentication options
-*set `jupyterhub::authenticator` to `OIDC`
-| Variable | Type | Description | Default |
-| -------- | :----| :-----------| ------- |
-| `jupyterhub::oauthenticator::client_id` | String | OIDC client ID | |
-| `jupyterhub::oauthenticator::client_secret` | String | OIDC client secret | |
-| `jupyterhub::oauthenticator::authorize_url` | String | OIDC authorize URL | |
-| `jupyterhub::oauthenticator::token_url` | String | OIDC token URL | |
-| `jupyterhub::oauthenticator::userdata_url` | String | OIDC userdata URL | |
-| `jupyterhub::oauthenticator::userdata_params` | Hash | OIDC userdata params | {'state' => 'state'} |
-| `jupyterhub::oauthenticator::oauth_callback_url` | String | OIDC oauth callback URL | |
-| `jupyterhub::oauthenticator::username_key` | String | OIDC username key | |
-| `jupyterhub::oauthenticator::scope` | Array[String] | OIDC scope | |
-| `jupyterhub::oauthenticator::allowed_groups` | Array[String] | List of groups who should be allowed to connect. Empty list = any group | [] |
-| `jupyterhub::oauthenticator::claim_groups_key` | String | Userdata groups claim key from returned  OIDC json | 'affiliation' |
 
 ### Submit addition option
 | Variable | Type | Description |
