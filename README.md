@@ -174,6 +174,39 @@ jupyterhub::jupyterhub_config_hash:
 
 Refer to [slurmformspawner documentation](https://github.com/cmd-ntrf/slurmformspawner) for more details on each parameter.
 
+### SlurmSpawner usage example
+
+[`SlurmSpawner`](https://github.com/jupyterhub/batchspawner) can be used instead of SlurmFormSpawner
+when job configuration with a form is not desirable:
+```yaml
+jupyterhub::spawner_class: "batchspawner.SlurmSpawner"
+jupyterhub::jupyterhub_config_hash:
+  SlurmSpawner:
+    req_account: "def-sponsor00"
+    req_memory: "256"
+    req_nprocs: "1"
+    req_runtime: "3600"
+    req_options: "--oversubscribe"
+    default_url: "/tree" # use nbclassic instead of lab
+```
+
+### OAuthenticator usage example
+
+By default, puppet-jupyterhub configures the authentication with PAM, but the oauthenticator
+package is readily installed.
+
+
+In this example, we configure JupyterHub to authenticate with GitHub and create an account in FreeIPA.
+```
+jupyterhub::authenticator_class: "ipa-github"
+jupyterhub::jupyterhub_config_hash:
+  GitHubOAuthenticator:
+    auto_login: true
+    oauth_callback_url: "https://[your-domain]/hub/oauth_callback"
+    client_id: "XYZ"
+    client_secret: "DCBA-123-456"
+```
+
 ### Jupyter Notebook options
 
 To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::jupyter_notebook_config_hash` like this:
