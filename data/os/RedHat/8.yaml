@@ -1,3 +1,0 @@
----
-jupyterhub::python3::version: "3.12"
-jupyterhub::kernel::venv::python: "3.12"
