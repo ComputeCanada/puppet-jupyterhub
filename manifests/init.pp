@@ -3,7 +3,7 @@
 # @param slurm_home Path to Slurm installation folder
 # @param bind_url Public facing URL of the whole JupyterHub application
 # @param spawner_class Class name for authenticating users.
-# @param authenticator_class Class name to use for spawning single-user servers
+# @param authenticator_class Class  to use for spawning single-user servers
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
