@@ -91,18 +91,20 @@ class jupyterhub::node::install (
     require => Exec['node_pip_install'],
   }
 
-  # disable jupyterlab-server-proxy extension
-  ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory' })
-  file { "${prefix}/etc/jupyter/labconfig/page_config.json":
-    content   => '{"disabledExtensions": {"jupyterlab-server-proxy": true}}',
-    subscribe => Exec['node_pip_install'],
-    require   => File["${prefix}/etc/jupyter/labconfig/"],
-  }
+  if $jupyterlmod_version and $jupyter_server_proxy_version {
+    # disable jupyterlab-server-proxy extension
+    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory' })
+    file { "${prefix}/etc/jupyter/labconfig/page_config.json":
+      content   => '{"disabledExtensions": {"jupyterlab-server-proxy": true}}',
+      subscribe => Exec['node_pip_install'],
+      require   => File["${prefix}/etc/jupyter/labconfig/"],
+    }
 
-  # disable jupyter-server-proxy nbextension
-  file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy-nbextension.json":
-    content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
-    subscribe => Exec['node_pip_install'],
+    # disable jupyter-server-proxy nbextension
+    file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy-nbextension.json":
+      content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
+      subscribe => Exec['node_pip_install'],
+    }
   }
 
   $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})

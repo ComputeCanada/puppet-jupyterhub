@@ -1,13 +1,13 @@
-batchspawner==<%= $batchspawner_version %>
-bokeh==<%= $bokeh_version %>
-jupyter-desktop-server @ <%= $jupyter_desktop_server_url %>
-jupyter-rsession-proxy==<%= $jupyter_rsession_proxy_version %>
-jupyter-server-proxy==<%= $jupyter_server_proxy_version %>
 jupyterhub==<%= $jupyterhub_version %>
 jupyterlab==<%= $jupyterlab_version %>
-jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %>
-jupyterlmod==<%= $jupyterlmod_version %>
 notebook==<%= $notebook_version %>
+batchspawner==<%= $batchspawner_version %>
+<% if $boke_version { %>bokeh==<%= $bokeh_version %><% } %>
+<% if $jupyter_desktop_server_url { %>jupyter-desktop-server @ <%= $jupyter_desktop_server_url %><% } %>
+<% if $jupyter_rsession_proxy_version { %>jupyter-rsession-proxy==<%= $jupyter_rsession_proxy_version %><% } %>
+<% if $jupyter_server_proxy_version { %>jupyter-server-proxy==<%= $jupyter_server_proxy_version %><% } %>
+<% if $jupyterlab_nvdashboard_version { %>jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %><% } %>
+<% if $jupyterlmod_version { %>jupyterlmod==<%= $jupyterlmod_version %><% } %>
 
 aiodns==3.2.0
 aiohttp==3.10.10
