@@ -2,17 +2,19 @@
 # @param prefix Absolute path where JupyterHub will be installed
 # @param slurm_home Path to Slurm installation folder
 # @param bind_url Public facing URL of the whole JupyterHub application
-# @param authenticator_class Entry point name of the JupyterHub authenticator class
+# @param spawner_class Class name for authenticating users.
+# @param authenticator_class Class  to use for spawning single-user servers
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
-# @param blocked_users List of users that cannot login
+# @param blocked_users List of users that cannot login and that jupyterhub can't sudo as
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
   String $bind_url = 'https://127.0.0.1:8000',
+  String $spawner_class = 'slurmformspawner.SlurmFormSpawner',
   String $authenticator_class = 'pam',
   Integer $idle_timeout = 0,
   String $traefik_version = '2.10.4',
@@ -172,10 +174,16 @@ class jupyterhub (
 
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
+  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
+  $prologue = $kernel_setup ? {
+    'venv'   => 'export VIRTUAL_ENV_DISABLE_PROMPT=1; source /opt/ipython-kernel-computecanada/bin/activate',
+    'module' => '',
+  }
   $jupyterhub_config_params = {
     'JupyterHub' => {
       'bind_url'                    => $bind_url,
       'authenticator_class'         => $authenticator_class,
+      'spawner_class'               => $spawner_class,
       'admin_access'                => Boolean(size($admin_groups) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
@@ -184,10 +192,21 @@ class jupyterhub (
       'admin_groups'  => $admin_groups,
       'blocked_users' => $blocked_users,
     },
-    'SlurmFormSpawner' => {
+    'Spawner' => {
+      'cmd' => "${node_prefix}/bin/jupyterhub-singleuser",
+    },
+    'BatchSpawnerBase' => {
       'batchspawner_singleuser_cmd' => "${node_prefix}/bin/batchspawner-singleuser",
-      'cmd'                         => "${node_prefix}/bin/jupyterhub-singleuser",
-      'slurm_bin_path'              => "${slurm_home}/bin",
+    },
+    'SlurmSpawner' => {
+      'exec_prefix'      => '',
+      'env_keep'         => [],
+      'batch_submit_cmd' => "sudo --preserve-env={keepvars} -u {username} ${slurm_home}/bin/sbatch --parsable",
+      'batch_cancel_cmd' => "sudo -u {username} ${slurm_home}/bin/scancel {job_id}",
+      'req_prologue'     => $prologue,
+    },
+    'SlurmFormSpawner' => {
+      'slurm_bin_path' => "${slurm_home}/bin",
     },
   }
 
@@ -232,18 +251,12 @@ class jupyterhub (
     require => User['jupyterhub'],
   }
 
-  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
-  $module_list = lookup('jupyterhub::kernel::module::list', Array[String], undef, [])
-  $venv_prefix = lookup('jupyterhub::kernel::venv::prefix', String, undef, '/opt/ipython-kernel')
   $submit_additions = lookup('jupyterhub::submit::additions', String, undef, '')
   file { 'submit.sh':
     path    => '/etc/jupyterhub/submit.sh',
     content => epp('jupyterhub/submit.sh', {
-        'kernel_setup' => $kernel_setup,
-        'module_list'  => join($module_list, ' '),
-        'node_prefix'  => $node_prefix,
-        'venv_prefix'  => $venv_prefix,
-        'additions'    => $submit_additions,
+        'prologue'  => $prologue,
+        'additions' => $submit_additions,
     }),
     mode    => '0644',
   }
@@ -273,12 +286,15 @@ class jupyterhub (
     mode    => '0644',
   }
 
-  exec { 'pip_install_venv':
-    command     => "pip install -r ${prefix}/hub-requirements.txt",
-    path        => ["${prefix}/bin", '/usr/bin', '/bin'],
+  exec { 'hub_pip_install':
+    command     => "uv pip install -r ${prefix}/hub-requirements.txt",
+    path        => ['/opt/uv/bin'],
     require     => Exec['jupyterhub_venv'],
     subscribe   => File["${prefix}/hub-requirements.txt"],
     refreshonly => true,
+    environment => [
+      "VIRTUAL_ENV=${prefix}",
+    ],
   }
 
   exec { 'create_self_signed_sslcert':
@@ -306,7 +322,7 @@ class jupyterhub (
     require   => File['submit.sh'],
     subscribe => [
       Archive['traefik'],
-      Exec['pip_install_venv'],
+      Exec['hub_pip_install'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],

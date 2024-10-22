@@ -19,11 +19,7 @@
 module load {{modules|join(' ')}}
 {% endif %}
 
-<% if $kernel_setup == 'venv' { %>
-# Activate kernel virtual environment
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-source <%= $venv_prefix %>/bin/activate
-<% } %>
+<%= $prologue %>
 
 # Launch jupyterhub single server
 {{cmd}}

@@ -1,29 +1,28 @@
 class jupyterhub::base (
   Stdlib::Absolutepath $prefix,
+  String $uv_version = '0.4.22',
 ) {
-  $pip_version = lookup('jupyterhub::pip::version')
-  $python3_version = lookup('jupyterhub::python3::version')
-  $python3_bin     = lookup('jupyterhub::python3::bin')
-  $python3_pkg     = lookup('jupyterhub::python3::pkg')
-  $python3_path    = lookup('jupyterhub::python3::path')
-
-  ensure_packages([$python3_pkg])
-
-  file { [$prefix, "${prefix}/bin"]:
-    ensure => directory,
+  ensure_resource('file', '/opt/uv', { 'ensure' => 'directory' })
+  ensure_resource('file', '/opt/uv/bin', { 'ensure' => 'directory', require => File['/opt/uv'] })
+  $arch = $::facts['os']['architecture']
+  archive { 'jh_install_uv':
+    path            => '/tmp/uv',
+    source          => "https://github.com/astral-sh/uv/releases/download/${uv_version}/uv-${arch}-unknown-linux-gnu.tar.gz",
+    extract         => true,
+    extract_path    => '/opt/uv/bin',
+    extract_command => 'tar xfz %s --strip-components=1',
+    creates         => '/opt/uv/bin/uv',
+    cleanup         => true,
+    require         => File['/opt/uv/bin'],
   }
+
+  $python3_version = lookup('jupyterhub::python3::version')
 
   exec { 'jupyterhub_venv':
-    command => "${$python3_bin} -m venv ${prefix}",
-    creates => "${prefix}/bin/python",
-    require => Package[$python3_pkg],
-    path    => [$python3_path],
-  }
-
-  exec { 'pip_upgrade_pip':
-    command => "pip install --upgrade --no-cache-dir pip==${pip_version}",
-    creates => "${prefix}/lib/python${python3_version}/site-packages/pip-${pip_version}.dist-info/",
-    require => Exec['jupyterhub_venv'],
-    path    => ["${prefix}/bin/"],
+    command     => "uv venv -p ${python3_version} ${prefix}",
+    creates     => "${prefix}/bin/python",
+    require     => Archive['jh_install_uv'],
+    path        => ['/opt/uv/bin'],
+    environment => ['XDG_DATA_HOME=/opt/uv/share'],
   }
 }

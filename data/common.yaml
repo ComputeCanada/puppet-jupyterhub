@@ -1,5 +1,8 @@
 # jupyterhub/data/common.yaml
 ---
+jupyterhub::python3::version: "3.12"
+jupyterhub::kernel::venv::python: "3.12"
+
 jupyterhub::notebook::version: 6.4.12
 jupyterhub::jupyterhub::version: 4.1.6
 jupyterhub::pamela::version: 1.2.0
@@ -17,7 +20,7 @@ jupyterhub::idle_culler::version: 1.2.1
 jupyterhub::oauthenticator::version: 14.2.0
 jupyterhub::announcement::version: 0.7.0
 jupyterhub::pammfauthenticator::version: 1.3.1
-jupyterhub::oauth2freeipa::version: 1.0.0
+jupyterhub::oauth2freeipa::version: 1.2.8
 
 jupyterhub::announcement::port: 8888
 jupyterhub::announcement::fixed_message: ''
@@ -37,10 +40,10 @@ jupyterhub::jupyterhub_config_hash:
         name: JupyterLab
       notebook:
         name: Jupyter Notebook
-        args: ['--SingleUserNotebookApp.default_url=/tree']
+        url: '/tree'
       terminal:
         name: Terminal
-        args: ['--SingleUserNotebookApp.default_url=/terminals/1']
+        url: '/terminals/1'
   SbatchForm:
     ui:
       choices: ['notebook', 'lab', 'terminal']
