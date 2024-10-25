@@ -56,7 +56,7 @@ class jupyterhub::node::install (
   }
 
   exec { 'node_pip_install':
-    command     => "uv pip install -r ${prefix}/node-requirements.txt",
+    command     => "uv pip install --no-deps -r ${prefix}/node-requirements.txt",
     path        => ['/opt/uv/bin'],
     environment => ["VIRTUAL_ENV=${prefix}"],
     require     => Exec['jupyterhub_venv'],
