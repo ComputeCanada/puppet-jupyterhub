@@ -49,12 +49,15 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  $node_prefix = $::jupyterhub::node::prefix
-  exec { 'install_kernel':
-    command => "python -m ipykernel install --name ${kernel_name} --display-name \"${display_name}\" --prefix ${node_prefix}",
-    creates => "${node_prefix}/share/jupyter/kernels/${kernel_name}/kernel.json",
-    require => [Exec['pip_ipykernel']],
-    path    => ["${prefix}/bin"],
+  $node_prefix = $jupyterhub::node::prefix
+  ensure_resource('file', "${node_prefix}/share/jupyter", { 'ensure' => 'directory', 'require' => Exec['node_pip_install'], })
+  ensure_resource('file', "${node_prefix}/share/jupyter/kernels", { 'ensure' => 'directory', require => File["${node_prefix}/share/jupyter"] })
+  file { "${node_prefix}/share/jupyter/kernels/${kernel_name}/kernel.json":
+    content => epp('jupyterhub/kernel.json', { 'prefix' => $prefix, 'display_name' => $display_name }),
+    require => File["${node_prefix}/share/jupyter/kernels"],
+    mode    => '0644',
+    owner   => 'root',
+    group   => 'root',
   }
 
   if (!$packages.empty) {

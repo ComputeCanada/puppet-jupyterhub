@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "<%= $prefix %>/bin/python",
+    "-m",
+    "ipykernel_launcher",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "<%= $display_name %>",
+  "language": "python",
+  "metadata": {
+    "debugger": true
+  }
+}
