@@ -56,7 +56,7 @@ class jupyterhub::node::install (
   }
 
   exec { 'node_pip_install':
-    command     => "uv pip install --no-deps -r ${prefix}/node-requirements.txt",
+    command     => "uv pip install -r ${prefix}/node-requirements.txt",
     path        => ['/opt/uv/bin'],
     environment => ["VIRTUAL_ENV=${prefix}"],
     require     => Exec['jupyterhub_venv'],
@@ -77,18 +77,6 @@ class jupyterhub::node::install (
       subscribe   => File["${prefix}/node-extra-requirements.txt"],
       refreshonly => true,
     }
-  }
-
-  # This make sure that the removal of ipykernel does not cause exception when using
-  # pkg_resources module. This was found out when trying to load jupyter-rsession-proxy
-  # JupyterLab. The extension could not load unless the ipython and ipykernel requirement
-  # were removed from notebook metadata.
-  $ipy_grep = "grep -l -E 'Requires-Dist: (ipykernel|ipython)' ${prefix}/lib/python${python3_version}/site-packages/*.dist-info/METADATA"
-  exec { 'sed_out_ipy_metadata':
-    command => "${ipy_grep} | xargs sed -i -E '/^Requires-Dist: ipykernel|ipython/d'",
-    onlyif  => "${ipy_grep} -q",
-    path    => ['/usr/bin'],
-    require => Exec['node_pip_install'],
   }
 
   if $jupyterlmod_version and $jupyter_server_proxy_version {
