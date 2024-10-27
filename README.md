@@ -43,21 +43,8 @@ To install the Jupyter notebook component on the compute node:
 include jupyterhub::node
 ```
 
-If the compute nodes cannot access Internet, consider defining the http proxy variables :
-
-```
-class { 'jupyterhub::node':
-    http_proxy  => 'http://squid.yourdomain.tld:3128',
-    https_proxy => 'http://squid.yourdomain.tld:3128'
-}
-```
-
-or using hieradata:
-
-```
-jupyterhub::node::http_proxy: 'http://squid.yourdomain.tld:3128'
-jupyterhub::node::https_proxy: 'http://squid.yourdomain.tld:3128'
-```
+If the compute nodes cannot access Internet, configure the puppet agent to use
+[`http_proxy_host`](https://www.puppet.com/docs/puppet/8/configuration.html#http-proxy-host).
 
 ## Hieradata Configuration
 

@@ -1,16 +1,7 @@
 class jupyterhub::node (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Array[String] $packages = [],
-  Optional[String] $http_proxy = undef,
-  Optional[String] $https_proxy = undef,
 ) {
-  if ($http_proxy != undef and $https_proxy != undef) {
-    # Lets use a proxy for all the pip install
-    Exec {
-      environment => ["http_proxy=${http_proxy}", "https_proxy=${https_proxy}"],
-    }
-  }
-
   ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
 
   class { 'jupyterhub::node::install':
