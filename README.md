@@ -31,7 +31,7 @@ mainly : `squeue`, `sbatch`, `sinfo`, `sacctmgr` and `scontrol`.
 ### hub
 To install JuptyerHub with the default options:
 
-```
+```puppet
 include jupyterhub
 ```
 
@@ -39,7 +39,7 @@ include jupyterhub
 
 To install the Jupyter notebook component on the compute node:
 
-```
+```puppet
 include jupyterhub::node
 ```
 
@@ -102,7 +102,7 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 
 To control SlurmFormSpawner options, use `jupyterhub::jupyterhub_config_hash` like this:
 
-```
+```yaml
 jupyterhub::jupyterhub_config_hash:
   SbatchForm:
     account:
@@ -184,7 +184,7 @@ package is readily installed.
 
 
 In this example, we configure JupyterHub to authenticate with GitHub and create an account in FreeIPA.
-```
+```yaml
 jupyterhub::authenticator_class: "ipa-github"
 jupyterhub::jupyterhub_config_hash:
   GitHubOAuthenticator:
@@ -197,7 +197,7 @@ jupyterhub::jupyterhub_config_hash:
 ### Jupyter Notebook options
 
 To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::jupyter_notebook_config_hash` like this:
-```
+```yaml
 jupyterhub::jupyter_notebook_config_hash:
   ServerProxy:
     servers:
