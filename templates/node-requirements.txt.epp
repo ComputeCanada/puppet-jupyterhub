@@ -56,7 +56,6 @@ jupyter-core==5.7.2
 jupyter-events==0.10.0
 jupyter-lsp==2.2.5
 jupyter-server==2.14.2
-jupyter-server-proxy==3.2.3
 jupyter-server-terminals==0.5.3
 jupyter-telemetry==0.1.0
 jupyterlab-pygments==0.3.0
