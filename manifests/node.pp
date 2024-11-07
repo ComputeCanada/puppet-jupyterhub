@@ -24,7 +24,6 @@ class jupyterhub::node::install (
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
-  $bokeh_version = lookup('jupyterhub::bokeh::version')
   $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
@@ -38,7 +37,6 @@ class jupyterhub::node::install (
         'jupyterlab_version'             => $jupyterlab_version,
         'jupyter_server_proxy_version'   => $jupyter_server_proxy_version,
         'jupyterlmod_version'            => $jupyterlmod_version,
-        'bokeh_version'                  => $bokeh_version,
         'jupyterlab_nvdashboard_version' => $jupyterlab_nvdashboard_version,
         'jupyter_rsession_proxy_version' => $jupyter_rsession_proxy_version,
         'jupyter_desktop_server_url'     => $jupyter_desktop_server_url,
