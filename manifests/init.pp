@@ -190,6 +190,7 @@ class jupyterhub (
     },
     'Authenticator' => {
       'admin_groups'  => $admin_groups,
+      'allow_all'     => true,
       'blocked_users' => $blocked_users,
     },
     'Spawner' => {
