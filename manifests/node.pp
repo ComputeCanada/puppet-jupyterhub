@@ -78,7 +78,7 @@ class jupyterhub::node::install (
     }
 
     # disable jupyter-server-proxy nbextension
-    file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy-nbextension.json":
+    file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy.json":
       content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
       subscribe => Exec['node_pip_install'],
     }
