@@ -32,6 +32,7 @@ cryptography==43.0.3
 debugpy==1.8.8
 decorator==5.1.1
 defusedxml==0.7.1
+entrypoints==0.4
 executing==2.1.0
 fastjsonschema==2.20.0
 fqdn==1.5.1
@@ -51,7 +52,7 @@ json5==0.9.25
 jsonpointer==3.0.0
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
-jupyter-client==8.6.3
+jupyter-client==7.4.9
 jupyter-core==5.7.2
 jupyter-events==0.10.0
 jupyter-lsp==2.2.5
