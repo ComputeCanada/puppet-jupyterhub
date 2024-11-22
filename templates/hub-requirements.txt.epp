@@ -8,6 +8,7 @@ pamela==<%= $pamela_version %>
 pammfauthenticator @ https://github.com/cmd-ntrf/pammfauthenticator/archive/refs/tags/v<%= $pammfauthenticator_version %>.zip
 oauthenticator==<%= $oauthenticator_version %>
 oauth2freeipa @ https://github.com/MagicCastle/oauth2freeipa/archive/refs/tags/v<%= $oauth2freeipa_version %>.zip
+jupyterhub-ltiauthenticator==<%= $ltiauthenticator_version %>
 
 aiofiles==24.1.0
 aiohappyeyeballs==2.4.3
