@@ -194,6 +194,13 @@ jupyterhub::jupyterhub_config_hash:
     client_secret: "DCBA-123-456"
 ```
 
+### LTIAuthenticator usage example
+
+By default, puppet-jupyterhub configures the authentication with PAM, but the ltiauthenticator
+package is readily installed.
+
+TODO
+
 ### Jupyter Notebook options
 
 To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::jupyter_notebook_config_hash` like this:
