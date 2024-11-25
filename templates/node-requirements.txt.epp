@@ -7,6 +7,7 @@ batchspawner==<%= $batchspawner_version %>
 <% if $jupyter_server_proxy_version { %>jupyter-server-proxy==<%= $jupyter_server_proxy_version %><% } %>
 <% if $jupyterlab_nvdashboard_version { %>jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %><% } %>
 <% if $jupyterlmod_version { %>jupyterlmod==<%= $jupyterlmod_version %><% } %>
+<% if $nbgitpuller_version { %>nbgitpuller==<%= $nbgitpuller_version %><% } %>
 
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
