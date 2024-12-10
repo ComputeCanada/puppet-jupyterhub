@@ -9,12 +9,14 @@ class jupyterhub::kernel::venv (
 ) {
   if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
-      command => "uv venv --seed --python-preference system ${prefix}",
+      command => "uv venv --seed --python ${python} ${prefix}",
       creates => "${prefix}/bin/python",
       require => Archive['jh_install_uv'],
       path    => [
         '/opt/uv/bin',
         dirname($python),
+        '/bin',
+        '/usr/bin',
       ],
     }
   } else {
