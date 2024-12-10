@@ -20,6 +20,7 @@ class jupyterhub::node::install (
 ) {
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
+  $nbgitpuller_version = lookup('jupyterhub::nbgitpuller::version')
   $notebook_version = lookup('jupyterhub::notebook::version')
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
@@ -34,6 +35,7 @@ class jupyterhub::node::install (
         'jupyterhub_version'             => $jupyterhub_version,
         'batchspawner_version'           => $batchspawner_version,
         'notebook_version'               => $notebook_version,
+        'nbgitpuller_version'            => $nbgitpuller_version,
         'jupyterlab_version'             => $jupyterlab_version,
         'jupyter_server_proxy_version'   => $jupyter_server_proxy_version,
         'jupyterlmod_version'            => $jupyterlmod_version,
