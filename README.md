@@ -57,6 +57,9 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 | `jupyterhub::notebook::version` | String | notebook package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::batchspawner::version` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::oauthenticator::version` | String | oauthenticator package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::ltiauthenticator::version` | String | ltiauthenticator package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::oauth2freeipa::version` | String | oauth2freeipa package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::jupyterhub_traefik_proxy::version` | String |  jupyterhub-traefik-proxy package version to install | refer to [data/common.yaml](data/common.yaml) |
 
@@ -193,6 +196,22 @@ jupyterhub::jupyterhub_config_hash:
     client_id: "XYZ"
     client_secret: "DCBA-123-456"
 ```
+
+### LTIAuthenticator usage example
+
+By default, puppet-jupyterhub configures the authentication with PAM, but the ltiauthenticator
+package is readily installed. This allows to integrate with LTI (Learning Tools Interoperability) providers.
+
+In this example, we configure JupyterHub to authenticate with an LTI 1.1 provider
+```yaml
+jupyterhub::authenticator_class: "ipa-lti11"
+jupyterhub::jupyterhub_config_hash:
+  LTI11Authenticator:
+    consumers: { '<lti_client_key>': '<lti_shared_secret'> ]}
+    username_key: 'lis_person_sourcedid'
+```
+For more information about the LTI Authenticator for JupyterHub, see [its documentation for version 1.1](https://ltiauthenticator.readthedocs.io/en/latest/lti11/getting-started.html). 
+For LTI 1.3, you would change `ipa-lti11` by `ipa-lti13` and adjust the hash according to [LTI Authenticator's documentation for version 1.3](https://ltiauthenticator.readthedocs.io/en/latest/lti13/getting-started.html).
 
 ### Jupyter Notebook options
 
