@@ -100,6 +100,7 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | `jupyterhub::kernel::venv::prefix` | Stdlib::Absolutepath | Absolute path where the IPython kernel virtual environment will be installed | `/opt/ipython-kernel` |
 | `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | `/usr/bin/python3` |
 | `jupyterhub::kernel::venv::pip_environment`| Hash[String, String] | Hash of environment variables configured before calling installing `venv::packages` | `{}` |
+| `jupyterhub::kernel::venv::kernel_environment`| Hash[String, String] | Hash of environment variables configured before the kernel is started | `{}` |
 | `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
 
 ### SlurmFormSpawner's options
