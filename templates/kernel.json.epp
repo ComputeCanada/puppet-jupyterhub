@@ -10,5 +10,6 @@
   "language": "python",
   "metadata": {
     "debugger": true
-  }
+  },
+  "env": <%= $env.to_json_pretty %>
 }

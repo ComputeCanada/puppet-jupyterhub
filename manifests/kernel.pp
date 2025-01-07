@@ -5,7 +5,8 @@ class jupyterhub::kernel::venv (
   String $kernel_name = 'python3',
   String $display_name = 'Python 3',
   Array[String] $packages = [],
-  Hash $pip_environment = {}
+  Hash $pip_environment = {},
+  Hash $kernel_environment = {}
 ) {
   if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
@@ -56,7 +57,7 @@ class jupyterhub::kernel::venv (
   ensure_resource('file', "${node_prefix}/share/jupyter/kernels", { 'ensure' => 'directory', require => File["${node_prefix}/share/jupyter"] })
   ensure_resource('file', "${node_prefix}/share/jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${node_prefix}/share/jupyter/kernels"] })
   file { "${node_prefix}/share/jupyter/kernels/${kernel_name}/kernel.json":
-    content => epp('jupyterhub/kernel.json', { 'prefix' => $prefix, 'display_name' => $display_name }),
+    content => epp('jupyterhub/kernel.json', { 'prefix' => $prefix, 'display_name' => $display_name, 'env' => $kernel_environment }),
     require => File["${node_prefix}/share/jupyter/kernels/${kernel_name}"],
     mode    => '0644',
     owner   => 'root',
