@@ -63,6 +63,9 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 | `jupyterhub::pammfauthenticator::url` | String |  Url to pammfauthenticator source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::jupyterhub_traefik_proxy::version` | String |  jupyterhub-traefik-proxy package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::nbgitpuller::version` | String | nbgitpuller package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::ipywidgets::version` | String | ipywidgets package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::widgetsnbextension::version` | String | widgetsnbextension package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::jupyterlab_widgets::version` | String | jupyterlab_widgets package version to install | refer to [data/common.yaml](data/common.yaml) |
 
 ### Hub options
 

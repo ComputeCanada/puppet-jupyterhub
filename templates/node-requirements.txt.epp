@@ -8,6 +8,9 @@ batchspawner==<%= $batchspawner_version %>
 <% if $jupyterlab_nvdashboard_version { %>jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %><% } %>
 <% if $jupyterlmod_version { %>jupyterlmod==<%= $jupyterlmod_version %><% } %>
 <% if $nbgitpuller_version { %>nbgitpuller==<%= $nbgitpuller_version %><% } %>
+<% if $ipywidgets_version { %>ipywidgets==<%= $ipywidgets_version %><% } %>
+<% if $widgetsnbextension_version { %>widgetsnbextension==<%= $widgetsnbextension_version %><% } %>
+<% if $jupyterlab_widgets_version { %>jupyterlab_widgets==<%= $jupyterlab_widgets_version %><% } %>
 
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10

@@ -4,6 +4,9 @@ jupyterhub::python3::version: "3.12"
 jupyterhub::kernel::venv::python: "3.12"
 
 jupyterhub::nbgitpuller::version: 1.2.1
+jupyterhub::ipywidgets::version: 8.1.5
+jupyterhub::widgetsnbextension::version: 4.0.13
+jupyterhub::jupyterlab_widgets::version: 3.0.13
 jupyterhub::notebook::version: 6.5.7
 jupyterhub::jupyterhub::version: 4.1.6
 jupyterhub::pamela::version: 1.2.0
