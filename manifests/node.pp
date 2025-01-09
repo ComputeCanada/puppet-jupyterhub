@@ -21,6 +21,9 @@ class jupyterhub::node::install (
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $nbgitpuller_version = lookup('jupyterhub::nbgitpuller::version')
+  $ipywidgets_version = lookup('jupyterhub::ipywidgets::version')
+  $widgetsnbextension_version = lookup('jupyterhub::widgetsnbextension::version')
+  $jupyterlab_widgets_version = lookup('jupyterhub::jupyterlab_widgets::version')
   $notebook_version = lookup('jupyterhub::notebook::version')
   $jupyterlab_version = lookup('jupyterhub::jupyterlab::version')
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
@@ -36,6 +39,9 @@ class jupyterhub::node::install (
         'batchspawner_version'           => $batchspawner_version,
         'notebook_version'               => $notebook_version,
         'nbgitpuller_version'            => $nbgitpuller_version,
+        'ipywidgets_version'             => $ipywidgets_version,
+        'widgetsnbextension_version'     => $widgetsnbextension_version,
+        'jupyterlab_widgets_version'     => $jupyterlab_widgets_version,
         'jupyterlab_version'             => $jupyterlab_version,
         'jupyter_server_proxy_version'   => $jupyter_server_proxy_version,
         'jupyterlmod_version'            => $jupyterlmod_version,
