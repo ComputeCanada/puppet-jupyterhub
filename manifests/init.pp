@@ -175,8 +175,9 @@ class jupyterhub (
   $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
+  $kernel_prefix = lookup('jupyterhub::kernel::venv::prefix', Stdlib::Absolutepath, undef, '/opt/ipython-kernel')
   $prologue = $kernel_setup ? {
-    'venv'   => 'export VIRTUAL_ENV_DISABLE_PROMPT=1; source /opt/ipython-kernel-computecanada/bin/activate',
+    'venv'   => "export VIRTUAL_ENV_DISABLE_PROMPT=1; source ${kernel_prefix}/bin/activate",
     'module' => '',
   }
   $jupyterhub_config_params = {
