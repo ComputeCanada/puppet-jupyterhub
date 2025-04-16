@@ -3,12 +3,13 @@
 # @param slurm_home Path to Slurm installation folder
 # @param bind_url Public facing URL of the whole JupyterHub application
 # @param spawner_class Class name for authenticating users.
-# @param authenticator_class Class  to use for spawning single-user servers
+# @param authenticator_class Class to use for spawning single-user servers
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
 # @param blocked_users List of users that cannot login and that jupyterhub can't sudo as
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
+# @param disable_user_config Disable per-user configuration of single-user servers
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
@@ -21,6 +22,7 @@ class jupyterhub (
   Array[String] $admin_groups = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
+  Boolean $disable_user_config = false,
   Optional[String] $prometheus_token = undef,
 ) {
   ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
@@ -195,6 +197,7 @@ class jupyterhub (
       'blocked_users' => $blocked_users,
     },
     'Spawner' => {
+      'disable_user_config' => $disable_user_config,
       'cmd' => "${node_prefix}/bin/jupyterhub-singleuser",
     },
     'BatchSpawnerBase' => {
