@@ -15,7 +15,7 @@ jupyterhub::batchspawner::version: 1.3.0
 jupyterhub::slurmformspawner::version: 2.8.1
 jupyterhub::jupyterhub_traefik_proxy::version: 2.0.0
 jupyterhub::jupyterlab::version: 4.3.0
-jupyterhub::jupyterlmod::version: 5.2.1
+jupyterhub::jupyterlmod::version: 5.2.2
 jupyterhub::jupyterlab_nvdashboard::version: 0.11.0
 jupyterhub::jupyter_server_proxy::version: 4.4.0
 jupyterhub::jupyter_rsession_proxy::version: 2.2.1
