@@ -215,8 +215,49 @@ jupyterhub::jupyterhub_config_hash:
     consumers: { '<lti_client_key>': '<lti_shared_secret'> ]}
     username_key: 'lis_person_sourcedid'
 ```
-For more information about the LTI Authenticator for JupyterHub, see [its documentation for version 1.1](https://ltiauthenticator.readthedocs.io/en/latest/lti11/getting-started.html). 
+For more information about the LTI Authenticator for JupyterHub, see [its documentation for version 1.1](https://ltiauthenticator.readthedocs.io/en/latest/lti11/getting-started.html).
 For LTI 1.3, you would change `ipa-lti11` by `ipa-lti13` and adjust the hash according to [LTI Authenticator's documentation for version 1.3](https://ltiauthenticator.readthedocs.io/en/latest/lti13/getting-started.html).
+
+### OpenID Connect (OIDC) usage example
+It is possible to configure JupyterHub to delegate authentication to an ODIC provider. The configuration might look someting like this:
+```yaml
+jupyterhub::authenticator_class: 'oauthenticator.generic.GenericOAuthenticator'
+jupyterhub::jupyterhub_config_hash:
+  GenericOAuthenticator:
+    client_id: '<client_id>'
+    client_secret: '<client_secret>'
+    authorize_url: 'https://<identity-provider-url>/idp/profile/oidc/authorize'
+    token_url: 'https://<identity-provider-url>/idp/profile/oidc/token'
+    userdata_url: 'https://<identity-provider-url>/idp/profile/oidc/userinfo'
+    oauth_callback_url: 'https://<hostname>/hub/oauth_callback'
+    username_key: 'preferred_username'
+    scope: ['openid', '<userinfo scope>']
+    allowed_groups: [<list of groups that are allowed>]
+    claim_groups_key: '<attribute that contains groups>'
+    required_groups: [<list of groups that are required>]
+```
+
+In the above example, we have defined a brand new `required_groups` parameter, which we can implement via custom Python code in `/etc/jupyterhub/jupyterhub_config.py`:
+```py
+`def require_groups(
+    authenticator: Authenticator, handler, auth_model: dict
+) -> dict | None:
+    claim_groups_key = authenticator.config['GenericOAuthenticator']['claim_groups_key']
+    in_groups = auth_model.get('auth_state', {}).get('oauth_user', {}).get(claim_groups_key, [])
+    required_groups = authenticator.config['GenericOAuthenticator']['required_groups']
+    for group in required_groups:
+        if group not in in_groups:
+            authenticator.log.warning(
+                "Not allowing access to user %s not in group %s (groups=%s)",
+                auth_model["name"],
+                group,
+                in_groups,
+            )
+            return None
+    return auth_model
+
+c.GenericOAuthenticator.post_auth_hook = require_groups
+```
 
 ### Jupyter Notebook options
 
