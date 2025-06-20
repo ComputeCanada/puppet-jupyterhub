@@ -57,6 +57,7 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 | `jupyterhub::notebook::version` | String | notebook package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::batchspawner::version` | String | Url to batchspawner source code release file | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::slurmformspawner::version` | String | slurmformspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::wrapspawner::version` | String | wrapspawner package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::oauthenticator::version` | String | oauthenticator package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::ltiauthenticator::version` | String | ltiauthenticator package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::oauth2freeipa::version` | String | oauth2freeipa package version to install | refer to [data/common.yaml](data/common.yaml) |
@@ -180,6 +181,25 @@ jupyterhub::jupyterhub_config_hash:
     req_account: "def-sponsor00"
     req_memory: "256"
     req_nprocs: "1"
+    req_runtime: "3600"
+    req_options: "--oversubscribe"
+    default_url: "/tree" # use nbclassic instead of lab
+```
+
+### ProfilesSpawner usage example
+
+[`ProfilesSpawner`](https://github.com/jupyterhub/wrapspawner) can be used instead of SlurmFormSpawner
+when job configuration with a complete form is not desirable, but some predefined options might be:
+```yaml
+jupyterhub::spawner_class: 'wrapspawner.ProfilesSpawner'
+jupyterhub::jupyterhub_config_hash:
+  ProfilesSpawner:
+    profiles:
+      - ["Base", 'base', 'batchspawner.SlurmSpawner', { 'req_nprocs': '1' } ]
+      - ["Parallel", 'parallel', 'batchspawner.SlurmSpawner', { 'req_nprocs': '2' } ]
+  SlurmSpawner:
+    req_account: "def-sponsor00"
+    req_memory: "256"
     req_runtime: "3600"
     req_options: "--oversubscribe"
     default_url: "/tree" # use nbclassic instead of lab
