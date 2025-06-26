@@ -5,7 +5,7 @@ class jupyterhub::kernel::venv (
   String $kernel_name = 'python3',
   String $display_name = 'Python 3',
   Array[String] $packages = [],
-  Hash $pip_environment = {},
+  Hash[String, Variant[String, Integer, Array[String]]] $pip_environment = {},
   Hash $kernel_environment = {}
 ) {
   if $python =~ Stdlib::Absolutepath {
@@ -66,7 +66,15 @@ class jupyterhub::kernel::venv (
 
   if (!$packages.empty) {
     $pip_env_list = $pip_environment.reduce([]) |Array $list, Array $value| {
-      $list + ["${value[0]}=${value[1]}"]
+      if is_array($value[1]) {
+        $concat = $value[1].reduce("") | String $concat, String $token | {
+          "${token}:${concat}"
+        }
+        $list + ["${value[0]}=${concat}"]
+      }
+      else {
+        $list + ["${value[0]}=${value[1]}"]
+      }
     }
 
     $pkg_string = join($packages, "\n")
