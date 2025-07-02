@@ -13,7 +13,6 @@
         "service"      : "jupyterhub-login"
     },
     "Spawner": {
-        "disable_user_config": false,
         "args": [
             "--KernelSpecManager.ensure_native_kernel=False"
         ]
