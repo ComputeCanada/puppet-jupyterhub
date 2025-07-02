@@ -114,6 +114,7 @@ class jupyterhub (
   $idle_culler_version = lookup('jupyterhub::idle_culler::version')
   $announcement_version = lookup('jupyterhub::announcement::version')
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
+  $wrapspawner_version = lookup('jupyterhub::wrapspawner::version')
 
   $announcement_port = lookup('jupyterhub::announcement::port')
   $announcement_service = {
@@ -281,6 +282,7 @@ class jupyterhub (
         'jupyterhub_version'               => $jupyterhub_version,
         'batchspawner_version'             => $batchspawner_version,
         'slurmformspawner_version'         => $slurmformspawner_version,
+        'wrapspawner_version'              => $wrapspawner_version,
         'oauthenticator_version'           => $oauthenticator_version,
         'ltiauthenticator_version'         => $ltiauthenticator_version,
         'oauth2freeipa_version'            => $oauth2freeipa_version,
