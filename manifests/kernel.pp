@@ -6,8 +6,7 @@ class jupyterhub::kernel::venv (
   String $display_name = 'Python 3',
   Array[String] $packages = [],
   Hash[String, Variant[String, Integer, Array[String]]] $pip_environment = {},
-  Hash $kernel_environment = {},
-  Stdlib::Absolutepath $kernels_path = '/opt/jupyter_kernels',
+  Hash $kernel_environment = {}
 ) {
   if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
@@ -53,15 +52,12 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  if $kernels_path == "%{lookup('jupyterhub::node::prefix')}/share/jupyter" {
-    Exec['node_pip_install'] -> File[$kernels_path]
-  }
-  ensure_resource('file', $kernels_path, { 'ensure' => 'directory', })
-  ensure_resource('file', "${kernels_path}/kernels", { 'ensure' => 'directory', require => File["${kernels_path}"] })
-  ensure_resource('file', "${kernels_path}/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${kernels_path}/kernels"] })
-  file { "${kernels_path}/kernels/${kernel_name}/kernel.json":
+  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv']})
+  ensure_resource('file', "${prefix}/puppet-jupyter/kernels", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter"] })
+  ensure_resource('file', "${prefix}/puppet-jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter/kernels"] })
+  file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/kernel.json":
     content => epp('jupyterhub/kernel.json', { 'prefix' => $prefix, 'display_name' => $display_name, 'env' => $kernel_environment }),
-    require => File["${kernels_path}/kernels/${kernel_name}"],
+    require => File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
