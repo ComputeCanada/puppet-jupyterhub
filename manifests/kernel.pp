@@ -52,13 +52,12 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  $node_prefix = $jupyterhub::node::prefix
-  ensure_resource('file', "${node_prefix}/share/jupyter", { 'ensure' => 'directory', 'require' => Exec['node_pip_install'], })
-  ensure_resource('file', "${node_prefix}/share/jupyter/kernels", { 'ensure' => 'directory', require => File["${node_prefix}/share/jupyter"] })
-  ensure_resource('file', "${node_prefix}/share/jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${node_prefix}/share/jupyter/kernels"] })
-  file { "${node_prefix}/share/jupyter/kernels/${kernel_name}/kernel.json":
+  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv']})
+  ensure_resource('file', "${prefix}/puppet-jupyter/kernels", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter"] })
+  ensure_resource('file', "${prefix}/puppet-jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter/kernels"] })
+  file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/kernel.json":
     content => epp('jupyterhub/kernel.json', { 'prefix' => $prefix, 'display_name' => $display_name, 'env' => $kernel_environment }),
-    require => File["${node_prefix}/share/jupyter/kernels/${kernel_name}"],
+    require => File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
     mode    => '0644',
     owner   => 'root',
     group   => 'root',

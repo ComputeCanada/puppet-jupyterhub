@@ -180,7 +180,7 @@ class jupyterhub (
   $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
   $kernel_prefix = lookup('jupyterhub::kernel::venv::prefix', Stdlib::Absolutepath, undef, '/opt/ipython-kernel')
   $prologue = $kernel_setup ? {
-    'venv'   => "export VIRTUAL_ENV_DISABLE_PROMPT=1; source ${kernel_prefix}/bin/activate",
+    'venv'   => "export JUPYTER_PATH=${kernel_prefix}/puppet-jupyter:\$JUPYTER_PATH; export VIRTUAL_ENV_DISABLE_PROMPT=1; source ${kernel_prefix}/bin/activate",
     'module' => '',
   }
   $jupyterhub_config_params = {
