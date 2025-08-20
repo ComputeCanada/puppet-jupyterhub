@@ -65,7 +65,7 @@ class jupyterhub::kernel::venv (
 
   if (!$packages.empty) {
     $pip_env_list = $pip_environment.reduce([]) |Array $list, Array $value| {
-      if is_array($value[1]) {
+      if $value[1] =~ Stdlib::Compat::Array {
         $concat = $value[1].reduce("") | String $concat, String $token | {
           "${token}:${concat}"
         }
