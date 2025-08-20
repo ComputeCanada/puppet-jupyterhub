@@ -65,7 +65,10 @@ class jupyterhub::kernel::venv (
 
   file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/logo-svg.svg":
     source  => "file://${prefix}/share/jupyter/kernels/python3/logo-svg.svg",
-    require => File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
+    require => [
+      File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
+      Exec['pip_ipykernel'],
+    ],
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
