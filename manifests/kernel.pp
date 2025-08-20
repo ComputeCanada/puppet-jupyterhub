@@ -63,6 +63,14 @@ class jupyterhub::kernel::venv (
     group   => 'root',
   }
 
+  file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/logo-svg.svg":
+    source  => "file://${prefix}/share/jupyter/kernels/python3/logo-svg.svg",
+    require => File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
+    mode    => '0644',
+    owner   => 'root',
+    group   => 'root',
+  }
+
   if (!$packages.empty) {
     $pip_env_list = $pip_environment.reduce([]) |Array $list, Array $value| {
       if $value[1] =~ Stdlib::Compat::Array {
