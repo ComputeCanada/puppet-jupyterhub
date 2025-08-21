@@ -1,23 +1,40 @@
 class jupyterhub::node (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
-  Array[String] $packages = [],
+  Enum['none', 'venv'] $install_method = 'venv',
 ) {
-  ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
+  include jupyterhub::node::config
+  include jupyterhub::kernel
 
-  class { 'jupyterhub::node::install':
-    prefix   => $prefix,
-    packages => $packages,
+  if $install_method == 'venv' {
+    include jupyterhub::node::install
   }
-  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
-  if $kernel_setup == 'venv' {
-    include jupyterhub::kernel::venv
+}
+
+class jupyterhub::node::config {
+  $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
+
+  ensure_resource('file', '/etc/jupyter', { 'ensure' => 'directory' })
+
+  file { 'jupyter_notebook_config.json' :
+    path    => '/etc/jupyter/jupyter_notebook_config.json',
+    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    mode    => '0644',
+    require => File['/etc/jupyter'],
+  }
+
+  file { 'jupyter_server_config.json' :
+    path    => '/etc/jupyter/jupyter_server_config.json',
+    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    mode    => '0644',
+    require => File['node_pip_install'],
   }
 }
 
 class jupyterhub::node::install (
-  Stdlib::Absolutepath $prefix,
+  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Array[String] $packages = [],
 ) {
+  ensure_resource('class', 'jupyterhub::base::install', { 'prefix' => $prefix })
+
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $nbgitpuller_version = lookup('jupyterhub::nbgitpuller::version')
@@ -90,21 +107,6 @@ class jupyterhub::node::install (
       content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
       subscribe => Exec['node_pip_install'],
     }
-  }
-
-  $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
-  file { 'jupyter_notebook_config.json' :
-    path    => "${prefix}/etc/jupyter/jupyter_notebook_config.json",
-    content => to_json_pretty($jupyter_notebook_config_hash, true),
-    mode    => '0644',
-    require => Exec['node_pip_install'],
-  }
-
-  file { 'jupyter_server_config.json' :
-    path    => "${prefix}/etc/jupyter/jupyter_server_config.json",
-    content => to_json_pretty($jupyter_notebook_config_hash, true),
-    mode    => '0644',
-    require => Exec['node_pip_install'],
   }
 
   file { "${prefix}/lib/usercustomize":

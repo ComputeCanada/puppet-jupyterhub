@@ -1,4 +1,18 @@
 # 
+class jupyterhub::kernel (
+  Enum['none', 'venv'] $install_method = 'venv',
+  Optional[Enum['venv', 'module']] $setup = undef,
+) {
+  if $setup {
+    deprecation('jupyterhub::kernel::setup', 'jupyterhub::kernel::setup is deprecated, use jupyterhub::kernel::install_method instead')
+    if $setup == 'venv' {
+      include jupyterhub::kernel::venv
+    }
+  } elsif $install_method == 'venv' {
+    include jupyterhub::kernel::venv
+  }
+}
+
 class jupyterhub::kernel::venv (
   Variant[Stdlib::Absolutepath, String] $python,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',

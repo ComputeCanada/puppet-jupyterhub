@@ -1,4 +1,4 @@
-class jupyterhub::base (
+class jupyterhub::base::install (
   Stdlib::Absolutepath $prefix,
   String $uv_version = '0.4.22',
 ) {

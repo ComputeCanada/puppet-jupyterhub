@@ -25,7 +25,7 @@ class jupyterhub (
   Boolean $disable_user_config = false,
   Optional[String] $prometheus_token = undef,
 ) {
-  ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
+  ensure_resource('class', 'jupyterhub::base::install', { 'prefix' => $prefix })
 
   user { 'jupyterhub':
     ensure  => 'present',
