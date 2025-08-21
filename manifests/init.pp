@@ -1,15 +1,17 @@
 # @summary Class configuring a JupyterHub server with SlurmFormSpawner
 # @param prefix Absolute path where JupyterHub will be installed
+# @param python Python version to be installed by uv
 # @param slurm_home Path to Slurm installation folder
 # @param bind_url Public facing URL of the whole JupyterHub application
-# @param spawner_class Class name for authenticating users.
-# @param authenticator_class Class to use for spawning single-user servers
+# @param spawner_class Class to use for spawning single-user servers
+# @param authenticator_class Class name for authenticating users.
 # @param idle_timeout Time in seconds after which an inactive notebook is culled
 # @param traefik_version Version of traefik to install on the hub instance
 # @param admin_groups List of user groups that can act as JupyterHub admin
 # @param blocked_users List of users that cannot login and that jupyterhub can't sudo as
 # @param jupyterhub_config_hash Custom hash merged to JupyterHub JSON main hash
 # @param disable_user_config Disable per-user configuration of single-user servers
+# @param packages List of extra packages to install in the hub virtual environment
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
   Stdlib::Absolutepath $prefix,
@@ -171,7 +173,7 @@ class jupyterhub (
   $services = [$announcement_service] + $idle_culler_services + $prometheus_services
   $roles = $announcement_roles + $idle_culler_roles + $prometheus_roles
 
-  $node_prefix = lookup('jupyterhub::node::install::prefix')
+  $node_prefix = lookup('jupyterhub::node::prefix')
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
   $kernel_setup = lookup('jupyterhub::kernel::install_method')
   $kernel_prefix = lookup('jupyterhub::kernel::venv::prefix')
