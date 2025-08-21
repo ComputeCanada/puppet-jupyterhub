@@ -30,7 +30,7 @@ class jupyterhub::node::config {
 }
 
 class jupyterhub::node::install (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub_node',
+  Stdlib::Absolutepath $prefix,
   Array[String] $packages = [],
 ) {
   include jupyterhub::uv::install

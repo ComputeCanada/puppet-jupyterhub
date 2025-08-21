@@ -40,6 +40,7 @@ jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-des
 jupyterhub::kernel::install_method: venv
 jupyterhub::kernel::venv::python3: "%{lookup('jupyterhub::python3::path')}/%{lookup('jupyterhub::python3::bin')}"
 
+jupyterhub::node::install::prefix: /opt/jupyterhub_node
 
 jupyterhub::jupyterhub_config_hash:
   SlurmFormSpawner:

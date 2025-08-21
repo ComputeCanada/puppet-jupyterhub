@@ -175,7 +175,7 @@ class jupyterhub (
   $services = [$announcement_service] + $idle_culler_services + $prometheus_services
   $roles = $announcement_roles + $idle_culler_roles + $prometheus_roles
 
-  $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
+  $node_prefix = lookup('jupyterhub::node::install::prefix')
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
   $kernel_setup = lookup('jupyterhub::kernel::install_method', Enum['none', 'venv'], undef, 'venv')
   $kernel_prefix = lookup('jupyterhub::kernel::venv::prefix', Stdlib::Absolutepath, undef, '/opt/ipython-kernel')
