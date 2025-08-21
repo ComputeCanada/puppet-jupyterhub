@@ -12,7 +12,8 @@
 # @param disable_user_config Disable per-user configuration of single-user servers
 # @param prometheus_token Token that Prometheus can use to scrape JupyterHub's metrics
 class jupyterhub (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
+  Stdlib::Absolutepath $prefix,
+  String $python,
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
   String $bind_url = 'https://127.0.0.1:8000',
   String $spawner_class = 'slurmformspawner.SlurmFormSpawner',
@@ -25,7 +26,7 @@ class jupyterhub (
   Boolean $disable_user_config = false,
   Optional[String] $prometheus_token = undef,
 ) {
-  ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
+  include jupyterhub::uv::install
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -52,12 +53,11 @@ class jupyterhub (
     extract_command => 'tar -xf %s traefik',
   }
 
-  $python3_version = lookup('jupyterhub::python3::version')
   file { 'jupyterhub.service':
     path    => '/lib/systemd/system/jupyterhub.service',
     content => epp('jupyterhub/jupyterhub.service',
       {
-        'python3_version' => $python3_version,
+        'python3_version' => $python,
         'prefix'          => $prefix,
         'slurm_home'      => $slurm_home,
       }
@@ -110,11 +110,6 @@ class jupyterhub (
     require => File['/etc/jupyterhub/templates/'],
     notify  => Service['jupyterhub'],
   }
-
-  $idle_culler_version = lookup('jupyterhub::idle_culler::version')
-  $announcement_version = lookup('jupyterhub::announcement::version')
-  $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
-  $wrapspawner_version = lookup('jupyterhub::wrapspawner::version')
 
   $announcement_port = lookup('jupyterhub::announcement::port')
   $announcement_service = {
@@ -175,13 +170,13 @@ class jupyterhub (
   $services = [$announcement_service] + $idle_culler_services + $prometheus_services
   $roles = $announcement_roles + $idle_culler_roles + $prometheus_roles
 
-  $node_prefix = lookup('jupyterhub::node::prefix', String, undef, $prefix)
+  $node_prefix = lookup('jupyterhub::node::install::prefix')
   $jupyterhub_config_base = parsejson(file('jupyterhub/jupyterhub_config.json'))
-  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
-  $kernel_prefix = lookup('jupyterhub::kernel::venv::prefix', Stdlib::Absolutepath, undef, '/opt/ipython-kernel')
+  $kernel_setup = lookup('jupyterhub::kernel::install_method')
+  $kernel_prefix = lookup('jupyterhub::kernel::venv::prefix')
   $prologue = $kernel_setup ? {
     'venv'   => "export JUPYTER_PATH=${kernel_prefix}/puppet-jupyter:\${JUPYTER_PATH:-}; export VIRTUAL_ENV_DISABLE_PROMPT=1; source ${kernel_prefix}/bin/activate",
-    'module' => '',
+    'none' => '',
   }
   $jupyterhub_config_params = {
     'JupyterHub' => {
@@ -276,9 +271,15 @@ class jupyterhub (
   $pamela_version = lookup('jupyterhub::pamela::version')
   $pammfauthenticator_version = lookup('jupyterhub::pammfauthenticator::version')
   $oauth2freeipa_version = lookup('jupyterhub::oauth2freeipa::version')
+  $idle_culler_version = lookup('jupyterhub::idle_culler::version')
+  $announcement_version = lookup('jupyterhub::announcement::version')
+  $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
+  $wrapspawner_version = lookup('jupyterhub::wrapspawner::version')
 
-  file { "${prefix}/hub-requirements.txt":
-    content => epp('jupyterhub/hub-requirements.txt', {
+  jupyterhub::uv::venv { 'hub':
+    prefix       => $prefix,
+    python       => $python,
+    requirements => epp('jupyterhub/hub-requirements.txt', {
         'jupyterhub_version'               => $jupyterhub_version,
         'batchspawner_version'             => $batchspawner_version,
         'slurmformspawner_version'         => $slurmformspawner_version,
@@ -292,18 +293,6 @@ class jupyterhub (
         'announcement_version'             => $announcement_version,
         'jupyterhub_traefik_proxy_version' => $jupyterhub_traefik_proxy_version,
     }),
-    mode    => '0644',
-  }
-
-  exec { 'hub_pip_install':
-    command     => "uv pip install -r ${prefix}/hub-requirements.txt",
-    path        => ['/opt/uv/bin'],
-    require     => Exec['jupyterhub_venv'],
-    subscribe   => File["${prefix}/hub-requirements.txt"],
-    refreshonly => true,
-    environment => [
-      "VIRTUAL_ENV=${prefix}",
-    ],
   }
 
   exec { 'create_self_signed_sslcert':
@@ -331,7 +320,7 @@ class jupyterhub (
     require   => File['submit.sh'],
     subscribe => [
       Archive['traefik'],
-      Exec['hub_pip_install'],
+      Jupyterhub::Uv::Venv['hub'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],

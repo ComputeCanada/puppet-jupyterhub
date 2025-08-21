@@ -1,46 +1,39 @@
 # 
+class jupyterhub::kernel (
+  Enum['none', 'venv'] $install_method = 'venv',
+  Optional[Enum['venv', 'module']] $setup = undef,
+) {
+  if $setup {
+    deprecation('jupyterhub::kernel::setup', 'jupyterhub::kernel::setup is deprecated, use jupyterhub::kernel::install_method instead')
+    if $setup == 'venv' {
+      include jupyterhub::kernel::venv
+    }
+  } elsif $install_method == 'venv' {
+    include jupyterhub::kernel::venv
+  }
+}
+
 class jupyterhub::kernel::venv (
+  Stdlib::Absolutepath $prefix,
   Variant[Stdlib::Absolutepath, String] $python,
-  Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
   String $kernel_name = 'python3',
   String $display_name = 'Python 3',
   Array[String] $packages = [],
   Hash[String, Variant[String, Integer, Array[String]]] $pip_environment = {},
   Hash $kernel_environment = {}
 ) {
-  if $python =~ Stdlib::Absolutepath {
-    exec { 'kernel_venv':
-      command => "uv venv --seed --python ${python} ${prefix}",
-      creates => "${prefix}/bin/python",
-      require => Archive['jh_install_uv'],
-      path    => [
-        '/opt/uv/bin',
-        dirname($python),
-        '/bin',
-        '/usr/bin',
-      ],
-    }
-  } else {
-    exec { 'kernel_venv':
-      command     => "uv venv --seed -p ${python} ${prefix}",
-      creates     => "${prefix}/bin/python",
-      require     => Archive['jh_install_uv'],
-      path        => ['/opt/uv/bin'],
-      environment => ['XDG_DATA_HOME=/opt/uv/share'],
-    }
-  }
+  include jupyterhub::uv::install
 
-  exec { 'pip_ipykernel':
-    command     => 'uv pip install ipykernel',
-    creates     => "${prefix}/bin/ipython",
-    require     => Exec['kernel_venv'],
-    environment => ["VIRTUAL_ENV=${prefix}"],
-    path        => ['/opt/uv/bin'],
+  jupyterhub::uv::venv { 'kernel':
+    prefix          => $prefix,
+    python          => $python,
+    requirements    => join(['ipykernel'] + $packages, "\n"),
+    pip_environment => $pip_environment,
   }
 
   file { "${prefix}/etc":
     ensure  => directory,
-    require => Exec['kernel_venv'],
+    require => Jupyterhub::Uv::Venv['kernel'],
   }
 
   file { "${prefix}/etc/ipython":
@@ -52,7 +45,7 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv']})
+  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Jupyterhub::Uv::Venv['kernel'] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter"] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter/kernels"] })
   file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/kernel.json":
@@ -67,50 +60,10 @@ class jupyterhub::kernel::venv (
     source  => "file://${prefix}/share/jupyter/kernels/python3/logo-svg.svg",
     require => [
       File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
-      Exec['pip_ipykernel'],
+      Jupyterhub::Uv::Venv['kernel'],
     ],
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-  }
-
-  if (!$packages.empty) {
-    $pip_env_list = $pip_environment.reduce([]) |Array $list, Array $value| {
-      if $value[1] =~ Stdlib::Compat::Array {
-        $concat = $value[1].reduce("") | String $concat, String $token | {
-          "${token}:${concat}"
-        }
-        $list + ["${value[0]}=${concat}"]
-      }
-      else {
-        $list + ["${value[0]}=${value[1]}"]
-      }
-    }
-
-    $pkg_string = join($packages, "\n")
-
-    file { "${prefix}/kernel-requirements.txt":
-      content => $pkg_string,
-    }
-
-    if 'PIP_CONFIG_FILE' in $pip_environment {
-      exec { 'install_kernel_requirements_nodeps':
-        command     => "pip --no-cache-dir install -r ${prefix}/kernel-requirements.txt",
-        subscribe   => File["${prefix}/kernel-requirements.txt"],
-        refreshonly => true,
-        environment => $pip_env_list,
-        timeout     => 0,
-        path        => ["${prefix}/bin"],
-      }
-    } else {
-      exec { 'install_kernel_requirements_nodeps':
-        command     => "uv --no-cache pip install -r ${prefix}/kernel-requirements.txt",
-        subscribe   => File["${prefix}/kernel-requirements.txt"],
-        refreshonly => true,
-        environment => $pip_env_list + ["VIRTUAL_ENV=${prefix}"],
-        timeout     => 0,
-        path        => ['/opt/uv/bin'],
-      }
-    }
   }
 }

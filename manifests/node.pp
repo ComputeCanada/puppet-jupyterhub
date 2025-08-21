@@ -1,23 +1,42 @@
 class jupyterhub::node (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
-  Array[String] $packages = [],
+  Stdlib::Absolutepath $prefix,
+  Enum['none', 'venv'] $install_method,
 ) {
-  ensure_resource('class', 'jupyterhub::base', { 'prefix' => $prefix })
+  include jupyterhub::node::config
+  include jupyterhub::kernel
 
-  class { 'jupyterhub::node::install':
-    prefix   => $prefix,
-    packages => $packages,
+  if $install_method == 'venv' {
+    include jupyterhub::node::install
   }
-  $kernel_setup = lookup('jupyterhub::kernel::setup', Enum['venv', 'module'], undef, 'venv')
-  if $kernel_setup == 'venv' {
-    include jupyterhub::kernel::venv
+}
+
+class jupyterhub::node::config {
+  $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
+
+  ensure_resource('file', '/etc/jupyter', { 'ensure' => 'directory' })
+
+  file { 'jupyter_notebook_config.json':
+    path    => '/etc/jupyter/jupyter_notebook_config.json',
+    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    mode    => '0644',
+    require => File['/etc/jupyter'],
+  }
+
+  file { 'jupyter_server_config.json':
+    path    => '/etc/jupyter/jupyter_server_config.json',
+    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    mode    => '0644',
+    require => File['/etc/jupyter'],
   }
 }
 
 class jupyterhub::node::install (
-  Stdlib::Absolutepath $prefix,
+  String $python,
   Array[String] $packages = [],
 ) {
+  include jupyterhub::uv::install
+  $prefix = lookup('jupyterhub::node::prefix')
+
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
   $nbgitpuller_version = lookup('jupyterhub::nbgitpuller::version')
@@ -31,10 +50,11 @@ class jupyterhub::node::install (
   $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
-  $python3_version = lookup('jupyterhub::python3::version')
 
-  file { "${prefix}/node-requirements.txt":
-    content => epp('jupyterhub/node-requirements.txt', {
+  jupyterhub::uv::venv { 'node':
+    prefix       => $prefix,
+    python       => $python,
+    requirements => epp('jupyterhub/node-requirements.txt', {
         'jupyterhub_version'             => $jupyterhub_version,
         'batchspawner_version'           => $batchspawner_version,
         'notebook_version'               => $notebook_version,
@@ -48,74 +68,35 @@ class jupyterhub::node::install (
         'jupyterlab_nvdashboard_version' => $jupyterlab_nvdashboard_version,
         'jupyter_rsession_proxy_version' => $jupyter_rsession_proxy_version,
         'jupyter_desktop_server_url'     => $jupyter_desktop_server_url,
+        'extra_packages'                 => $packages,
     }),
-    mode    => '0644',
-  }
-
-  exec { 'node_pip_install':
-    command     => "uv pip install --no-deps -r ${prefix}/node-requirements.txt",
-    path        => ['/opt/uv/bin'],
-    environment => ["VIRTUAL_ENV=${prefix}"],
-    require     => Exec['jupyterhub_venv'],
-    subscribe   => File["${prefix}/node-requirements.txt"],
-    refreshonly => true,
-  }
-
-  if length($packages) > 0 {
-    file { "${prefix}/node-extra-requirements.txt":
-      content => join($packages, '\n'),
-    }
-
-    exec { 'node_pip_install_extra':
-      command     => "uv pip install -r ${prefix}/node-extra-requirements.txt",
-      path        => ['/opt/uv/bin'],
-      environment => ["VIRTUAL_ENV=${prefix}"],
-      require     => Exec['node_pip_install'],
-      subscribe   => File["${prefix}/node-extra-requirements.txt"],
-      refreshonly => true,
-    }
   }
 
   if $jupyterlmod_version and $jupyter_server_proxy_version {
     # disable jupyterlab-server-proxy extension
-    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory' })
+    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Jupyterhub::Uv::Venv['node'] })
     file { "${prefix}/etc/jupyter/labconfig/page_config.json":
       content   => '{"disabledExtensions": {"@jupyterhub/jupyter-server-proxy": true}}',
-      subscribe => Exec['node_pip_install'],
+      subscribe => Jupyterhub::Uv::Venv['node'],
       require   => File["${prefix}/etc/jupyter/labconfig/"],
     }
 
     # disable jupyter-server-proxy nbextension
     file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy.json":
       content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
-      subscribe => Exec['node_pip_install'],
+      subscribe => Jupyterhub::Uv::Venv['node'],
     }
-  }
-
-  $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
-  file { 'jupyter_notebook_config.json' :
-    path    => "${prefix}/etc/jupyter/jupyter_notebook_config.json",
-    content => to_json_pretty($jupyter_notebook_config_hash, true),
-    mode    => '0644',
-    require => Exec['node_pip_install'],
-  }
-
-  file { 'jupyter_server_config.json' :
-    path    => "${prefix}/etc/jupyter/jupyter_server_config.json",
-    content => to_json_pretty($jupyter_notebook_config_hash, true),
-    mode    => '0644',
-    require => Exec['node_pip_install'],
   }
 
   file { "${prefix}/lib/usercustomize":
     ensure  => 'directory',
     mode    => '0755',
-    require => Exec['jupyterhub_venv'],
+    require => Jupyterhub::Uv::Venv['node'],
   }
 
   file { "${prefix}/lib/usercustomize/usercustomize.py":
     source  => 'puppet:///modules/jupyterhub/usercustomize.py',
     mode    => '0655',
-    require => Exec['jupyterhub_venv'],
+    require => Jupyterhub::Uv::Venv['node'],
   }
 }
