@@ -30,11 +30,14 @@ class jupyterhub::node::config {
 }
 
 class jupyterhub::node::install (
-  Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
+  Stdlib::Absolutepath $prefix = '/opt/jupyterhub_node',
   Array[String] $packages = [],
 ) {
   include jupyterhub::uv::install
-  ensure_resource('class', 'jupyterhub::base::install', { 'prefix' => $prefix })
+  jupyterhub::uv::venv { 'jupyterhub-node':
+    prefix  => $prefix,
+    version => lookup('jupyterhub::python3::version'),
+  }
 
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')

@@ -26,7 +26,10 @@ class jupyterhub (
   Optional[String] $prometheus_token = undef,
 ) {
   include jupyterhub::uv::install
-  ensure_resource('class', 'jupyterhub::base::install', { 'prefix' => $prefix })
+  jupyterhub::uv::venv { 'jupyterhub':
+    prefix  => $prefix,
+    version => lookup('jupyterhub::python3::version'),
+  }
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -299,7 +302,7 @@ class jupyterhub (
   exec { 'hub_pip_install':
     command     => "uv pip install -r ${prefix}/hub-requirements.txt",
     path        => ['/opt/uv/bin'],
-    require     => Exec['jupyterhub_venv'],
+    require     => Jupyterhub::Uv::Venv['jupyterhub'],
     subscribe   => File["${prefix}/hub-requirements.txt"],
     refreshonly => true,
     environment => [
