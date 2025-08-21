@@ -105,6 +105,7 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::node::prefix` | Stdlib::Absolutepath | Absolute path where Jupyter Notebook and jupyterhub-singleuser will be installed | `/opt/jupyterhub` |
+| `jupyterhub::node::config::jupyter_server_config` | Hash | control options and traitlets of Jupyter and its extensions | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::node::install_method` | Enum['none', 'venv'] | Determine if the jupyterhub node virtual environment needs to be installed by Puppet | `venv` |
 | `jupyterhub::node::install::python` | String | Python version to be installed by uv | `%{alias('jupyterhub::python3::version')}` |
 | `jupyterhub::node::install::packages` | Array[String] | List of extra packages to install in the node virtual environment | `[]` |
@@ -297,9 +298,9 @@ c.GenericOAuthenticator.post_auth_hook = require_groups
 
 ### Jupyter Notebook options
 
-To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::jupyter_notebook_config_hash` like this:
+To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::node::config::jupyter_server_config` like this:
 ```yaml
-jupyterhub::jupyter_notebook_config_hash:
+jupyterhub::node::config::jupyter_server_config:
   ServerProxy:
     servers:
       rstudio:

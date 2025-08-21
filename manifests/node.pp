@@ -10,21 +10,21 @@ class jupyterhub::node (
   }
 }
 
-class jupyterhub::node::config {
-  $jupyter_notebook_config_hash = lookup('jupyterhub::jupyter_notebook_config_hash', undef, undef, {})
-
+class jupyterhub::node::config (
+  Hash $jupyter_server_config = {}
+) {
   ensure_resource('file', '/etc/jupyter', { 'ensure' => 'directory' })
 
   file { 'jupyter_notebook_config.json':
     path    => '/etc/jupyter/jupyter_notebook_config.json',
-    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    content => to_json_pretty($jupyter_server_config, true),
     mode    => '0644',
     require => File['/etc/jupyter'],
   }
 
   file { 'jupyter_server_config.json':
     path    => '/etc/jupyter/jupyter_server_config.json',
-    content => to_json_pretty($jupyter_notebook_config_hash, true),
+    content => to_json_pretty($jupyter_server_config, true),
     mode    => '0644',
     require => File['/etc/jupyter'],
   }
