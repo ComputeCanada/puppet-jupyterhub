@@ -25,7 +25,7 @@ class jupyterhub::node::config {
     path    => '/etc/jupyter/jupyter_server_config.json',
     content => to_json_pretty($jupyter_notebook_config_hash, true),
     mode    => '0644',
-    require => File['node_pip_install'],
+    require => File['/etc/jupyter'],
   }
 }
 
