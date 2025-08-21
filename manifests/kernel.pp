@@ -1,4 +1,18 @@
 # 
+class jupyterhub::kernel (
+  Enum['none', 'venv'] $install_method = 'venv',
+  Optional[Enum['venv', 'module']] $setup = undef,
+) {
+  if $setup {
+    deprecation('jupyterhub::kernel::setup', 'jupyterhub::kernel::setup is deprecated, use jupyterhub::kernel::install_method instead')
+    if $setup == 'venv' {
+      include jupyterhub::kernel::venv
+    }
+  } elsif $install_method == 'venv' {
+    include jupyterhub::kernel::venv
+  }
+}
+
 class jupyterhub::kernel::venv (
   Variant[Stdlib::Absolutepath, String] $python,
   Stdlib::Absolutepath $prefix = '/opt/ipython-kernel',
@@ -8,6 +22,8 @@ class jupyterhub::kernel::venv (
   Hash[String, Variant[String, Integer, Array[String]]] $pip_environment = {},
   Hash $kernel_environment = {}
 ) {
+  include jupyterhub::uv::install
+
   if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
       command => "uv venv --seed --python ${python} ${prefix}",
@@ -52,7 +68,7 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv']})
+  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv'] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter"] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter/kernels"] })
   file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/kernel.json":
@@ -65,7 +81,10 @@ class jupyterhub::kernel::venv (
 
   file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/logo-svg.svg":
     source  => "file://${prefix}/share/jupyter/kernels/python3/logo-svg.svg",
-    require => File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
+    require => [
+      File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
+      Exec['pip_ipykernel'],
+    ],
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
