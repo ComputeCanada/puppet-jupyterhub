@@ -34,10 +34,6 @@ class jupyterhub::node::install (
   Array[String] $packages = [],
 ) {
   include jupyterhub::uv::install
-  jupyterhub::uv::venv { 'jupyterhub-node':
-    prefix  => $prefix,
-    version => lookup('jupyterhub::python3::version'),
-  }
 
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
   $batchspawner_version = lookup('jupyterhub::batchspawner::version')
@@ -54,8 +50,10 @@ class jupyterhub::node::install (
   $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
   $python3_version = lookup('jupyterhub::python3::version')
 
-  file { "${prefix}/node-requirements.txt":
-    content => epp('jupyterhub/node-requirements.txt', {
+  jupyterhub::uv::venv { 'node':
+    prefix       => $prefix,
+    version      => lookup('jupyterhub::python3::version'),
+    requirements => epp('jupyterhub/node-requirements.txt', {
         'jupyterhub_version'             => $jupyterhub_version,
         'batchspawner_version'           => $batchspawner_version,
         'notebook_version'               => $notebook_version,
@@ -69,32 +67,7 @@ class jupyterhub::node::install (
         'jupyterlab_nvdashboard_version' => $jupyterlab_nvdashboard_version,
         'jupyter_rsession_proxy_version' => $jupyter_rsession_proxy_version,
         'jupyter_desktop_server_url'     => $jupyter_desktop_server_url,
-    }),
-    mode    => '0644',
-  }
-
-  exec { 'node_pip_install':
-    command     => "uv pip install --no-deps -r ${prefix}/node-requirements.txt",
-    path        => ['/opt/uv/bin'],
-    environment => ["VIRTUAL_ENV=${prefix}"],
-    require     => Exec['jupyterhub_venv'],
-    subscribe   => File["${prefix}/node-requirements.txt"],
-    refreshonly => true,
-  }
-
-  if length($packages) > 0 {
-    file { "${prefix}/node-extra-requirements.txt":
-      content => join($packages, '\n'),
-    }
-
-    exec { 'node_pip_install_extra':
-      command     => "uv pip install -r ${prefix}/node-extra-requirements.txt",
-      path        => ['/opt/uv/bin'],
-      environment => ["VIRTUAL_ENV=${prefix}"],
-      require     => Exec['node_pip_install'],
-      subscribe   => File["${prefix}/node-extra-requirements.txt"],
-      refreshonly => true,
-    }
+    }) + join($packages, '\n'),
   }
 
   if $jupyterlmod_version and $jupyter_server_proxy_version {

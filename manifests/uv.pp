@@ -20,13 +20,29 @@ class jupyterhub::uv::install (
 define jupyterhub::uv::venv (
   String $prefix,
   String $version,
+  String $requirements,
 ) {
   $uv_prefix = lookup('jupyterhub::uv::install::prefix')
-  exec { 'jupyterhub_venv':
+  exec { "${name}_venv":
     command     => "uv venv -p ${version} ${prefix}",
     creates     => "${prefix}/bin/python",
     require     => Class['jupyterhub::uv::install'],
     path        => ["${uv_prefix}/bin"],
     environment => ["XDG_DATA_HOME=${uv_prefix}/share"],
+  }
+
+  file { "${prefix}/${name}-requirements.txt":
+    content => $requirements,
+  }
+
+  exec { "${name}_pip_install":
+    command     => "uv pip install -r ${prefix}/${name}-requirements.txt",
+    path        => ["${uv_prefix}/bin"],
+    require     => Exec["${name}_venv"],
+    subscribe   => File["${prefix}/${name}-requirements.txt"],
+    refreshonly => true,
+    environment => [
+      "VIRTUAL_ENV=${prefix}",
+    ],
   }
 }

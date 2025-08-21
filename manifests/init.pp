@@ -26,10 +26,6 @@ class jupyterhub (
   Optional[String] $prometheus_token = undef,
 ) {
   include jupyterhub::uv::install
-  jupyterhub::uv::venv { 'jupyterhub':
-    prefix  => $prefix,
-    version => lookup('jupyterhub::python3::version'),
-  }
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -281,8 +277,10 @@ class jupyterhub (
   $pammfauthenticator_version = lookup('jupyterhub::pammfauthenticator::version')
   $oauth2freeipa_version = lookup('jupyterhub::oauth2freeipa::version')
 
-  file { "${prefix}/hub-requirements.txt":
-    content => epp('jupyterhub/hub-requirements.txt', {
+  jupyterhub::uv::venv { 'hub':
+    prefix       => $prefix,
+    version      => lookup('jupyterhub::python3::version'),
+    requirements => epp('jupyterhub/hub-requirements.txt', {
         'jupyterhub_version'               => $jupyterhub_version,
         'batchspawner_version'             => $batchspawner_version,
         'slurmformspawner_version'         => $slurmformspawner_version,
@@ -296,18 +294,6 @@ class jupyterhub (
         'announcement_version'             => $announcement_version,
         'jupyterhub_traefik_proxy_version' => $jupyterhub_traefik_proxy_version,
     }),
-    mode    => '0644',
-  }
-
-  exec { 'hub_pip_install':
-    command     => "uv pip install -r ${prefix}/hub-requirements.txt",
-    path        => ['/opt/uv/bin'],
-    require     => Jupyterhub::Uv::Venv['jupyterhub'],
-    subscribe   => File["${prefix}/hub-requirements.txt"],
-    refreshonly => true,
-    environment => [
-      "VIRTUAL_ENV=${prefix}",
-    ],
   }
 
   exec { 'create_self_signed_sslcert':
