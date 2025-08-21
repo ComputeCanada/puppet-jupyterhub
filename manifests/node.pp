@@ -67,7 +67,8 @@ class jupyterhub::node::install (
         'jupyterlab_nvdashboard_version' => $jupyterlab_nvdashboard_version,
         'jupyter_rsession_proxy_version' => $jupyter_rsession_proxy_version,
         'jupyter_desktop_server_url'     => $jupyter_desktop_server_url,
-    }) + join($packages, '\n'),
+        'extra_packages'                 => $packages,
+    }),
   }
 
   if $jupyterlmod_version and $jupyter_server_proxy_version {
