@@ -37,7 +37,7 @@ jupyterhub::announcement::persist_path: /var/run/jupyterhub/announcements.json
 
 jupyterhub::jupyter_desktop_server::url: https://github.com/cmd-ntrf/jupyter-desktop-server/archive/refs/tags/v0.3.0.zip
 
-jupyterhub::kernel::setup: module
+jupyterhub::kernel::install_method: venv
 jupyterhub::kernel::venv::python3: "%{lookup('jupyterhub::python3::path')}/%{lookup('jupyterhub::python3::bin')}"
 
 
