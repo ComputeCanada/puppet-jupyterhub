@@ -79,3 +79,5 @@ webcolors==24.11.1
 wtforms==2.3.1
 yarl==1.17.1
 zipp==3.21.0
+
+<% if $extra_packages { %><%= join($extra_packages, '\n') %><% } %>

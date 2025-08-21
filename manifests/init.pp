@@ -24,6 +24,7 @@ class jupyterhub (
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
   Boolean $disable_user_config = false,
+  Array[String] $packages = [],
   Optional[String] $prometheus_token = undef,
 ) {
   include jupyterhub::uv::install
@@ -292,6 +293,7 @@ class jupyterhub (
         'idle_culler_version'              => $idle_culler_version,
         'announcement_version'             => $announcement_version,
         'jupyterhub_traefik_proxy_version' => $jupyterhub_traefik_proxy_version,
+        'extra_packages'                   => $packages,
     }),
   }
 

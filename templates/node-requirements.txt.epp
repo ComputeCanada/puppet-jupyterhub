@@ -129,4 +129,4 @@ webencodings==0.5.1
 websocket-client==1.8.0
 yarl==1.17.1
 
-<% if $extra_packages { join($extra_packages, '\n') } %>
+<% if $extra_packages { %><%= join($extra_packages, '\n') %><% } %>
