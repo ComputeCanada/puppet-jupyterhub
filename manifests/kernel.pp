@@ -68,7 +68,7 @@ class jupyterhub::kernel::venv (
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv']})
+  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Exec['kernel_venv'] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter"] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter/kernels"] })
   file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/kernel.json":
