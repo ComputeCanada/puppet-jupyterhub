@@ -33,6 +33,7 @@ class jupyterhub::node::install (
   Stdlib::Absolutepath $prefix = '/opt/jupyterhub',
   Array[String] $packages = [],
 ) {
+  include jupyterhub::uv::install
   ensure_resource('class', 'jupyterhub::base::install', { 'prefix' => $prefix })
 
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')

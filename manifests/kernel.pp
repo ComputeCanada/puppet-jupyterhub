@@ -22,6 +22,8 @@ class jupyterhub::kernel::venv (
   Hash[String, Variant[String, Integer, Array[String]]] $pip_environment = {},
   Hash $kernel_environment = {}
 ) {
+  include jupyterhub::uv::install
+
   if $python =~ Stdlib::Absolutepath {
     exec { 'kernel_venv':
       command => "uv venv --seed --python ${python} ${prefix}",
