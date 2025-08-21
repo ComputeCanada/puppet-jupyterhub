@@ -1,5 +1,5 @@
 class jupyterhub::uv::install (
-  String $prefix
+  String $prefix,
   String $version = '0.4.22',
 ) {
   ensure_resource('file', $prefix, { 'ensure' => 'directory' })
