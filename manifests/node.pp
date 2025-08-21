@@ -73,7 +73,7 @@ class jupyterhub::node::install (
 
   if $jupyterlmod_version and $jupyter_server_proxy_version {
     # disable jupyterlab-server-proxy extension
-    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory' })
+    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Jupyterhub::Uv::Venv['node'] })
     file { "${prefix}/etc/jupyter/labconfig/page_config.json":
       content   => '{"disabledExtensions": {"@jupyterhub/jupyter-server-proxy": true}}',
       subscribe => Jupyterhub::Uv::Venv['node'],
