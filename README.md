@@ -52,6 +52,7 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
+| `jupyterhub::python3::version` | String | Global Python 3 version to use when creating virtual environment | refer to [data/common.yaml](data/common.yaml)|
 | `jupyterhub::jupyterhub::version` | String | JupyterHub package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::pip::version` | String | pip package version to install | refer to [data/common.yaml](data/common.yaml) |
 | `jupyterhub::notebook::version` | String | notebook package version to install | refer to [data/common.yaml](data/common.yaml) |
@@ -73,15 +74,20 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::prefix` | Stdlib::Absolutepath | Absolute path where JupyterHub will be installed | `/opt/jupyterhub` |
-| `jupyterhub::bind_url` | String | Public facing URL of the whole JupyterHub application | `https://127.0.0.1:8000` |
+| `jupyterhub::python` | String | Python version to be installed by uv | `%{alias('jupyterhub::python3::version')}` |
 | `jupyterhub::slurm_home` | Stdlib::Absolutepath | Path to Slurm installation folder | `/opt/software/slurm` |
-| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `[]` |
+| `jupyterhub::bind_url` | String | Public facing URL of the whole JupyterHub application | `https://127.0.0.1:8000` |
+| `jupyterhub::spawner_class` | String |  Class to use for spawning single-user servers | `slurmformspawner.SlurmFormSpawner` |
+| `jupyterhub::authenticator_class` | String | Class name for authenticating users | `pam` |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `0 (no timeout)` |
 | `jupyterhub::traefik_version` | String | Version of traefik to install on the hub instance | '2.10.4' |
-| `jupyterhub::authenticator_class` | String | Class name of the authenticator JupyterHub will use | `pam` |
-| `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
+| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `[]` |
 | `jupyterhub::blocked_users` | List[String] | List of users that cannot login | `['root', 'toor', 'admin', 'centos', 'slurm']` |
+| `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
+| `jupyterhub::disable_user_config` | Boolean | Disable per-user configuration of single-user servers | `false` |
+| `jupyterhub::packages` | Array[String] | List of extra packages to install in the hub virtual environment | `[]` |
 | `jupyterhub::prometheus_token` | String | Token that Prometheus can use to scrape JupyterHub's metrics | `undef` |
+| `jupyterhub::frozen_deps` | Boolean | Install all unlisted dependencies versions as frozen by this module | `true` |
 
 ### Announcement options
 
@@ -100,12 +106,25 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | Variable | Type | Description | Default |
 | -------- | :----| :-----------| ------- |
 | `jupyterhub::node::prefix` | Stdlib::Absolutepath | Absolute path where Jupyter Notebook and jupyterhub-singleuser will be installed | `/opt/jupyterhub` |
-| `jupyterhub::kernel::setup` | Enum['venv', 'module'] | Determine if the Python kernel is provided by a local virtual environment or a module | `module` |
+| `jupyterhub::node::config::jupyter_server_config` | Hash | control options and traitlets of Jupyter and its extensions | refer to [data/common.yaml](data/common.yaml) |
+| `jupyterhub::node::install_method` | Enum['none', 'venv'] | Determine if the jupyterhub node virtual environment needs to be installed by Puppet | `venv` |
+| `jupyterhub::node::install::python` | String | Python version to be installed by uv | `%{alias('jupyterhub::python3::version')}` |
+| `jupyterhub::node::install::packages` | Array[String] | List of extra packages to install in the node virtual environment | `[]` |
+| `jupyterhub::node::install::frozen_deps` | Boolean | Install all unlisted dependencies versions as frozen by this module | `true` |
+
+### Kernel options
+
+| Variable | Type | Description | Default |
+| -------- | :----| :-----------| ------- |
+| `jupyterhub::kernel::install_method` | Enum['none', 'venv'] | Determine if the Python kernel is installed as a local virtual environment by Puppet | `venv` |
 | `jupyterhub::kernel::venv::prefix` | Stdlib::Absolutepath | Absolute path where the IPython kernel virtual environment will be installed | `/opt/ipython-kernel` |
-| `jupyterhub::kernel::venv::python` | Stdlib::Absolutepath | Absolute path to the Python binary that will be used as the default kernel | `/usr/bin/python3` |
+| `jupyterhub::kernel::venv::python` | Variant[String, Stdlib::Absolutepath] | Python version or path to Python binary to init virtual environment with uv | `3.12` |
+| `jupyterhub::kernel::venv::kernel_name` | String | Name of the kernelspec | `python3` |
+| `jupyterhub::kernel::venv::display_name` | String | Display name of the kernel | `Python 3` |
+| `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
 | `jupyterhub::kernel::venv::pip_environment`| Hash[String, String] | Hash of environment variables configured before calling installing `venv::packages` | `{}` |
 | `jupyterhub::kernel::venv::kernel_environment`| Hash[String, String] | Hash of environment variables configured before the kernel is started | `{}` |
-| `jupyterhub::kernel::venv::packages` | Array[String] | Python packages to install in the default kernel | `[]` |
+
 
 ### SlurmFormSpawner's options
 
@@ -281,9 +300,9 @@ c.GenericOAuthenticator.post_auth_hook = require_groups
 
 ### Jupyter Notebook options
 
-To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::jupyter_notebook_config_hash` like this:
+To control options and traitlets of Jupyter Notebook and its extensions, use `jupyterhub::node::config::jupyter_server_config` like this:
 ```yaml
-jupyterhub::jupyter_notebook_config_hash:
+jupyterhub::node::config::jupyter_server_config:
   ServerProxy:
     servers:
       rstudio:
