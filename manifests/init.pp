@@ -16,12 +16,12 @@
 class jupyterhub (
   Stdlib::Absolutepath $prefix,
   String $python,
+  String $traefik_version,
   Stdlib::Absolutepath $slurm_home = '/opt/software/slurm',
   String $bind_url = 'https://127.0.0.1:8000',
   String $spawner_class = 'slurmformspawner.SlurmFormSpawner',
   String $authenticator_class = 'pam',
   Integer $idle_timeout = 0,
-  String $traefik_version = '2.10.4',
   Array[String] $admin_groups = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
