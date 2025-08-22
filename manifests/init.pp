@@ -26,6 +26,7 @@ class jupyterhub (
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
   Boolean $disable_user_config = false,
+  Boolean $frozen_deps = true,
   Array[String] $packages = [],
   Optional[String] $prometheus_token = undef,
 ) {
@@ -295,6 +296,7 @@ class jupyterhub (
         'idle_culler_version'              => $idle_culler_version,
         'announcement_version'             => $announcement_version,
         'jupyterhub_traefik_proxy_version' => $jupyterhub_traefik_proxy_version,
+        'frozen_deps'                      => $frozen_deps,
         'extra_packages'                   => $packages,
     }),
   }

@@ -33,6 +33,7 @@ class jupyterhub::node::config (
 class jupyterhub::node::install (
   String $python,
   Array[String] $packages = [],
+  Boolean $frozen_deps = true,
 ) {
   include jupyterhub::uv::install
   $prefix = lookup('jupyterhub::node::prefix')
@@ -68,6 +69,7 @@ class jupyterhub::node::install (
         'jupyterlab_nvdashboard_version' => $jupyterlab_nvdashboard_version,
         'jupyter_rsession_proxy_version' => $jupyter_rsession_proxy_version,
         'jupyter_desktop_server_url'     => $jupyter_desktop_server_url,
+        'frozen_deps'                    => $frozen_deps,
         'extra_packages'                 => $packages,
     }),
   }

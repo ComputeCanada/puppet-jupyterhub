@@ -87,6 +87,7 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 | `jupyterhub::disable_user_config` | Boolean | Disable per-user configuration of single-user servers | `false` |
 | `jupyterhub::packages` | Array[String] | List of extra packages to install in the hub virtual environment | `[]` |
 | `jupyterhub::prometheus_token` | String | Token that Prometheus can use to scrape JupyterHub's metrics | `undef` |
+| `jupyterhub::frozen_deps` | Boolean | Install all unlisted dependencies versions as frozen by this module | `true` |
 
 ### Announcement options
 
@@ -109,6 +110,7 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | `jupyterhub::node::install_method` | Enum['none', 'venv'] | Determine if the jupyterhub node virtual environment needs to be installed by Puppet | `venv` |
 | `jupyterhub::node::install::python` | String | Python version to be installed by uv | `%{alias('jupyterhub::python3::version')}` |
 | `jupyterhub::node::install::packages` | Array[String] | List of extra packages to install in the node virtual environment | `[]` |
+| `jupyterhub::node::install::frozen_deps` | Boolean | Install all unlisted dependencies versions as frozen by this module | `true` |
 
 ### Kernel options
 

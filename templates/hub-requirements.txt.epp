@@ -11,6 +11,7 @@ oauthenticator==<%= $oauthenticator_version %>
 oauth2freeipa @ https://github.com/MagicCastle/oauth2freeipa/archive/refs/tags/v<%= $oauth2freeipa_version %>.zip
 jupyterhub-ltiauthenticator==<%= $ltiauthenticator_version %>
 
+<% if $frozen_deps { -%>
 aiofiles==24.1.0
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
@@ -79,5 +80,6 @@ webcolors==24.11.1
 wtforms==2.3.1
 yarl==1.17.1
 zipp==3.21.0
+<% } -%>
 
 <% if $extra_packages { %><%= join($extra_packages, '\n') %><% } %>
