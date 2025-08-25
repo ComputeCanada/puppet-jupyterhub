@@ -71,7 +71,7 @@ jupyterhub::jupyter_notebook_config_hash:
   FileManagerMixin:
     use_atomic_writing: false
   Lmod:
-    launcher_pins: ['desktop']
+    launcher_pins: ['desktop-websockify']
   ServerProxy:
     servers:
       code-server:
