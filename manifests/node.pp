@@ -101,4 +101,9 @@ class jupyterhub::node::install (
     mode    => '0655',
     require => Jupyterhub::Uv::Venv['node'],
   }
+
+  file { "${prefix}/share/jupyter/kernels/python3/kernel.json":
+    ensure  => absent,
+    require => Jupyterhub::Uv::Venv['node'],
+  }
 }

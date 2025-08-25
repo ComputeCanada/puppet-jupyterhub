@@ -41,6 +41,11 @@ class jupyterhub::kernel::venv (
     require => File["${prefix}/etc"],
   }
 
+  file { "${prefix}/share/jupyter/kernels/python3/kernel.json":
+    ensure  => absent,
+    require => Jupyterhub::Uv::Venv['kernel'],
+  }
+
   file { "${prefix}/etc/ipython/ipython_config.py":
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
