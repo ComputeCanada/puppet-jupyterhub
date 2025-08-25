@@ -6,7 +6,7 @@ jupyterhub::prefix: "/opt/jupyterhub"
 jupyterhub::python: "%{alias('jupyterhub::python3::version')}"
 
 jupyterhub::node::prefix: "/opt/jupyterhub_node"
-jupyterhub::node::config:jupyter_server_config: "%{alias('jupyterhub::jupyter_notebook_config_hash')}"
+jupyterhub::node::config::jupyter_server_config: "%{alias('jupyterhub::jupyter_notebook_config_hash')}"
 jupyterhub::node::install_method: "venv"
 jupyterhub::node::install::python: "%{alias('jupyterhub::python3::version')}"
 
