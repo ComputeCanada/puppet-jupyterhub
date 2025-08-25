@@ -50,27 +50,27 @@ class jupyterhub::node::install (
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
   $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
-  $jupyter_desktop_server_url = lookup('jupyterhub::jupyter_desktop_server::url')
+  $jupyter_remote_desktop_proxy_version = lookup('jupyterhub::jupyter_remote_desktop_proxy::version')
 
   jupyterhub::uv::venv { 'node':
     prefix       => $prefix,
     python       => $python,
     requirements => epp('jupyterhub/node-requirements.txt', {
-        'jupyterhub_version'             => $jupyterhub_version,
-        'batchspawner_version'           => $batchspawner_version,
-        'notebook_version'               => $notebook_version,
-        'nbgitpuller_version'            => $nbgitpuller_version,
-        'ipywidgets_version'             => $ipywidgets_version,
-        'widgetsnbextension_version'     => $widgetsnbextension_version,
-        'jupyterlab_widgets_version'     => $jupyterlab_widgets_version,
-        'jupyterlab_version'             => $jupyterlab_version,
-        'jupyter_server_proxy_version'   => $jupyter_server_proxy_version,
-        'jupyterlmod_version'            => $jupyterlmod_version,
-        'jupyterlab_nvdashboard_version' => $jupyterlab_nvdashboard_version,
-        'jupyter_rsession_proxy_version' => $jupyter_rsession_proxy_version,
-        'jupyter_desktop_server_url'     => $jupyter_desktop_server_url,
-        'frozen_deps'                    => $frozen_deps,
-        'extra_packages'                 => $packages,
+        'jupyterhub_version'                   => $jupyterhub_version,
+        'batchspawner_version'                 => $batchspawner_version,
+        'notebook_version'                     => $notebook_version,
+        'nbgitpuller_version'                  => $nbgitpuller_version,
+        'ipywidgets_version'                   => $ipywidgets_version,
+        'widgetsnbextension_version'           => $widgetsnbextension_version,
+        'jupyterlab_widgets_version'           => $jupyterlab_widgets_version,
+        'jupyterlab_version'                   => $jupyterlab_version,
+        'jupyter_server_proxy_version'         => $jupyter_server_proxy_version,
+        'jupyterlmod_version'                  => $jupyterlmod_version,
+        'jupyterlab_nvdashboard_version'       => $jupyterlab_nvdashboard_version,
+        'jupyter_rsession_proxy_version'       => $jupyter_rsession_proxy_version,
+        'jupyter_remote_desktop_proxy_version' => $jupyter_remote_desktop_proxy_version,
+        'frozen_deps'                          => $frozen_deps,
+        'extra_packages'                       => $packages,
     }),
   }
 
