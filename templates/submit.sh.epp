@@ -11,6 +11,7 @@
 {% if reservation %}#SBATCH --reservation={{reservation}}{% endif %}
 {% if gpus != "gpu:0" %}#SBATCH --gres={{gpus}}{% endif %}
 {% if partition %}#SBATCH --partition={{partition}}{% endif %}
+{% if constraint %}#SBATCH --constraint={{constraint}}{% endif %}
 
 <%# write any additional script here -%>
 <%= $additions -%>
