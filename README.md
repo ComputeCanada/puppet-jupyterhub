@@ -158,6 +158,9 @@ jupyterhub::jupyterhub_config_hash:
     partition:
       def: 'partition1'
       choices: ['partition1', 'partition2', 'partition3']
+    feature:
+      def: ['feature1']
+      choices: ['feature1', 'feature2', 'feature3']
   SlurmFormSpawner:
     ui_args:
       notebook:
