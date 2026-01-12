@@ -15,10 +15,6 @@ jupyterhub::kernel::install_method: venv
 jupyterhub::kernel::venv::prefix: "/opt/ipython_kernel"
 jupyterhub::kernel::venv::python: "%{alias('jupyterhub::python3::version')}"
 
-
-jupyterhub::uv::install::prefix: "/opt/uv"
-jupyterhub::uv::install::version: "0.8.13"
-
 jupyterhub::nbgitpuller::version: 1.2.2
 jupyterhub::ipywidgets::version: 8.1.7
 jupyterhub::widgetsnbextension::version: 4.0.14

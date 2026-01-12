@@ -30,7 +30,7 @@ class jupyterhub (
   Array[String] $packages = [],
   Optional[String] $prometheus_token = undef,
 ) {
-  include jupyterhub::uv::install
+  include uv::install
 
   user { 'jupyterhub':
     ensure  => 'present',
@@ -280,7 +280,7 @@ class jupyterhub (
   $slurmformspawner_version = lookup('jupyterhub::slurmformspawner::version')
   $wrapspawner_version = lookup('jupyterhub::wrapspawner::version')
 
-  jupyterhub::uv::venv { 'hub':
+  uv::venv { 'hub':
     prefix       => $prefix,
     python       => $python,
     requirements => epp('jupyterhub/hub-requirements.txt', {
@@ -326,7 +326,7 @@ class jupyterhub (
     require   => File['submit.sh'],
     subscribe => [
       Archive['traefik'],
-      Jupyterhub::Uv::Venv['hub'],
+      Uv::Venv['hub'],
       File['jupyterhub-login'],
       File['jupyterhub.service'],
       File['jupyterhub_config.json'],
