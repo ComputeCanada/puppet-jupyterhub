@@ -22,9 +22,9 @@ class jupyterhub::kernel::venv (
   Hash[String, Variant[String, Integer, Array[String]]] $pip_environment = {},
   Hash $kernel_environment = {}
 ) {
-  include jupyterhub::uv::install
+  include uv::install
 
-  jupyterhub::uv::venv { 'kernel':
+  uv::venv { 'kernel':
     prefix          => $prefix,
     python          => $python,
     requirements    => join(['ipykernel'] + $packages, "\n"),
@@ -33,7 +33,7 @@ class jupyterhub::kernel::venv (
 
   file { "${prefix}/etc":
     ensure  => directory,
-    require => Jupyterhub::Uv::Venv['kernel'],
+    require => Uv::Venv['kernel'],
   }
 
   file { "${prefix}/etc/ipython":
@@ -43,14 +43,14 @@ class jupyterhub::kernel::venv (
 
   file { "${prefix}/share/jupyter/kernels/python3/kernel.json":
     ensure  => absent,
-    require => Jupyterhub::Uv::Venv['kernel'],
+    require => Uv::Venv['kernel'],
   }
 
   file { "${prefix}/etc/ipython/ipython_config.py":
     source => 'puppet:///modules/jupyterhub/ipython_config.py',
   }
 
-  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Jupyterhub::Uv::Venv['kernel'] })
+  ensure_resource('file', "${prefix}/puppet-jupyter", { 'ensure' => 'directory', require => Uv::Venv['kernel'] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter"] })
   ensure_resource('file', "${prefix}/puppet-jupyter/kernels/${kernel_name}", { 'ensure' => 'directory', require => File["${prefix}/puppet-jupyter/kernels"] })
   file { "${prefix}/puppet-jupyter/kernels/${kernel_name}/kernel.json":
@@ -65,7 +65,7 @@ class jupyterhub::kernel::venv (
     source  => "file://${prefix}/share/jupyter/kernels/python3/logo-svg.svg",
     require => [
       File["${prefix}/puppet-jupyter/kernels/${kernel_name}"],
-      Jupyterhub::Uv::Venv['kernel'],
+      Uv::Venv['kernel'],
     ],
     mode    => '0644',
     owner   => 'root',

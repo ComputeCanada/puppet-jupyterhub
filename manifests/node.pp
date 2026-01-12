@@ -35,7 +35,7 @@ class jupyterhub::node::install (
   Array[String] $packages = [],
   Boolean $frozen_deps = true,
 ) {
-  include jupyterhub::uv::install
+  include uv::install
   $prefix = lookup('jupyterhub::node::prefix')
 
   $jupyterhub_version = lookup('jupyterhub::jupyterhub::version')
@@ -52,7 +52,7 @@ class jupyterhub::node::install (
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_remote_desktop_proxy_version = lookup('jupyterhub::jupyter_remote_desktop_proxy::version')
 
-  jupyterhub::uv::venv { 'node':
+  uv::venv { 'node':
     prefix       => $prefix,
     python       => $python,
     requirements => epp('jupyterhub/node-requirements.txt', {
@@ -76,34 +76,34 @@ class jupyterhub::node::install (
 
   if $jupyterlmod_version and $jupyter_server_proxy_version {
     # disable jupyterlab-server-proxy extension
-    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Jupyterhub::Uv::Venv['node'] })
+    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Uv::Venv['node'] })
     file { "${prefix}/etc/jupyter/labconfig/page_config.json":
       content   => '{"disabledExtensions": {"@jupyterhub/jupyter-server-proxy": true}}',
-      subscribe => Jupyterhub::Uv::Venv['node'],
+      subscribe => Uv::Venv['node'],
       require   => File["${prefix}/etc/jupyter/labconfig/"],
     }
 
     # disable jupyter-server-proxy nbextension
     file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy.json":
       content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
-      subscribe => Jupyterhub::Uv::Venv['node'],
+      subscribe => Uv::Venv['node'],
     }
   }
 
   file { "${prefix}/lib/usercustomize":
     ensure  => 'directory',
     mode    => '0755',
-    require => Jupyterhub::Uv::Venv['node'],
+    require => Uv::Venv['node'],
   }
 
   file { "${prefix}/lib/usercustomize/usercustomize.py":
     source  => 'puppet:///modules/jupyterhub/usercustomize.py',
     mode    => '0655',
-    require => Jupyterhub::Uv::Venv['node'],
+    require => Uv::Venv['node'],
   }
 
   file { "${prefix}/share/jupyter/kernels/python3/kernel.json":
     ensure  => absent,
-    require => Jupyterhub::Uv::Venv['node'],
+    require => Uv::Venv['node'],
   }
 }
