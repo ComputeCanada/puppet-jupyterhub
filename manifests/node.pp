@@ -33,6 +33,7 @@ class jupyterhub::node::config (
 class jupyterhub::node::install (
   String $python,
   Array[String] $packages = [],
+  Array[String] $jupyterlab_disabled_extensions = [],
   Boolean $frozen_deps = true,
 ) {
   include uv::install
@@ -80,20 +81,37 @@ class jupyterhub::node::install (
     }),
   }
 
-  if $jupyterlmod_version and $jupyter_server_proxy_version {
-    # disable jupyterlab-server-proxy extension
-    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Uv::Venv['node'] })
-    file { "${prefix}/etc/jupyter/labconfig/page_config.json":
-      content   => '{"disabledExtensions": {"@jupyterhub/jupyter-server-proxy": true}}',
-      subscribe => Uv::Venv['node'],
-      require   => File["${prefix}/etc/jupyter/labconfig/"],
-    }
+  # Build list of disabled extensions
+  # Start with user-configured extensions
+  $disabled_ext_list = $jupyterlab_disabled_extensions
 
-    # disable jupyter-server-proxy nbextension
+  # Auto-disable jupyter-server-proxy when both jupyterlmod and jupyter_server_proxy are enabled
+  if $jupyterlmod_version and $jupyter_server_proxy_version {
+    $auto_disabled = ['@jupyterhub/jupyter-server-proxy']
+
+    # Also disable the classic notebook extension
     file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy.json":
       content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
       subscribe => Uv::Venv['node'],
     }
+  } else {
+    $auto_disabled = []
+  }
+
+  # Merge user-specified and auto-disabled extensions
+  $all_disabled = unique($disabled_ext_list + $auto_disabled)
+
+  # Convert array to hash format: ['ext1', 'ext2'] -> {'ext1': true, 'ext2': true}
+  $disabled_extensions_hash = $all_disabled.reduce({}) |$acc, $ext| {
+    $acc + { $ext => true }
+  }
+
+  # Always create page_config.json
+  ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Uv::Venv['node'] })
+  file { "${prefix}/etc/jupyter/labconfig/page_config.json":
+    content   => to_json_pretty({ 'disabledExtensions' => $disabled_extensions_hash }, true),
+    subscribe => Uv::Venv['node'],
+    require   => File["${prefix}/etc/jupyter/labconfig/"],
   }
 
   file { "${prefix}/lib/usercustomize":

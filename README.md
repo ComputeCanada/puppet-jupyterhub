@@ -111,6 +111,7 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | `jupyterhub::node::install::python` | String | Python version to be installed by uv | `%{alias('jupyterhub::python3::version')}` |
 | `jupyterhub::node::install::packages` | Array[String] | List of extra packages to install in the node virtual environment | `[]` |
 | `jupyterhub::node::install::frozen_deps` | Boolean | Install all unlisted dependencies versions as frozen by this module | `true` |
+| `jupyterhub::node::install::jupyterlab_disabled_extensions` | Array[String] | List of JupyterLab extensions to disable in page_config.json | `[]` |
 
 ### Kernel options
 
