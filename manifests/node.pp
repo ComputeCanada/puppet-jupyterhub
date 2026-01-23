@@ -52,6 +52,12 @@ class jupyterhub::node::install (
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_remote_desktop_proxy_version = lookup('jupyterhub::jupyter_remote_desktop_proxy::version')
 
+  # Frozen deps command : 
+  # /opt/jupyterhub_node/bin/pip freeze | tr '_' '-' | tr '[:upper:]' '[:lower:]' | \
+  # grep -v -P '^(jupyterhub|jupyterlab|notebook|batchspawner|jupyter-remote-desktop-proxy|
+  # jupyter-rsession-proxy|jupyter-server-proxy|jupyterlab-nvdashboard|jupyterlmod|nbgitpuller|
+  # ipywidgets|widgetsnbextension|jupyterlab_widget)=='
+
   uv::venv { 'node':
     prefix       => $prefix,
     python       => $python,
