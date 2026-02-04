@@ -34,6 +34,7 @@ class jupyterhub::node::install (
   String $python,
   Array[String] $packages = [],
   Boolean $frozen_deps = true,
+  Array[String] $jupyterlab_disabled_extensions = [],
 ) {
   include uv::install
   $prefix = lookup('jupyterhub::node::prefix')
@@ -80,19 +81,49 @@ class jupyterhub::node::install (
     }),
   }
 
+  # Build the base set of disabled extensions
   if $jupyterlmod_version and $jupyter_server_proxy_version {
-    # disable jupyterlab-server-proxy extension
-    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", { 'ensure' => 'directory', 'require' => Uv::Venv['node'] })
-    file { "${prefix}/etc/jupyter/labconfig/page_config.json":
-      content   => '{"disabledExtensions": {"@jupyterhub/jupyter-server-proxy": true}}',
-      subscribe => Uv::Venv['node'],
-      require   => File["${prefix}/etc/jupyter/labconfig/"],
-    }
+    $base_disabled = { '@jupyterhub/jupyter-server-proxy' => true }
 
     # disable jupyter-server-proxy nbextension
     file { "${prefix}/etc/jupyter/nbconfig/tree.d/jupyter-server-proxy.json":
       content   => '{"load_extensions": {"jupyter_server_proxy/tree": false}}',
       subscribe => Uv::Venv['node'],
+    }
+  } else {
+    $base_disabled = {}
+  }
+
+  # Convert the disabled_extensions array to the hash format required by page_config.json
+  $jupyterlab_disabled_hash = $jupyterlab_disabled_extensions.reduce({}) |$result, $ext| {
+    $result + { $ext => true }
+  }
+
+  # When user specifies extensions to disable, also disable the Extension Manager
+  # and Plugin Manager to prevent users from installing or re-enabling extensions
+  if !empty($jupyterlab_disabled_extensions) {
+    $manager_disabled = {
+      '@jupyterlab/extensionmanager-extension' => true,
+      '@jupyterlab/pluginmanager-extension'    => true,
+    }
+  } else {
+    $manager_disabled = {}
+  }
+
+  # Merge all disabled extension sources
+  $all_disabled = $base_disabled + $manager_disabled + $jupyterlab_disabled_hash
+
+  if !empty($all_disabled) {
+    $page_config = { 'disabledExtensions' => $all_disabled }
+
+    ensure_resource('file', "${prefix}/etc/jupyter/labconfig/", {
+      'ensure'  => 'directory',
+      'require' => Uv::Venv['node'],
+    })
+    file { "${prefix}/etc/jupyter/labconfig/page_config.json":
+      content   => to_json_pretty($page_config, true),
+      subscribe => Uv::Venv['node'],
+      require   => File["${prefix}/etc/jupyter/labconfig/"],
     }
   }
 
