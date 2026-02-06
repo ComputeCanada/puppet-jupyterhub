@@ -111,6 +111,34 @@ puppet-jupyterhub installs the service [jupyterhub-announcement](https://github.
 | `jupyterhub::node::install::python` | String | Python version to be installed by uv | `%{alias('jupyterhub::python3::version')}` |
 | `jupyterhub::node::install::packages` | Array[String] | List of extra packages to install in the node virtual environment | `[]` |
 | `jupyterhub::node::install::frozen_deps` | Boolean | Install all unlisted dependencies versions as frozen by this module | `true` |
+| `jupyterhub::node::install::jupyterlab_disabled_extensions` | Array[String] | List of JupyterLab extensions or plugins to disable. When non-empty, the Extension Manager and Plugin Manager are also disabled. | `[]` |
+
+### Disabling JupyterLab Extensions
+
+To prevent users from using specific JupyterLab features (such as file download),
+you can disable individual extensions or plugins. When any extensions are disabled,
+the Extension Manager and Plugin Manager are also automatically disabled to prevent
+users from installing or re-enabling extensions.
+
+**Important**: Strongly consider setting `jupyterhub::disable_user_config` to
+`true` when using this feature. Otherwise users may be able to override disabled
+extensions via their personal Jupyter configuration.
+
+Example -- disable download functionality:
+```yaml
+jupyterhub::disable_user_config: true
+jupyterhub::node::install::jupyterlab_disabled_extensions:
+  - "@jupyterlab/filebrowser-extension:download"
+  - "@jupyterlab/filebrowser-extension:open-browser-tab"
+  - "@jupyterlab/docmanager-extension:download"
+  - "@jupyterlab/docmanager-extension:open-browser-tab"
+  - "@jupyterlab/notebook-extension:export"
+  - "@jupyterlab/collaboration-extension"
+```
+
+Values are JupyterLab extension or plugin identifiers. Disable an entire extension
+(e.g., `@jupyterlab/extensionmanager-extension`) or individual plugins within one
+(e.g., `@jupyterlab/filebrowser-extension:download`).
 
 ### Kernel options
 

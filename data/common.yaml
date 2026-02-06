@@ -10,6 +10,7 @@ jupyterhub::node::prefix: "/opt/jupyterhub_node"
 jupyterhub::node::config::jupyter_server_config: "%{alias('jupyterhub::jupyter_notebook_config_hash')}"
 jupyterhub::node::install_method: "venv"
 jupyterhub::node::install::python: "%{alias('jupyterhub::python3::version')}"
+jupyterhub::node::install::jupyterlab_disabled_extensions: []
 
 jupyterhub::kernel::install_method: venv
 jupyterhub::kernel::venv::prefix: "/opt/ipython_kernel"
