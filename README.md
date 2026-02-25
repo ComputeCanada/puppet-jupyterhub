@@ -352,3 +352,25 @@ export PYTHONPATH=${PYTHONPATH}:"/opt/jupyterhub/lib/usercustomize"
 # and it is not doing the right thing in our case.
 export JUPYTER_PREFER_ENV_PATH=0
 ```
+
+### Configuration behind a reverse proxy
+JupyterHub's [documentation page](https://jupyterhub.readthedocs.io/en/stable/howto/configuration/config-proxy.html) about proxy configuration
+suggests preserving the Host header to avoid cross-origin problems. They document for Nginx and Apache. If you are running behind a [caddy server](https://caddyserver.com/),
+this used to not be an issue until version [2.11](https://github.com/caddyserver/caddy/pull/7454), which changed the behavior of the Host headers. You may need to
+configure your caddy server to revert back to [previous behavior](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#https) by adding
+```
+header_up Host {host}
+```
+to your caddy configuration, or configure your ServerApp to have a proper `allow_origin` or `allow_origin_pat`:
+```yaml
+jupyterhub::jupyter_notebook_config_hash:
+  ServerApp:
+    allow_origin: "https://jupyter.your.host.name"
+```
+or
+
+```yaml
+jupyterhub::jupyter_notebook_config_hash:
+  ServerApp:
+    allow_origin_pat: "https://*.your.host.name"
+```
