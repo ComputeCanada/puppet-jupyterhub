@@ -6,7 +6,8 @@
         "cleanup_servers": false,
         "shutdown_on_logout": true,
         "template_paths": ["/etc/jupyterhub/templates"],
-        "proxy_class": "traefik_file"
+        "proxy_class": "traefik_file",
+        "forwarded_host_header" : "X-Forwarded-Host"
     },
     "PAMAuthenticator": {
         "open_sessions": false,
