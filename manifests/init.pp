@@ -23,6 +23,7 @@ class jupyterhub (
   String $authenticator_class = 'pam',
   Integer $idle_timeout = 0,
   Array[String] $admin_groups = [],
+  Array[String] $admin_users = [],
   Array[String] $blocked_users = ['root', 'toor', 'admin', 'centos', 'slurm'],
   Hash $jupyterhub_config_hash = {},
   Boolean $disable_user_config = false,
@@ -187,14 +188,17 @@ class jupyterhub (
       'bind_url'                    => $bind_url,
       'authenticator_class'         => $authenticator_class,
       'spawner_class'               => $spawner_class,
-      'admin_access'                => Boolean(size($admin_groups) > 0),
+      'admin_access'                => Boolean(size($admin_groups) > 0 or size($admin_users) > 0),
       'services'                    => $services,
       'load_roles'                  => $roles,
     },
     'Authenticator' => {
-      'admin_groups'  => $admin_groups,
+      'admin_users'   => $admin_users,
       'allow_all'     => true,
       'blocked_users' => $blocked_users,
+    },
+    'PAMAuthenticator' => {
+      'admin_groups'  => $admin_groups,
     },
     'Spawner' => {
       'disable_user_config' => $disable_user_config,
