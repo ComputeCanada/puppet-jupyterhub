@@ -81,7 +81,8 @@ If the compute nodes cannot access Internet, configure the puppet agent to use
 | `jupyterhub::authenticator_class` | String | Class name for authenticating users | `pam` |
 | `jupyterhub::idle_timeout` | Integer | Time in seconds after which an inactive notebook is culled | `0 (no timeout)` |
 | `jupyterhub::traefik_version` | String | Version of traefik to install on the hub instance | '2.10.4' |
-| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin | `[]` |
+| `jupyterhub::admin_groups` | Array[String] | List of user groups that can act as JupyterHub admin (PAMAuthenticator only) | `[]` |
+| `jupyterhub::admin_users` | Array[String] | List of users that can act as JupyterHub admin | `[]` |
 | `jupyterhub::blocked_users` | List[String] | List of users that cannot login | `['root', 'toor', 'admin', 'centos', 'slurm']` |
 | `jupyterhub::jupyterhub_config_hash` | Hash | Custom hash merged to JupyterHub JSON main hash  | `{}` |
 | `jupyterhub::disable_user_config` | Boolean | Disable per-user configuration of single-user servers | `false` |
