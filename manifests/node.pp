@@ -17,14 +17,14 @@ class jupyterhub::node::config (
 
   file { 'jupyter_notebook_config.json':
     path    => '/etc/jupyter/jupyter_notebook_config.json',
-    content => to_json_pretty($jupyter_server_config, true),
+    content => stdlib::to_json_pretty($jupyter_server_config, true),
     mode    => '0644',
     require => File['/etc/jupyter'],
   }
 
   file { 'jupyter_server_config.json':
     path    => '/etc/jupyter/jupyter_server_config.json',
-    content => to_json_pretty($jupyter_server_config, true),
+    content => stdlib::to_json_pretty($jupyter_server_config, true),
     mode    => '0644',
     require => File['/etc/jupyter'],
   }

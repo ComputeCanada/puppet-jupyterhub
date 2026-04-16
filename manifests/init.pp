@@ -244,7 +244,7 @@ class jupyterhub (
 
   file { 'jupyterhub_config.json':
     path    => '/etc/jupyterhub/jupyterhub_config.json',
-    content => to_json_pretty($jupyterhub_config, true),
+    content => stdlib::to_json_pretty($jupyterhub_config, true),
     mode    => '0640',
     owner   => 'root',
     group   => 'jupyterhub',
@@ -253,7 +253,7 @@ class jupyterhub (
 
   file { 'announcement_config.json':
     path    => '/etc/jupyterhub/announcement_config.json',
-    content => to_json_pretty($announcement_config, true),
+    content => stdlib::to_json_pretty($announcement_config, true),
     mode    => '0640',
     owner   => 'root',
     group   => 'jupyterhub',
