@@ -11,5 +11,5 @@
   "metadata": {
     "debugger": true
   },
-  "env": <%= $env.to_json_pretty %>
+  "env": <%= stdlib::to_json_pretty($env, undef, { 'indent' => '    ' }) %>
 }
