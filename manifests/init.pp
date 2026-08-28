@@ -200,6 +200,9 @@ class jupyterhub (
     'PAMAuthenticator' => {
       'admin_groups'  => $admin_groups,
     },
+    'GenericOAuthenticator' => {
+      'admin_groups'  => $admin_groups,
+    },
     'Spawner' => {
       'disable_user_config' => $disable_user_config,
       'cmd' => "${node_prefix}/bin/jupyterhub-singleuser",
