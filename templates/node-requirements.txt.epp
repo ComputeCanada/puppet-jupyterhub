@@ -7,6 +7,7 @@ batchspawner==<%= $batchspawner_version %>
 <% if $jupyter_server_proxy_version { %>jupyter-server-proxy==<%= $jupyter_server_proxy_version %><% } %>
 <% if $jupyterlab_nvdashboard_version { %>jupyterlab-nvdashboard==<%= $jupyterlab_nvdashboard_version %><% } %>
 <% if $jupyterlmod_version { %>jupyterlmod==<%= $jupyterlmod_version %><% } %>
+<% if $jupyterlab_spreadsheet_editor_version { %>jupyterlab-spreadsheet-editor==<%= $jupyterlab_spreadsheet_editor_version %><% } %>
 <% if $nbgitpuller_version { %>nbgitpuller==<%= $nbgitpuller_version %><% } %>
 <% if $ipywidgets_version { %>ipywidgets==<%= $ipywidgets_version %><% } %>
 <% if $widgetsnbextension_version { %>widgetsnbextension==<%= $widgetsnbextension_version %><% } %>

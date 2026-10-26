@@ -49,6 +49,7 @@ class jupyterhub::node::install (
   $jupyter_server_proxy_version = lookup('jupyterhub::jupyter_server_proxy::version')
   $jupyterlmod_version = lookup('jupyterhub::jupyterlmod::version')
   $jupyterlab_nvdashboard_version = lookup('jupyterhub::jupyterlab_nvdashboard::version')
+  $jupyterlab_spreadsheet_editor_version = lookup('jupyterhub::jupyterlab_spreadsheet_editor::version')
   $jupyter_rsession_proxy_version = lookup('jupyterhub::jupyter_rsession_proxy::version')
   $jupyter_remote_desktop_proxy_version = lookup('jupyterhub::jupyter_remote_desktop_proxy::version')
 
@@ -73,6 +74,7 @@ class jupyterhub::node::install (
         'jupyter_server_proxy_version'         => $jupyter_server_proxy_version,
         'jupyterlmod_version'                  => $jupyterlmod_version,
         'jupyterlab_nvdashboard_version'       => $jupyterlab_nvdashboard_version,
+        'jupyterlab_spreadsheet_editor_version' => $jupyterlab_spreadsheet_editor_version,
         'jupyter_rsession_proxy_version'       => $jupyter_rsession_proxy_version,
         'jupyter_remote_desktop_proxy_version' => $jupyter_remote_desktop_proxy_version,
         'frozen_deps'                          => $frozen_deps,
